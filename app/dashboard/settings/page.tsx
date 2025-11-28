@@ -1,10 +1,8 @@
-import React from 'react'
-import SettingsComponent from '@/components/dashboard/Settings'
+import React from "react";
+import SettingsComponent from "@/components/dashboard/others/Settings";
 
 const Settings = () => {
-  return (
-    <SettingsComponent  />
-  )
-}
+  return <SettingsComponent />;
+};
 
-export default Settings
+export default Settings;
