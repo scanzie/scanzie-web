@@ -171,7 +171,7 @@ const AllUserAnalysis: React.FC<AllUserAnalysisProps> = ({ analysis }) => {
       <main className="dashboard-container">
         {/* Stats Cards */}
         <div className="px-6 py-10">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
             <MetricCard
               key={stats.total}
               title="All Analyses"

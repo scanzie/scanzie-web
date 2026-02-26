@@ -99,7 +99,7 @@ const Dashboard = ({ results }: { results: Analysis[] }) => {
       <main className="dashboard-container">
         <div className="p-6">
           {/* Metrics Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
             <MetricCard
               title="Total Analyses"
               value={stats.total.toString()}
