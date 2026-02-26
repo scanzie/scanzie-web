@@ -7,8 +7,6 @@ import {
   Search,
   Globe,
   ChevronDown,
-  AlertTriangle,
-  CheckCircle,
   NotebookTextIcon,
   Eye,
   DownloadIcon,
@@ -16,6 +14,8 @@ import {
   BoxIcon,
   MoreHorizontal,
   TriangleAlert,
+  InfoIcon,
+  Check,
 } from "lucide-react";
 import { Button } from "../../ui/button";
 import { SidebarTrigger } from "../../ui/sidebar";
@@ -185,7 +185,7 @@ const AllUserAnalysis: React.FC<AllUserAnalysisProps> = ({ analysis }) => {
               key={stats.good}
               title="Good (70+)"
               value={stats.good.toString()}
-              icon={CheckCircle}
+              icon={Check}
               iconColor="green"
             />
             <MetricCard
@@ -199,7 +199,7 @@ const AllUserAnalysis: React.FC<AllUserAnalysisProps> = ({ analysis }) => {
               key={stats.poor}
               title="Poor (0-39)"
               value={stats.poor.toString()}
-              icon={AlertTriangle}
+              icon={InfoIcon}
               iconColor="red"
             />
           </div>
