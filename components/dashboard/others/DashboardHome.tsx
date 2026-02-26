@@ -22,7 +22,7 @@ import {
   getScoreStatus,
 } from "@/utils/seo-utils";
 import Image from "next/image";
-import { formatDate } from "@/utils/general";
+import { formatDate, formatUrl } from "@/utils/general";
 
 interface MetricCardProps {
   title: string;
@@ -30,19 +30,6 @@ interface MetricCardProps {
   value: string;
   icon: LucideIcon;
 }
-
-export const formatUrl = (url: string): string => {
-  try {
-    const urlObj = new URL(url);
-    const hostname = urlObj.hostname + urlObj.pathname;
-    if (hostname.length > 30) {
-      return hostname.substring(0, 27) + "...";
-    }
-    return hostname;
-  } catch {
-    return url.length > 30 ? url.substring(0, 27) + "..." : url;
-  }
-};
 
 export const MetricCard = ({
   title,

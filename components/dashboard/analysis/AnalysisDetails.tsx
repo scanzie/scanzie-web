@@ -36,7 +36,7 @@ import {
 } from "../../../utils/seo-utils";
 import Image from "next/image";
 import DeleteDialog from "../dialogs/DeleteDialog";
-import { formatUrl } from "../others/DashboardHome";
+import { formatUrl } from "@/utils/general";
 import ScoreCard from "../cards/ScoreCard";
 import IssuesList from "../cards/IssuesList";
 import MetricCard from "../cards/MetricCard";

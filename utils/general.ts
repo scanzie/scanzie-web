@@ -28,3 +28,12 @@ export const formatDate = (date: Date | string): string => {
 
   return "a long time ago";
 };
+
+export const formatUrl = (url: string): string => {
+  if (url.length <= 28) return url;
+
+  const start = url.slice(0, 10); // first 10 chars
+  const end = url.slice(-5); // last 5 chars
+
+  return `${start}...${end}`; // total = 18 chars
+};
