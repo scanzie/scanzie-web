@@ -68,7 +68,9 @@ const AllUserAnalysis: React.FC<AllUserAnalysisProps> = ({ analysis }) => {
   const [analyses] = useState<SEOAnalysisResult[]>(analysis);
   const [open, setOpen] = useState(false);
   const [reanalyzeOpen, setReanalyzeOpen] = useState(false);
-  const [selectedAnalysis, setSelectedAnalysis] = useState<Analysis | null>(null);
+  const [selectedAnalysis, setSelectedAnalysis] = useState<Analysis | null>(
+    null,
+  );
   const [currentUrl, setCurrentUrl] = useState<string | null>(null);
 
   // These will come back from API response
@@ -334,13 +336,9 @@ const AllUserAnalysis: React.FC<AllUserAnalysisProps> = ({ analysis }) => {
                       </div>
                       <div className="flex items-center gap-2">
                         <div
-                          className={`grid rounded-full h-11 w-11 p-2 place-content-center border-2 ${scoreStatus.bgClass}`}
+                          className={`text-xs sm:text-sm px-2 py-1 rounded-full ${scoreStatus.bgClass}`}
                         >
-                          <div
-                            className={`text-sm font-bold ${scoreStatus.colorClass}`}
-                          >
-                            {getScoreBreakdown(analysis).overall}%
-                          </div>
+                          {getScoreBreakdown(analysis).overall}%
                         </div>
                         {/* Action Buttons */}
                         <div className="z-20 border-gray-200 pointer-events-auto">
