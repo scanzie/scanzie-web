@@ -297,7 +297,7 @@ const AllUserAnalysis: React.FC<AllUserAnalysisProps> = ({ analysis }) => {
               return (
                 <div
                   key={analysis.id}
-                  className="relative bg-white rounded-2xl border hover:border-gray-400 overflow-hidden"
+                  className="relative bg-white rounded-xl border hover:border-gray-400 overflow-hidden"
                 >
                   <Link
                     href={`/dashboard/analysis/${encodeURIComponent(analysis.url)}`}
@@ -336,7 +336,7 @@ const AllUserAnalysis: React.FC<AllUserAnalysisProps> = ({ analysis }) => {
                       </div>
                       <div className="flex items-center gap-2">
                         <div
-                          className={`text-xs sm:text-sm px-2 py-1 rounded-full ${scoreStatus.bgClass}`}
+                          className={`text-xs sm:text-sm px-2 py-1 rounded-full ${scoreStatus.bgClass} ${scoreStatus.colorClass}`}
                         >
                           {getScoreBreakdown(analysis).overall}%
                         </div>
