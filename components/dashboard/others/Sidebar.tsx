@@ -89,9 +89,9 @@ export function AppSidebar() {
                     <SidebarMenuItem>
                       <SidebarMenuButton
                         asChild
-                        className={`relative px-3 py-2.5 rounded-lg transition-all duration-200 group hover:bg-gray-50 ${
+                        className={`relative px-3 py-4 rounded-lg transition-all duration-200 group hover:bg-gray-50 ${
                           isActive
-                            ? "bg-blue-50 text-blue-700 hover:bg-blue-50 border-r-4 border-blue-500"
+                            ? "bg-blue-50 text-blue-700 hover:bg-blue-50  border-blue-500"
                             : "text-gray-600 hover:text-gray-900"
                         }`}
                       >
@@ -119,7 +119,7 @@ export function AppSidebar() {
 
         {/* Quick Action Card */}
         <div className="mx-4 mb-6">
-          <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-4 text-white">
+          <div className="bg-linear-to-br from-blue-500 to-blue-600 rounded-xl p-4 text-white">
             <div className="flex items-center mb-3">
               <div className="bg-white/20 rounded-lg p-2">
                 <Zap className="w-5 h-5 text-white" />
@@ -131,7 +131,7 @@ export function AppSidebar() {
             </div>
             <Link href="/dashboard/analysis/new">
               <button className="w-full bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white text-xs font-medium py-2.5 px-3 rounded-lg transition-all duration-200 hover:scale-105">
-                Start Analysis →
+                New Analysis 
               </button>
             </Link>
           </div>
