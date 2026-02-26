@@ -22,6 +22,7 @@ import {
   getScoreStatus,
 } from "@/utils/seo-utils";
 import Image from "next/image";
+import { formatDate } from "@/utils/general";
 
 interface MetricCardProps {
   title: string;
@@ -63,21 +64,6 @@ const Dashboard = ({ results }: { results: Analysis[] }) => {
         status,
       };
     });
-
-  // Format URL for display (remove protocol and truncate if too long)
-  // Format date for display
-  const formatDate = (dateString: Date): string => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInHours = Math.floor(
-      (now.getTime() - date.getTime()) / (1000 * 60 * 60)
-    );
-
-    if (diffInHours < 1) return "Just now";
-    if (diffInHours < 24) return `${diffInHours}h ago`;
-    if (diffInHours < 48) return "1 day ago";
-    return `${Math.floor(diffInHours / 24)} days ago`;
-  };
 
   const MetricCard = ({
     title,
@@ -169,7 +155,7 @@ const Dashboard = ({ results }: { results: Analysis[] }) => {
                 </div>
               </div>
               <div className="flex justify-center items-center min-h-4/5">
-                <div className="h-64 w-full max-w-lg bg-gradient-to-t from-gray-50 to-transparent rounded-lg flex items-center justify-center">
+                <div className="h-64 w-full max-w-lg bg-linear-to-t from-gray-50 to-transparent rounded-lg flex items-center justify-center">
                   {stats.total > 0 ? (
                     <div className="w-full px-4">
                       <div className="space-y-4">
