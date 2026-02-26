@@ -162,9 +162,9 @@ const ScoreBreakdownDialog: React.FC<{
               />
               <div>
                 <p className="font-bold text-gray-900 text-base leading-tight">
-                  {analysis.on_page.title.text.length > 30
+                  {analysis.on_page.title ? analysis.on_page.title.text.length > 30
                     ? analysis.on_page.title.text.slice(0, 27) + "..."
-                    : analysis.on_page.title.text}
+                    : analysis.on_page.title.text : "Untitled"}
                 </p>
                 <p className="text-xs text-gray-400 font-normal">
                   {formatUrl(analysis.url)}
