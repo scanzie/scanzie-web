@@ -7,7 +7,6 @@ import {
   Search,
   Globe,
   ChevronDown,
-  TrendingDown,
   AlertTriangle,
   CheckCircle,
   NotebookTextIcon,
@@ -16,6 +15,7 @@ import {
   RefreshCcw,
   BoxIcon,
   MoreHorizontal,
+  TriangleAlert,
 } from "lucide-react";
 import { Button } from "../../ui/button";
 import { SidebarTrigger } from "../../ui/sidebar";
@@ -42,6 +42,7 @@ import {
 } from "./AnalysisDetails";
 import apiClient from "@/lib/api/client";
 import { formatDate } from "@/utils/general";
+import { MetricCard } from "../others/DashboardHome";
 
 export type Analysis = {
   id: string;
@@ -67,9 +68,7 @@ const AllUserAnalysis: React.FC<AllUserAnalysisProps> = ({ analysis }) => {
   const [analyses] = useState<SEOAnalysisResult[]>(analysis);
   const [open, setOpen] = useState(false);
   const [reanalyzeOpen, setReanalyzeOpen] = useState(false);
-  const [selectedAnalysis, setSelectedAnalysis] = useState<Analysis | null>(
-    null,
-  );
+  const [selectedAnalysis, setSelectedAnalysis] = useState<Analysis | null>(null);
   const [currentUrl, setCurrentUrl] = useState<string | null>(null);
 
   // These will come back from API response
@@ -138,8 +137,6 @@ const AllUserAnalysis: React.FC<AllUserAnalysisProps> = ({ analysis }) => {
     return calculateAnalysisStats(analyses);
   }, [analyses]);
 
-  
-
   return (
     <div className="w-full mx-auto bg-gray-50">
       {/* Header */}
@@ -175,61 +172,34 @@ const AllUserAnalysis: React.FC<AllUserAnalysisProps> = ({ analysis }) => {
         {/* Stats Cards */}
         <div className="px-6 py-10">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div className="bg-white backdrop-blur-sm rounded-2xl p-6 border hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-500 text-sm font-medium">
-                    Total Analysis
-                  </p>
-                  <p className="text-3xl font-bold text-gray-900">
-                    {stats.total}
-                  </p>
-                </div>
-                <Globe className="w-8 h-8 text-blue-500" />
-              </div>
-            </div>
-            <div className="bg-white backdrop-blur-sm rounded-2xl p-6 border hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-500 text-sm font-medium">
-                    Good Analysis
-                  </p>
-                  <p className="text-3xl font-bold text-green-600">
-                    {stats.good}
-                  </p>
-                  <p className="text-xs text-gray-400 mt-1">Score ≥ 70%</p>
-                </div>
-                <CheckCircle className="w-8 h-8 text-green-500" />
-              </div>
-            </div>
-            <div className="bg-white backdrop-blur-sm rounded-2xl p-6 border hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-500 text-sm font-medium">
-                    Moderate Analysis
-                  </p>
-                  <p className="text-3xl font-bold text-yellow-600">
-                    {stats.moderate}
-                  </p>
-                  <p className="text-xs text-gray-400 mt-1">Score 40-69%</p>
-                </div>
-                <AlertTriangle className="w-8 h-8 text-yellow-500" />
-              </div>
-            </div>
-            <div className="bg-white backdrop-blur-sm rounded-2xl p-6 border hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-500 text-sm font-medium">
-                    Poor Analysis
-                  </p>
-                  <p className="text-3xl font-bold text-red-600">
-                    {stats.poor}
-                  </p>
-                  <p className="text-xs text-gray-400 mt-1">Score &lt; 40%</p>
-                </div>
-                <TrendingDown className="w-8 h-8 text-red-500" />
-              </div>
-            </div>
+            <MetricCard
+              key={stats.total}
+              title="All Analyses"
+              value={stats.total.toString()}
+              icon={Globe}
+              iconColor="blue"
+            />
+            <MetricCard
+              key={stats.good}
+              title="Good (70+)"
+              value={stats.good.toString()}
+              icon={CheckCircle}
+              iconColor="green"
+            />
+            <MetricCard
+              key={stats.moderate}
+              title="Moderate (40-69)"
+              value={stats.moderate.toString()}
+              icon={TriangleAlert}
+              iconColor="yellow"
+            />
+            <MetricCard
+              key={stats.poor}
+              title="Poor (0-39)"
+              value={stats.poor.toString()}
+              icon={AlertTriangle}
+              iconColor="red"
+            />
           </div>
 
           {/* Search and Filter Controls */}
