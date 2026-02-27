@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { OnPageAnalysis } from "./AnalysisDetails"; // adjust import path as needed
+import Image from "next/image";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -295,10 +296,7 @@ const GoogleIcon = () => (
 );
 
 const BingIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-    <path d="M5 3l4 1.5v13.3l5.5-3.1-2-1.1 5.5-2.1V6.2L5 3z" fill="#00809D" />
-    <path d="M9 17.8V4.5L5 3v18l14-7.9-5.5-1.5-4.5 6.2z" fill="#008373" />
-  </svg>
+  <Image src="/bing.png" alt="Bing Icon" height={24} width={24} />
 );
 
 const LinkedInIcon = () => (
@@ -361,7 +359,13 @@ const OGSocialPreview: React.FC<OGSocialPreviewProps> = ({
         </div>
         <TabBar tabs={searchTabs} active={searchTab} onChange={setSearchTab} />
         <div className="transition-all duration-200">
-          {searchTab === "google" && <GooglePreview og={og} faviconUrl={on_page.favicon.url} url={pageUrl} />}
+          {searchTab === "google" && (
+            <GooglePreview
+              og={og}
+              faviconUrl={on_page.favicon.url}
+              url={pageUrl}
+            />
+          )}
           {searchTab === "bing" && <BingPreview og={og} url={pageUrl} />}
         </div>
       </div>
