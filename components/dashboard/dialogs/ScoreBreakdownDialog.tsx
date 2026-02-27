@@ -6,13 +6,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Analysis } from "../analysis/AllUserAnalysis";
-import {
-  AlertTriangle,
-  Code,
-  Eye,
-  FileText,
-  X,
-} from "lucide-react";
+import { AlertTriangle, Code, Eye, FileText, X } from "lucide-react";
 import Image from "next/image";
 import { formatUrl } from "@/utils/general";
 
@@ -162,9 +156,11 @@ const ScoreBreakdownDialog: React.FC<{
               />
               <div>
                 <p className="font-bold text-gray-900 text-base leading-tight">
-                  {analysis.on_page.title ? analysis.on_page.title.text.length > 30
-                    ? analysis.on_page.title.text.slice(0, 27) + "..."
-                    : analysis.on_page.title.text : "Untitled"}
+                  {analysis.on_page.title ?
+                    analysis.on_page.title.text.length > 30 ?
+                      analysis.on_page.title.text.slice(0, 27) + "..."
+                    : analysis.on_page.title.text
+                  : "Untitled"}
                 </p>
                 <p className="text-xs text-gray-400 font-normal">
                   {formatUrl(analysis.url)}
@@ -193,7 +189,10 @@ const ScoreBreakdownDialog: React.FC<{
               label="Page Speed"
               score={analysis.technical?.pageSpeed?.score || 0}
             />
-            <ScoreRow label="Mobile" score={analysis.technical?.mobile?.score || 0} />
+            <ScoreRow
+              label="Mobile"
+              score={analysis.technical?.mobile?.score || 0}
+            />
             <ScoreRow label="SSL" score={analysis.technical?.ssl?.score || 0} />
           </Card>
 
@@ -204,12 +203,18 @@ const ScoreBreakdownDialog: React.FC<{
             score={onPageScore}
             accent="bg-gray-50 text-gray-600"
           >
-            <ScoreRow label="Title" score={analysis.on_page?.title?.score || 0} />
+            <ScoreRow
+              label="Title"
+              score={analysis.on_page?.title?.score || 0}
+            />
             <ScoreRow
               label="Headings"
               score={analysis.on_page?.headings?.score || 0}
             />
-            <ScoreRow label="Images" score={analysis.on_page?.images?.score || 0} />
+            <ScoreRow
+              label="Images"
+              score={analysis.on_page?.images?.score || 0}
+            />
           </Card>
 
           {/* Content Quality */}
