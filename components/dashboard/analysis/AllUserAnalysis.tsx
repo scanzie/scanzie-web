@@ -7,7 +7,6 @@ import {
   Search,
   Globe,
   ChevronDown,
-  NotebookTextIcon,
   Eye,
   DownloadIcon,
   RefreshCcw,
