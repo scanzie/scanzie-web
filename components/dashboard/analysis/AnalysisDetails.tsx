@@ -285,13 +285,7 @@ const SEOAnalysisDashboard: React.FC<SEOAnalysisProps> = ({
       setDeleteLoading(false);
     }
   };
-  // Show scanzie open after 5 seconds
-  // useEffect(() => {
-  //   const timer = setTimeout(() => {
-  //     setShareScanzie(true)
-  //   }, 5000);
-  //   return () => clearTimeout(timer);
-  // }, []);
+ 
   useEffect(() => {
     setOpen(false);
   }, []);
@@ -379,7 +373,7 @@ const SEOAnalysisDashboard: React.FC<SEOAnalysisProps> = ({
             </Link>
           </div>
           {/* Overall Scores */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
             <ScoreCard
               icon={<Globe className="w-5 h-5 text-inherit" />}
               title="Overall Score"
