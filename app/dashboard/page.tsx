@@ -1,4 +1,3 @@
-import React from "react";
 import DashboardHome from "@/components/dashboard/others/DashboardHome";
 import { fetchUserAnalysis } from "@/lib/actions/analysis";
 

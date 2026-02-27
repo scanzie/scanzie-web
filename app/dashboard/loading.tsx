@@ -1,98 +1,134 @@
-import React from 'react';
+"use client";
 
-const SkeletonBox = ({ className = "", animate = true }) => (
-  <div className={`bg-gray-200 rounded ${animate ? 'animate-pulse' : ''} ${className}`}></div>
+import React from "react";
+
+const Shimmer = ({ className }: { className?: string }) => (
+  <div
+    className={`rounded bg-linear-to-r from-gray-100 via-gray-200 to-gray-100 bg-size-[200%_100%] ${className ?? ""}`}
+    style={{ animation: "shimmer 1.6s infinite linear" }}
+  />
 );
 
-const SkeletonCircle = ({ size = "w-12 h-12", animate = true }) => (
-  <div className={`bg-gray-200 rounded-full ${animate ? 'animate-pulse' : ''} ${size}`}></div>
-);
-
-const MetricCardSkeleton = () => (
-  <div className="bg-white rounded-lg p-6 shadow-sm border">
-    <div className="flex items-center space-x-3 mb-4">
-      <SkeletonCircle size="w-8 h-8" />
-    </div>
-    <SkeletonBox className="h-8 w-12 mb-2" />
-    <SkeletonBox className="h-4 w-24" />
-  </div>
-);
-
-const ChartBarSkeleton = ({ width, height = "h-6" }: {width: string, height: string}) => (
-  <div className="flex items-end space-x-2 mb-3">
-    <SkeletonBox className={`${height} ${width}`} />
-    <SkeletonBox className="h-4 w-16" />
-    <div className="flex-1"></div>
-    <SkeletonBox className="h-4 w-12" />
+const StatCardSkeleton = () => (
+  <div className="flex flex-col gap-3 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+    <Shimmer className="h-10 w-10 rounded-xl" />
+    <Shimmer className="mt-2 h-8 w-12" />
+    <Shimmer className="h-4 w-28" />
   </div>
 );
 
 const RecentAnalysisItemSkeleton = () => (
-  <div className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0">
-    <div className="flex-1 mr-4">
-      <SkeletonBox className="h-4 w-48 mb-2" />
-    </div>
-    <div className="flex items-center space-x-3">
-      <SkeletonBox className="h-6 w-12 rounded-full" />
-      <SkeletonBox className="h-4 w-16" />
+  <div className="flex items-center gap-3 py-3">
+    {/* Site favicon */}
+    <Shimmer className="h-10 w-10 shrink-0 rounded-full" />
+    <div className="flex flex-1 flex-col gap-2">
+      {/* URL */}
+      <Shimmer className="h-4 w-44" />
+      <div className="flex items-center gap-2">
+        {/* Score badge */}
+        <Shimmer className="h-5 w-10 rounded-full" />
+        {/* Timestamp */}
+        <Shimmer className="h-3 w-24" />
+      </div>
     </div>
   </div>
 );
 
-const SEODashboardLoading = () => {
+export default function DashboardSkeleton() {
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <SkeletonBox className="h-8 w-32 mb-2" />
-            <SkeletonBox className="h-5 w-80" />
+    <>
+      <style>{`
+        @keyframes shimmer {
+          0%   { background-position: 200% 0; }
+          100% { background-position: -200% 0; }
+        }
+      `}</style>
+
+      <div className="min-h-screen bg-slate-50 font-sans">
+        {/* ── Header ── */}
+        <div className="flex items-center justify-between border-b border-gray-100 bg-white px-8 py-6">
+          <div className="flex flex-col gap-2">
+            <Shimmer className="h-7 w-36" />
+            <Shimmer className="h-4 w-72" />
           </div>
-          <SkeletonBox className="h-10 w-32 rounded-lg" />
+          {/* "New Analysis" button */}
+          <Shimmer className="h-10 w-36 rounded-xl" />
         </div>
 
-        {/* Metrics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <MetricCardSkeleton />
-          <MetricCardSkeleton />
-          <MetricCardSkeleton />
-          <MetricCardSkeleton />
-        </div>
-
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Score Distribution Chart */}
-          <div className="lg:col-span-2 bg-white rounded-lg p-6 shadow-sm border">
-            <div className="flex justify-between items-center mb-6">
-              <SkeletonBox className="h-6 w-32" />
-              <SkeletonBox className="h-4 w-20" />
-            </div>
-            
-            <div className="space-y-6">
-              <ChartBarSkeleton width="w-24" height="h-4" />
-              <ChartBarSkeleton width="w-96" height="h-4" />
-              <ChartBarSkeleton width="w-12" height="h-4" />
-            </div>
+        <div className="mx-auto max-w-5xl px-6 py-8 space-y-6">
+          {/* ── Stat Cards ── */}
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <StatCardSkeleton key={i} />
+            ))}
           </div>
 
-          {/* Recent Analysis */}
-          <div className="bg-white rounded-lg p-6 shadow-sm border">
-            <div className="flex justify-between items-center mb-6">
-              <SkeletonBox className="h-6 w-28" />
-              <SkeletonCircle size="w-5 h-5" />
+          {/* ── Bottom Row: Score Distribution + Recent Analysis ── */}
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_380px]">
+            {/* Score Distribution Card */}
+            <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm space-y-6">
+              {/* Card header */}
+              <div className="flex items-center justify-between">
+                <Shimmer className="h-5 w-40" />
+                <Shimmer className="h-4 w-20 rounded" />
+              </div>
+
+              {/* Good bar */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Shimmer className="h-4 w-28" />
+                  <Shimmer className="h-4 w-20" />
+                </div>
+                <div className="relative h-3 w-full rounded-full bg-gray-100 overflow-hidden">
+                  <Shimmer className="absolute inset-y-0 left-0 w-4/5 rounded-full" />
+                </div>
+              </div>
+
+              {/* Moderate bar */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Shimmer className="h-4 w-28" />
+                  <Shimmer className="h-4 w-20" />
+                </div>
+                <div className="relative h-3 w-full rounded-full bg-gray-100 overflow-hidden">
+                  <Shimmer className="absolute inset-y-0 left-0 w-2/5 rounded-full" />
+                </div>
+              </div>
+
+              {/* Poor bar */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Shimmer className="h-4 w-28" />
+                  <Shimmer className="h-4 w-20" />
+                </div>
+                <div className="relative h-3 w-full rounded-full bg-gray-100 overflow-hidden">
+                  <Shimmer className="absolute inset-y-0 left-0 w-1 rounded-full" />
+                </div>
+              </div>
             </div>
-            
-            <div className="space-y-1 overflow-hidden">
-              <RecentAnalysisItemSkeleton />
-              <RecentAnalysisItemSkeleton />
-              <RecentAnalysisItemSkeleton />
+
+            {/* Recent Analysis Card */}
+            <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm space-y-2">
+              {/* Card header */}
+              <div className="flex items-center justify-between pb-2">
+                <Shimmer className="h-5 w-36" />
+                <Shimmer className="h-6 w-6 rounded" />
+              </div>
+
+              {/* Divider */}
+              <div className="border-t border-gray-100" />
+
+              {/* List items */}
+              {Array.from({ length: 4 }).map((_, i) => (
+                <React.Fragment key={i}>
+                  <RecentAnalysisItemSkeleton />
+                  {i < 3 && <div className="border-t border-gray-50" />}
+                </React.Fragment>
+              ))}
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
-};
-
-export default SEODashboardLoading;
+}

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Geom:ital,wght@0,300..900;1,300..900&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -81,7 +81,7 @@
 
 .dark {
   --foreground: oklch(0.984 0.003 247.858);
-  --background:oklch(0.129 0.042 264.695);
+  --background: oklch(0.129 0.042 264.695);
   --card: oklch(0.208 0.042 265.755);
   --card-foreground: oklch(0.984 0.003 247.858);
   --popover: oklch(0.208 0.042 265.755);
@@ -123,17 +123,17 @@
 }
 
 body {
-  font-family: 'Plus Jakarta Sans';
   background: var(--background);
-  color: var(--foreground)
+  font-family: "Geom";
+  color: var(--foreground);
 }
 
 /* Custom Styles */
 .app-container {
-  @apply container mx-auto xl:px-[4rem] px-5;
+  @apply container mx-auto xl:px-16 px-5;
 }
 .dashboard-container {
-  @apply container mx-auto xl:px-[1rem];
+  @apply container mx-auto xl:px-4;
 }
 
 .custom-hover:hover svg {

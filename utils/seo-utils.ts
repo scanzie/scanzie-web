@@ -117,7 +117,7 @@ export const getScoreStatus = (score: number): ScoreStatus => {
       category: 'good',
       percentage,
       colorClass: 'text-green-600',
-      bgClass: 'bg-green-100 border-green-200'
+      bgClass: 'bg-green-100'
     };
   }
 
@@ -126,7 +126,7 @@ export const getScoreStatus = (score: number): ScoreStatus => {
       category: 'moderate',
       percentage,
       colorClass: 'text-yellow-600',
-      bgClass: 'bg-yellow-100 border-yellow-200'
+      bgClass: 'bg-yellow-100'
     };
   }
 
@@ -134,7 +134,7 @@ export const getScoreStatus = (score: number): ScoreStatus => {
     category: 'poor',
     percentage,
     colorClass: 'text-red-600',
-    bgClass: 'bg-red-100 border-red-200'
+    bgClass: 'bg-red-100'
   };
 };
 

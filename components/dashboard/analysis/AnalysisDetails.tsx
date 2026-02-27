@@ -36,12 +36,13 @@ import {
 } from "../../../utils/seo-utils";
 import Image from "next/image";
 import DeleteDialog from "../dialogs/DeleteDialog";
-import { formatUrl } from "../others/DashboardHome";
+import { formatUrl } from "@/utils/general";
 import ScoreCard from "../cards/ScoreCard";
 import IssuesList from "../cards/IssuesList";
 import MetricCard from "../cards/MetricCard";
 import KeywordDensityChart from "../cards/KeywordDensityChart";
 import ShareScanzie from "../dialogs/ShareScanzie";
+import OGSocialPreview from "./OgSocialPreview";
 
 interface PageSpeedResult {
   loadTime: number;
@@ -284,13 +285,7 @@ const SEOAnalysisDashboard: React.FC<SEOAnalysisProps> = ({
       setDeleteLoading(false);
     }
   };
-  // Show scanzie open after 5 seconds
-  // useEffect(() => {
-  //   const timer = setTimeout(() => {
-  //     setShareScanzie(true)
-  //   }, 5000);
-  //   return () => clearTimeout(timer);
-  // }, []);
+ 
   useEffect(() => {
     setOpen(false);
   }, []);
@@ -303,7 +298,7 @@ const SEOAnalysisDashboard: React.FC<SEOAnalysisProps> = ({
           {/* Header */}
           <div className="flex justify-between items-center bg-white border-b border-gray-100 p-6">
             <div className="flex items-center gap-3">
-              {results.on_page.favicon ? (
+              {results.on_page.favicon ?
                 <Image
                   src={`${new URL(results.on_page.favicon.url)}`}
                   alt="Favicon"
@@ -311,14 +306,12 @@ const SEOAnalysisDashboard: React.FC<SEOAnalysisProps> = ({
                   height={32}
                   className="w-12 h-12"
                 />
-              ) : (
-                <Globe className="w-10 h-10 text-gray-700" />
-              )}
+              : <Globe className="w-10 h-10 text-gray-700" />}
               <div>
                 <h1 className="text-xl md:text-2xl font-bold text-gray-900 ">
-                  {on_page?.title?.text.length > 25
-                    ? `${on_page?.title?.text.substring(0, 25)}...`
-                    : on_page?.title?.text || "Untitled"}{" "}
+                  {on_page?.title?.text.length > 25 ?
+                    `${on_page?.title?.text.substring(0, 25)}...`
+                  : on_page?.title?.text || "Untitled"}{" "}
                 </h1>
                 <div className=" text-gray-600 flex items-center gap-2 text-sm">
                   <Link
@@ -349,11 +342,9 @@ const SEOAnalysisDashboard: React.FC<SEOAnalysisProps> = ({
                   onClick={handleReanalyze}
                   className="p-3 rounded-xl hover:bg-gray-100 cursor-pointer hover:text-blue-600 flex items-center gap-2"
                 >
-                  {loading ? (
+                  {loading ?
                     <Loader2Icon className="animate-spin" />
-                  ) : (
-                    <RefreshCcw className="" />
-                  )}
+                  : <RefreshCcw className="" />}
                 </div>
                 <div
                   onClick={() => setDeleteOpen(true)}
@@ -363,6 +354,7 @@ const SEOAnalysisDashboard: React.FC<SEOAnalysisProps> = ({
                 </div>
               </div>
             </div>
+
             <SidebarTrigger className="bg-blue-50 p-3 rounded-md md:hidden" />
           </div>
         </main>
@@ -381,7 +373,7 @@ const SEOAnalysisDashboard: React.FC<SEOAnalysisProps> = ({
             </Link>
           </div>
           {/* Overall Scores */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
             <ScoreCard
               icon={<Globe className="w-5 h-5 text-inherit" />}
               title="Overall Score"
@@ -444,7 +436,7 @@ const SEOAnalysisDashboard: React.FC<SEOAnalysisProps> = ({
                     <span className="text-gray-600">Score</span>
                     <span
                       className={`font-medium px-2 py-1 rounded text-sm ${getScoreColor(
-                        technical?.pageSpeed?.score
+                        technical?.pageSpeed?.score,
                       )}`}
                     >
                       {technical?.pageSpeed?.score}/100
@@ -459,9 +451,9 @@ const SEOAnalysisDashboard: React.FC<SEOAnalysisProps> = ({
                     <span className="text-gray-600">Responsive</span>
                     <span
                       className={`px-2 py-1 rounded text-sm ${
-                        technical?.mobile?.responsive
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-700"
+                        technical?.mobile?.responsive ?
+                          "bg-green-100 text-green-700"
+                        : "bg-red-100 text-red-700"
                       }`}
                     >
                       {technical?.mobile?.responsive ? "Yes" : "No"}
@@ -471,7 +463,7 @@ const SEOAnalysisDashboard: React.FC<SEOAnalysisProps> = ({
                     <span className="text-gray-600">Mobile Score</span>
                     <span
                       className={`font-medium px-2 py-1 rounded text-sm ${getScoreColor(
-                        technical?.mobile?.score
+                        technical?.mobile?.score,
                       )}`}
                     >
                       {technical?.mobile?.score}/100
@@ -486,9 +478,9 @@ const SEOAnalysisDashboard: React.FC<SEOAnalysisProps> = ({
                     <span className="text-gray-600">SSL Enabled</span>
                     <span
                       className={`px-2 py-1 rounded text-sm ${
-                        technical?.ssl?.enabled
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-700"
+                        technical?.ssl?.enabled ?
+                          "bg-green-100 text-green-700"
+                        : "bg-red-100 text-red-700"
                       }`}
                     >
                       {technical?.ssl?.enabled ? "Yes" : "No"}
@@ -498,9 +490,9 @@ const SEOAnalysisDashboard: React.FC<SEOAnalysisProps> = ({
                     <span className="text-gray-600">Valid HTML</span>
                     <span
                       className={`px-2 py-1 rounded text-sm ${
-                        technical?.structure?.validHTML
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-700"
+                        technical?.structure?.validHTML ?
+                          "bg-green-100 text-green-700"
+                        : "bg-red-100 text-red-700"
                       }`}
                     >
                       {technical?.structure?.validHTML ? "Yes" : "No"}
@@ -535,7 +527,7 @@ const SEOAnalysisDashboard: React.FC<SEOAnalysisProps> = ({
                     <span className="text-gray-600">Readability</span>
                     <span
                       className={`font-medium px-2 py-1 rounded text-sm ${getScoreColor(
-                        content?.readabilityScore
+                        content?.readabilityScore,
                       )}`}
                     >
                       {content?.readabilityScore}/100
@@ -545,7 +537,7 @@ const SEOAnalysisDashboard: React.FC<SEOAnalysisProps> = ({
                     <span className="text-gray-600">Quality Score</span>
                     <span
                       className={`font-medium px-2 py-1 rounded text-sm ${getScoreColor(
-                        content?.contentQuality?.score
+                        content?.contentQuality?.score,
                       )}`}
                     >
                       {content?.contentQuality?.score}/100
@@ -605,7 +597,7 @@ const SEOAnalysisDashboard: React.FC<SEOAnalysisProps> = ({
                       <span className="text-gray-600">Title Tag</span>
                       <span
                         className={`px-2 py-1 rounded text-sm ${getScoreColor(
-                          on_page?.title?.score
+                          on_page?.title?.score,
                         )}`}
                       >
                         {on_page?.title?.score}/100
@@ -621,7 +613,7 @@ const SEOAnalysisDashboard: React.FC<SEOAnalysisProps> = ({
                       <span className="text-gray-600">Meta Description</span>
                       <span
                         className={`px-2 py-1 rounded text-sm ${getScoreColor(
-                          on_page?.metaDescription?.score
+                          on_page?.metaDescription?.score,
                         )}`}
                       >
                         {on_page?.metaDescription?.score}/100
@@ -659,9 +651,9 @@ const SEOAnalysisDashboard: React.FC<SEOAnalysisProps> = ({
                     <span className="text-gray-600">Images without Alt</span>
                     <span
                       className={`font-medium ${
-                        on_page?.images?.withoutAlt > 0
-                          ? "text-red-600"
-                          : "text-green-600"
+                        on_page?.images?.withoutAlt > 0 ?
+                          "text-red-600"
+                        : "text-green-600"
                       }`}
                     >
                       {on_page?.images?.withoutAlt}
@@ -682,167 +674,8 @@ const SEOAnalysisDashboard: React.FC<SEOAnalysisProps> = ({
                 </div>
               </MetricCard>
             </div>
-            {/* Twiiter annd Open Grpah */}
-            {on_page?.openGraph || on_page?.twitterCard ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                {on_page?.openGraph && (
-                  <MetricCard title="Open Graph">
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-gray-600">OG Score</span>
-                        <span
-                          className={`px-2 py-1 rounded text-sm ${getScoreColor(
-                            on_page.openGraph.score ?? 0
-                          )}`}
-                        >
-                          {on_page.openGraph.score ?? 0}/100
-                        </span>
-                      </div>
 
-                      {on_page.openGraph.image && (
-                        <div className="flex items-start gap-4">
-                          {on_page.openGraph.imageWidth &&
-                          on_page.openGraph.imageHeight ? (
-                            <Image
-                              src={on_page.openGraph.image}
-                              alt={
-                                on_page.openGraph.imageAlt ?? "Open Graph image"
-                              }
-                              width={on_page.openGraph.imageWidth}
-                              height={on_page.openGraph.imageHeight}
-                              className="rounded-md object-cover w-32 h-20 shadow-md"
-                            />
-                          ) : (
-                            // fallback to native img if dimensions missing
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
-                              src={on_page.openGraph.image}
-                              alt={
-                                on_page.openGraph.imageAlt ?? "Open Graph image"
-                              }
-                              className="rounded-md object-cover w-32 h-20 shadow-md"
-                            />
-                          )}
-                          <div className="text-sm flex-1">
-                            {on_page.openGraph.title && (
-                              <div className="font-medium">
-                                {on_page.openGraph.title}
-                              </div>
-                            )}
-                            {on_page.openGraph.description && (
-                              <div className="text-gray-600">
-                                {on_page.openGraph.description}
-                              </div>
-                            )}
-                            {on_page.openGraph.url && (
-                              <a
-                                href={on_page.openGraph.url}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="text-blue-600 text-sm inline-block mt-1"
-                              >
-                                {formatUrl(on_page.openGraph.url)}
-                              </a>
-                            )}
-                          </div>
-                        </div>
-                      )}
-
-                      <div className="text-sm space-y-1">
-                        {on_page.openGraph.type && (
-                          <div>
-                            <span className="text-gray-600">Type: </span>
-                            {on_page.openGraph.type}
-                          </div>
-                        )}
-                        {on_page.openGraph.siteName && (
-                          <div>
-                            <span className="text-gray-600">Site: </span>
-                            {on_page.openGraph.siteName}
-                          </div>
-                        )}
-                        {on_page.openGraph.locale && (
-                          <div>
-                            <span className="text-gray-600">Locale: </span>
-                            {on_page.openGraph.locale}
-                          </div>
-                        )}
-                        {on_page.openGraph.imageWidth &&
-                          on_page.openGraph.imageHeight && (
-                            <div>
-                              <span className="text-gray-600">Image: </span>
-                              {on_page.openGraph.imageWidth}x
-                              {on_page.openGraph.imageHeight}
-                            </div>
-                          )}
-                      </div>
-                    </div>
-                  </MetricCard>
-                )}
-
-                {on_page?.twitterCard && (
-                  <MetricCard title="Twitter Card">
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-gray-600">Twitter Score</span>
-                        <span
-                          className={`px-2 py-1 rounded text-sm ${getScoreColor(
-                            on_page.twitterCard.score ?? 0
-                          )}`}
-                        >
-                          {on_page.twitterCard.score ?? 0}/100
-                        </span>
-                      </div>
-
-                      {on_page.twitterCard.image && (
-                        <div className="flex items-start gap-4">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={on_page.twitterCard.image}
-                            alt={
-                              on_page.twitterCard.imageAlt ??
-                              "Twitter card image"
-                            }
-                            className="rounded-md object-cover w-32 h-20 shadow-md"
-                          />
-                          <div className="text-sm flex-1">
-                            {on_page.twitterCard.title && (
-                              <div className="font-medium">
-                                {on_page.twitterCard.title}
-                              </div>
-                            )}
-                            {on_page.twitterCard.description && (
-                              <div className="text-gray-600">
-                                {on_page.twitterCard.description}
-                              </div>
-                            )}
-                            {on_page.twitterCard.site && (
-                              <div className="text-gray-600 mt-1">
-                                Site: {on_page.twitterCard.site}
-                              </div>
-                            )}
-                            {on_page.twitterCard.creator && (
-                              <div className="text-gray-600">
-                                Creator: {on_page.twitterCard.creator}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      )}
-
-                      <div className="text-sm space-y-1">
-                        {on_page.twitterCard.card && (
-                          <div>
-                            <span className="text-gray-600">Card: </span>
-                            {on_page.twitterCard.card}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </MetricCard>
-                )}
-              </div>
-            ) : null}
+            <OGSocialPreview on_page={on_page} pageUrl={results.url} />
 
             {/* On-page Issues */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -906,20 +739,19 @@ const SEOAnalysisDashboard: React.FC<SEOAnalysisProps> = ({
             </AlertDialogTitle>
           </AlertDialogHeader>
 
-          {sessionId && userId ? (
+          {sessionId && userId ?
             <AnalysisProgress
               sessionId={sessionId}
               userId={userId}
               url={results.url}
             />
-          ) : (
-            <div className="flex flex-col items-center justify-center p-8">
+          : <div className="flex flex-col items-center justify-center p-8">
               <Loader2Icon className="animate-spin h-32 w-32 text-blue-500 mt-4" />
               <p className="text-center text-gray-500 p-6">
                 Initiating re-analysis, please wait...
               </p>
             </div>
-          )}
+          }
         </AlertDialogContent>
       </AlertDialog>
       <ShareScanzie open={shareScanzie} onOpenChange={setShareScanzie} />

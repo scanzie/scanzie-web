@@ -22,7 +22,7 @@ import {
   getScoreStatus,
 } from "@/utils/seo-utils";
 import Image from "next/image";
-import { formatDate } from "@/utils/general";
+import { formatDate, formatUrl } from "@/utils/general";
 
 interface MetricCardProps {
   title: string;
@@ -31,28 +31,30 @@ interface MetricCardProps {
   icon: LucideIcon;
 }
 
-export const formatUrl = (url: string): string => {
-  try {
-    const urlObj = new URL(url);
-    const hostname = urlObj.hostname + urlObj.pathname;
-    if (hostname.length > 30) {
-      return hostname.substring(0, 27) + "...";
-    }
-    return hostname;
-  } catch {
-    return url.length > 30 ? url.substring(0, 27) + "..." : url;
-  }
-};
+export const MetricCard = ({
+  title,
+  value,
+  iconColor,
+  icon: Icon,
+}: MetricCardProps) => (
+  <div className="bg-white rounded-xl p-6 border border-gray-100 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+    <div className="flex items-center justify-between mb-4">
+      <div className={`p-3 bg-${iconColor}-50 rounded-lg`}>
+        <Icon className={`w-6 h-6 text-${iconColor}-600`} />
+      </div>
+    </div>
+    <h3 className="text-2xl font-bold text-gray-900 mb-1">{value}</h3>
+    <p className="text-gray-600 text-sm">{title}</p>
+  </div>
+);
 
 const Dashboard = ({ results }: { results: Analysis[] }) => {
-  // Calculate real statistics from the results
   const stats = calculateAnalysisStats(results);
 
-  // Get recent analyses (last 4) with calculated scores
   const recentAnalyses = results
     .sort(
       (a, b) =>
-        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
     )
     .slice(0, 4)
     .map((analysis) => {
@@ -64,23 +66,6 @@ const Dashboard = ({ results }: { results: Analysis[] }) => {
         status,
       };
     });
-
-  const MetricCard = ({
-    title,
-    value,
-    iconColor,
-    icon: Icon,
-  }: MetricCardProps) => (
-    <div className="bg-white rounded-xl p-6 border border-gray-100 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-      <div className="flex items-center justify-between mb-4">
-        <div className={`p-3 bg-${iconColor}-50 rounded-lg`}>
-          <Icon className={`w-6 h-6 text-${iconColor}-600`} />
-        </div>
-      </div>
-      <h3 className="text-2xl font-bold text-gray-900 mb-1">{value}</h3>
-      <p className="text-gray-600 text-sm">{title}</p>
-    </div>
-  );
 
   return (
     <div className="w-full mx-auto bg-gray-50">
@@ -114,9 +99,9 @@ const Dashboard = ({ results }: { results: Analysis[] }) => {
       <main className="dashboard-container">
         <div className="p-6">
           {/* Metrics Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
             <MetricCard
-              title="Total Analysis"
+              title="Total Analyses"
               value={stats.total.toString()}
               icon={Globe}
               iconColor="blue"
@@ -156,7 +141,7 @@ const Dashboard = ({ results }: { results: Analysis[] }) => {
               </div>
               <div className="flex justify-center items-center min-h-4/5">
                 <div className="h-64 w-full max-w-lg bg-linear-to-t from-gray-50 to-transparent rounded-lg flex items-center justify-center">
-                  {stats.total > 0 ? (
+                  {stats.total > 0 ?
                     <div className="w-full px-4">
                       <div className="space-y-4">
                         {/* Good Scores */}
@@ -214,9 +199,7 @@ const Dashboard = ({ results }: { results: Analysis[] }) => {
                         </div>
                       </div>
                     </div>
-                  ) : (
-                    <p className="text-gray-500">No analyses available yet</p>
-                  )}
+                  : <p className="text-gray-500">No analyses available yet</p>}
                 </div>
               </div>
             </div>
@@ -228,16 +211,16 @@ const Dashboard = ({ results }: { results: Analysis[] }) => {
                 <AlarmClock className="text-gray-500" />
               </h3>
               <div className="space-y-4">
-                {recentAnalyses.length > 0 ? (
+                {recentAnalyses.length > 0 ?
                   recentAnalyses.map((analysis) => (
                     <Link
                       href={`/dashboard/analysis/${encodeURIComponent(
-                        analysis.url
+                        analysis.url,
                       )}`}
                       key={analysis.id}
                       className="custom-hover flex gap-2 items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
                     >
-                      {analysis.on_page.favicon ? (
+                      {analysis.on_page.favicon ?
                         <Image
                           src={`${new URL(analysis.on_page.favicon.url)}`}
                           alt="Favicon"
@@ -245,9 +228,7 @@ const Dashboard = ({ results }: { results: Analysis[] }) => {
                           height={32}
                           className="w-8 h-8"
                         />
-                      ) : (
-                        <Globe className="w-8 h-8 text-gray-700" />
-                      )}
+                      : <Globe className="w-8 h-8 text-gray-700" />}
                       <div className="flex-1 min-w-0">
                         <p
                           className="font-medium text-gray-900 mb-1 truncate"
@@ -268,15 +249,14 @@ const Dashboard = ({ results }: { results: Analysis[] }) => {
                       </div>
                     </Link>
                   ))
-                ) : (
-                  <div className="text-center py-8">
+                : <div className="text-center py-8">
                     <Globe className="w-8 h-8 text-gray-300 mx-auto mb-2" />
                     <p className="text-gray-500 text-sm">No analyses yet</p>
                     <p className="text-gray-400 text-xs">
                       Create your first analysis to get started
                     </p>
                   </div>
-                )}
+                }
               </div>
             </div>
           </div>

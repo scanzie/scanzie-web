@@ -7,15 +7,15 @@ import {
   Search,
   Globe,
   ChevronDown,
-  TrendingDown,
-  AlertTriangle,
-  CheckCircle,
-  NotebookTextIcon,
   Eye,
   DownloadIcon,
   RefreshCcw,
   BoxIcon,
   MoreHorizontal,
+  TriangleAlert,
+  InfoIcon,
+  Check,
+  PlusCircleIcon,
 } from "lucide-react";
 import { Button } from "../../ui/button";
 import { SidebarTrigger } from "../../ui/sidebar";
@@ -42,6 +42,7 @@ import {
 } from "./AnalysisDetails";
 import apiClient from "@/lib/api/client";
 import { formatDate } from "@/utils/general";
+import { MetricCard } from "../others/DashboardHome";
 
 export type Analysis = {
   id: string;
@@ -138,8 +139,6 @@ const AllUserAnalysis: React.FC<AllUserAnalysisProps> = ({ analysis }) => {
     return calculateAnalysisStats(analyses);
   }, [analyses]);
 
-  
-
   return (
     <div className="w-full mx-auto bg-gray-50">
       {/* Header */}
@@ -161,8 +160,8 @@ const AllUserAnalysis: React.FC<AllUserAnalysisProps> = ({ analysis }) => {
                 className="hidden md:flex items-center gap-4"
               >
                 <Button className="bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors duration-200">
-                  <NotebookTextIcon className="" />
-                  <span>New Analysis</span>
+                  <PlusCircleIcon className="" />
+                  <span>New</span>
                 </Button>
               </Link>
               <SidebarTrigger className="bg-blue-50 p-3 rounded-md md:hidden" />
@@ -174,62 +173,35 @@ const AllUserAnalysis: React.FC<AllUserAnalysisProps> = ({ analysis }) => {
       <main className="dashboard-container">
         {/* Stats Cards */}
         <div className="px-6 py-10">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div className="bg-white backdrop-blur-sm rounded-2xl p-6 border hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-500 text-sm font-medium">
-                    Total Analysis
-                  </p>
-                  <p className="text-3xl font-bold text-gray-900">
-                    {stats.total}
-                  </p>
-                </div>
-                <Globe className="w-8 h-8 text-blue-500" />
-              </div>
-            </div>
-            <div className="bg-white backdrop-blur-sm rounded-2xl p-6 border hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-500 text-sm font-medium">
-                    Good Analysis
-                  </p>
-                  <p className="text-3xl font-bold text-green-600">
-                    {stats.good}
-                  </p>
-                  <p className="text-xs text-gray-400 mt-1">Score ≥ 70%</p>
-                </div>
-                <CheckCircle className="w-8 h-8 text-green-500" />
-              </div>
-            </div>
-            <div className="bg-white backdrop-blur-sm rounded-2xl p-6 border hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-500 text-sm font-medium">
-                    Moderate Analysis
-                  </p>
-                  <p className="text-3xl font-bold text-yellow-600">
-                    {stats.moderate}
-                  </p>
-                  <p className="text-xs text-gray-400 mt-1">Score 40-69%</p>
-                </div>
-                <AlertTriangle className="w-8 h-8 text-yellow-500" />
-              </div>
-            </div>
-            <div className="bg-white backdrop-blur-sm rounded-2xl p-6 border hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-500 text-sm font-medium">
-                    Poor Analysis
-                  </p>
-                  <p className="text-3xl font-bold text-red-600">
-                    {stats.poor}
-                  </p>
-                  <p className="text-xs text-gray-400 mt-1">Score &lt; 40%</p>
-                </div>
-                <TrendingDown className="w-8 h-8 text-red-500" />
-              </div>
-            </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+            <MetricCard
+              key={stats.total}
+              title="All Analyses"
+              value={stats.total.toString()}
+              icon={Globe}
+              iconColor="blue"
+            />
+            <MetricCard
+              key={stats.good}
+              title="Good (70+)"
+              value={stats.good.toString()}
+              icon={Check}
+              iconColor="green"
+            />
+            <MetricCard
+              key={stats.moderate}
+              title="Moderate (40-69)"
+              value={stats.moderate.toString()}
+              icon={TriangleAlert}
+              iconColor="yellow"
+            />
+            <MetricCard
+              key={stats.poor}
+              title="Poor (0-39)"
+              value={stats.poor.toString()}
+              icon={InfoIcon}
+              iconColor="red"
+            />
           </div>
 
           {/* Search and Filter Controls */}
@@ -325,7 +297,7 @@ const AllUserAnalysis: React.FC<AllUserAnalysisProps> = ({ analysis }) => {
               return (
                 <div
                   key={analysis.id}
-                  className="relative bg-white rounded-2xl border hover:border-gray-400 overflow-hidden"
+                  className="relative bg-white rounded-xl border hover:border-gray-400 overflow-hidden"
                 >
                   <Link
                     href={`/dashboard/analysis/${encodeURIComponent(analysis.url)}`}
@@ -364,13 +336,9 @@ const AllUserAnalysis: React.FC<AllUserAnalysisProps> = ({ analysis }) => {
                       </div>
                       <div className="flex items-center gap-2">
                         <div
-                          className={`grid rounded-full h-11 w-11 p-2 place-content-center border-2 ${scoreStatus.bgClass}`}
+                          className={`text-xs sm:text-sm px-2 py-1 rounded-full ${scoreStatus.bgClass} ${scoreStatus.colorClass}`}
                         >
-                          <div
-                            className={`text-sm font-bold ${scoreStatus.colorClass}`}
-                          >
-                            {getScoreBreakdown(analysis).overall}%
-                          </div>
+                          {getScoreBreakdown(analysis).overall}%
                         </div>
                         {/* Action Buttons */}
                         <div className="z-20 border-gray-200 pointer-events-auto">
