@@ -136,16 +136,16 @@ const ScoreBreakdownDialog: React.FC<{
   if (!analysis) return null;
 
   const onPageScore = Math.round(
-    (analysis.on_page.title.score +
-      analysis.on_page.headings.score +
-      analysis.on_page.links.score +
-      analysis.on_page.images.score) /
+    ((analysis.on_page?.title?.score || 0) +
+      (analysis.on_page?.headings?.score || 0) +
+      (analysis.on_page?.links?.score || 0) +
+      (analysis.on_page?.images?.score || 0)) /
       4,
   );
 
   const totalIssues =
-    (analysis.technical.issues?.length || 0) +
-    (analysis.content.issues?.length || 0);
+    (analysis.technical?.issues?.length || 0) +
+    (analysis.content?.issues?.length || 0);
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
@@ -186,15 +186,15 @@ const ScoreBreakdownDialog: React.FC<{
           <Card
             icon={<Code className="w-4 h-4" />}
             title="Technical SEO"
-            score={analysis.technical.score}
+            score={analysis.technical?.score || 0}
             accent="bg-gray-50 text-gray-600"
           >
             <ScoreRow
               label="Page Speed"
-              score={analysis.technical.pageSpeed.score}
+              score={analysis.technical?.pageSpeed?.score || 0}
             />
-            <ScoreRow label="Mobile" score={analysis.technical.mobile.score} />
-            <ScoreRow label="SSL" score={analysis.technical.ssl.score} />
+            <ScoreRow label="Mobile" score={analysis.technical?.mobile?.score || 0} />
+            <ScoreRow label="SSL" score={analysis.technical?.ssl?.score || 0} />
           </Card>
 
           {/* On-Page SEO */}
@@ -204,34 +204,34 @@ const ScoreBreakdownDialog: React.FC<{
             score={onPageScore}
             accent="bg-gray-50 text-gray-600"
           >
-            <ScoreRow label="Title" score={analysis.on_page.title.score} />
+            <ScoreRow label="Title" score={analysis.on_page?.title?.score || 0} />
             <ScoreRow
               label="Headings"
-              score={analysis.on_page.headings.score}
+              score={analysis.on_page?.headings?.score || 0}
             />
-            <ScoreRow label="Images" score={analysis.on_page.images.score} />
+            <ScoreRow label="Images" score={analysis.on_page?.images?.score || 0} />
           </Card>
 
           {/* Content Quality */}
           <Card
             icon={<FileText className="w-4 h-4" />}
             title="Content Quality"
-            score={analysis.content.score}
+            score={analysis.content?.score || 0}
             accent="bg-gray-50 text-gray-600"
           >
             <div className="flex justify-between items-center text-sm">
               <span className="text-gray-500 font-medium">Word Count</span>
               <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-gray-50 text-gray-700">
-                {analysis.content.wordCount}
+                {analysis.content?.wordCount || 0}
               </span>
             </div>
             <ScoreRow
               label="Quality"
-              score={analysis.content.contentQuality.score}
+              score={analysis.content?.contentQuality?.score || 0}
             />
             <ScoreRow
               label="Readability"
-              score={analysis.content.readabilityScore}
+              score={analysis.content?.readabilityScore || 0}
             />
           </Card>
 
@@ -292,19 +292,19 @@ const ScoreBreakdownDialog: React.FC<{
                 <span className="text-gray-500 font-medium">Broken Links</span>
                 <span
                   className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
-                    analysis.on_page.links.broken ?
+                    analysis.on_page?.links?.broken ?
                       "bg-red-50 text-red-600 "
                     : "bg-green-50 text-green-600 "
                   }`}
                 >
-                  {analysis.on_page.links.broken}
+                  {analysis.on_page?.links?.broken || 0}
                 </span>
               </div>
               <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
                 <div
                   className="h-full rounded-full bg-red-400"
                   style={{
-                    width: `${Math.min(analysis.on_page.links.broken * 10, 100)}%`,
+                    width: `${Math.min((analysis.on_page?.links?.broken || 0) * 10, 100)}%`,
                   }}
                 />
               </div>
