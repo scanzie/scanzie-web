@@ -12,7 +12,7 @@ import {
   Trash,
   Share2,
 } from "lucide-react";
-import { SidebarTrigger } from "../../ui/sidebar";
+import { SidebarProvider, SidebarTrigger } from "../../ui/sidebar";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -232,7 +232,6 @@ const handleCopyUrl = (url: string) => {
   toast("Url has been copied");
 };
 
-
 const SEOAnalysisDashboard: React.FC<SEOAnalysisProps> = ({
   results,
 }: SEOAnalysisProps) => {
@@ -361,6 +360,7 @@ const SEOAnalysisDashboard: React.FC<SEOAnalysisProps> = ({
                 </div>
               </div>
             </div>
+
             <SidebarTrigger className="bg-blue-50 p-3 rounded-md md:hidden" />
           </div>
         </main>
@@ -680,8 +680,8 @@ const SEOAnalysisDashboard: React.FC<SEOAnalysisProps> = ({
                 </div>
               </MetricCard>
             </div>
-           
-           <OGSocialPreview on_page={on_page} pageUrl={results.url} />
+
+            <OGSocialPreview on_page={on_page} pageUrl={results.url} />
 
             {/* On-page Issues */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
