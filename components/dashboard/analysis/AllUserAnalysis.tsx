@@ -16,6 +16,7 @@ import {
   TriangleAlert,
   InfoIcon,
   Check,
+  PlusCircleIcon,
 } from "lucide-react";
 import { Button } from "../../ui/button";
 import { SidebarTrigger } from "../../ui/sidebar";
@@ -160,8 +161,8 @@ const AllUserAnalysis: React.FC<AllUserAnalysisProps> = ({ analysis }) => {
                 className="hidden md:flex items-center gap-4"
               >
                 <Button className="bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors duration-200">
-                  <NotebookTextIcon className="" />
-                  <span>New Analysis</span>
+                  <PlusCircleIcon className="" />
+                  <span>New</span>
                 </Button>
               </Link>
               <SidebarTrigger className="bg-blue-50 p-3 rounded-md md:hidden" />

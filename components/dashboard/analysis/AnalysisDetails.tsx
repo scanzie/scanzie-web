@@ -12,7 +12,7 @@ import {
   Trash,
   Share2,
 } from "lucide-react";
-import { SidebarProvider, SidebarTrigger } from "../../ui/sidebar";
+import { SidebarTrigger } from "../../ui/sidebar";
 import { toast } from "sonner";
 import {
   AlertDialog,
