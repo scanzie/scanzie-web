@@ -7,7 +7,6 @@ export async function proxy(request: NextRequest) {
   const publicOnlyRoutes = ["/", "/login", "/register", "/forgot-password"];
   const publicRoutes = [
     "/api/",
-    "/.well-known",
     "/robots.txt",
     "/sitemap.xml",
     "/favicon.png",
@@ -26,13 +25,13 @@ export async function proxy(request: NextRequest) {
 
   // Check if current path matches any route pattern
   const isPublicOnlyRoute = publicOnlyRoutes.some(
-    (route) => pathname === route || pathname.startsWith(route + "/")
+    (route) => pathname === route || pathname.startsWith(route + "/"),
   );
   const isPublicRoute = publicRoutes.some((route) =>
-    pathname.startsWith(route)
+    pathname.startsWith(route),
   );
   const isProtectedRoute = protectedRoutes.some((route) =>
-    pathname.startsWith(route)
+    pathname.startsWith(route),
   );
 
   // Get session cookie
@@ -87,7 +86,7 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Match all paths except API routes, Next.js static files, images, and favicon
-    "/((?!api|_next/static|_next/image|favicon.ico).*)",
+    // Match all paths except API routes, Next.js static files, .well-known, and common static files
+    "/((?!api|_next/static|_next/image|\\.well-known|favicon.ico|robots.txt|sitemap.xml).*)",
   ],
 };
