@@ -26,6 +26,7 @@ import {
 } from "../../ui/alert-dialog";
 import { useRouter } from "next/navigation";
 import { getInitials } from "@/utils/general";
+import PlanCard from "./PlanCard";
 
 // OAuth Provider Icons
 const GitHubIcon = () => (
@@ -82,7 +83,7 @@ const Settings = () => {
               year: "numeric",
               month: "long",
               day: "numeric",
-            })
+            }),
           );
         }
 
@@ -176,7 +177,7 @@ const Settings = () => {
   };
 
   const handleDeleteAccount = async (
-    e: React.MouseEvent<HTMLButtonElement>
+    e: React.MouseEvent<HTMLButtonElement>,
   ) => {
     e.preventDefault();
     setDeleteLoading(true);
@@ -229,9 +230,9 @@ const Settings = () => {
               </label>
               <Input
                 className={`w-auto ${
-                  nameError
-                    ? "border-red-500 focus:border-red-500 focus:ring-red-500"
-                    : ""
+                  nameError ?
+                    "border-red-500 focus:border-red-500 focus:ring-red-500"
+                  : ""
                 }`}
                 placeholder="eg. Fisayo Obadina"
                 value={name}
@@ -265,9 +266,9 @@ const Settings = () => {
               <label className="text-sm font-medium text-gray-700">Email</label>
               <span
                 className={`border rounded-full px-3 py-1 ${
-                  user?.emailVerified
-                    ? "bg-blue-50 border-blue-100"
-                    : "bg-red-50 border-red-100"
+                  user?.emailVerified ?
+                    "bg-blue-50 border-blue-100"
+                  : "bg-red-50 border-red-100"
                 } flex items-center gap-2 text-sm`}
               >
                 <BadgeCheck
@@ -303,21 +304,21 @@ const Settings = () => {
             </label>
             <div className="flex items-center gap-3 p-3 border border-gray-200 rounded-2xl bg-gray-50">
               <div className="flex items-center gap-2">
-                {providerLoading ? (
+                {providerLoading ?
                   <div className="w-4 h-4 rounded-full bg-gray-300 animate-pulse"></div>
-                ) : (
-                  getProviderIcon(authProvider)
-                )}
+                : getProviderIcon(authProvider)}
                 <span className="text-sm font-medium text-gray-700">
-                  {providerLoading
-                    ? "Loading..."
-                    : getProviderName(authProvider)}
+                  {providerLoading ?
+                    "Loading..."
+                  : getProviderName(authProvider)}
                 </span>
               </div>
             </div>
           </div>
 
           {/* Delete Account Section */}
+          <PlanCard user={user} currentPlan="free" />
+
           <div className="border-t border-gray-200 pt-6">
             <div className="bg-red-50 border border-red-200 rounded-lg p-4">
               <div className="flex items-start gap-3">
@@ -362,9 +363,9 @@ const Settings = () => {
                           disabled={deleteLoading}
                           className="bg-red-600 hover:bg-red-700 focus:ring-red-500"
                         >
-                          {deleteLoading
-                            ? "Deleting..."
-                            : "Yes, delete my account"}
+                          {deleteLoading ?
+                            "Deleting..."
+                          : "Yes, delete my account"}
                         </AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>
