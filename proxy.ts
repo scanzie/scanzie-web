@@ -12,6 +12,7 @@ export async function proxy(request: NextRequest) {
     "/sitemap.xml",
     "/favicon.png",
     "/bing.png",
+    "/.well-known",
     "/og-twitter.png",
     "/favicon.ico",
   ];
