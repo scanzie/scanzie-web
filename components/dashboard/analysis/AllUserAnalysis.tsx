@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { toast } from "sonner";
@@ -30,7 +30,6 @@ import {
 } from "../../ui/dropdown-menu";
 import {
   getScoreStatus,
-  getScoreCategory,
   calculateAnalysisStats,
   getScoreBreakdown,
 } from "../../../utils/seo-utils";
@@ -69,16 +68,23 @@ interface AllUserAnalysisProps {
     totalPages: number;
     currentPage: number;
   };
+  search: string;
+  filter: "all" | "good" | "moderate" | "poor";
 }
 
 const AllUserAnalysis: React.FC<AllUserAnalysisProps> = ({
   analysis: paginatedData,
+  search: initialSearch,
+  filter: initialFilter,
 }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [searchTerm, setSearchTerm] = useState("");
-  const [sortFilter, setSortFilter] = useState("all");
+  // Use URL params for search and filter
+  const [searchTerm, setSearchTerm] = useState(initialSearch);
+  const [sortFilter, setSortFilter] = useState<
+    "all" | "good" | "moderate" | "poor"
+  >(initialFilter);
   const [sortBy, setSortBy] = useState("createdAt");
   const [sortOrder, setSortOrder] = useState("desc");
 
@@ -88,7 +94,7 @@ const AllUserAnalysis: React.FC<AllUserAnalysisProps> = ({
     projectName: item.projectName,
   }));
 
-  const { data, total, totalPages, currentPage } = paginatedData;
+  const { totalPages, currentPage } = paginatedData;
 
   const [open, setOpen] = useState(false);
   const [reanalyzeOpen, setReanalyzeOpen] = useState(false);
@@ -121,19 +127,8 @@ const AllUserAnalysis: React.FC<AllUserAnalysisProps> = ({
   };
 
   const filteredAndSortedAnalyses = useMemo(() => {
-    const filtered: SEOAnalysisResult[] = analyses.filter((a) => {
-      const matchesSearch =
-        a.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        a.url.toLowerCase().includes(searchTerm.toLowerCase());
-
-      if (sortFilter === "all") return matchesSearch;
-      return (
-        matchesSearch &&
-        getScoreCategory(getScoreBreakdown(a).overall) === sortFilter
-      );
-    });
-
-    return filtered.sort((a, b) => {
+    // Database already handles search and filter, here we just handle sorting
+    return analyses.sort((a, b) => {
       let aValue, bValue;
 
       switch (sortBy) {
@@ -157,7 +152,7 @@ const AllUserAnalysis: React.FC<AllUserAnalysisProps> = ({
       }
       return aValue < bValue ? 1 : -1;
     });
-  }, [searchTerm, sortFilter, sortBy, sortOrder, analyses]);
+  }, [sortBy, sortOrder, analyses]);
 
   const stats = useMemo(() => {
     return calculateAnalysisStats(analyses);
@@ -166,9 +161,38 @@ const AllUserAnalysis: React.FC<AllUserAnalysisProps> = ({
   const handlePageChange = (newPage: number) => {
     const params = new URLSearchParams(searchParams);
     params.set("page", newPage.toString());
+    if (searchTerm) params.set("search", searchTerm);
+    else params.delete("search");
+    if (sortFilter !== "all") params.set("filter", sortFilter);
+    else params.delete("filter");
     router.push(`?${params.toString()}`);
     window.scrollTo(0, 0);
   };
+
+  const handleFilterChange = (
+    newFilter: "all" | "good" | "moderate" | "poor",
+  ) => {
+    setSortFilter(newFilter);
+    const params = new URLSearchParams(searchParams);
+    params.set("page", "1");
+    if (searchTerm) params.set("search", searchTerm);
+    if (newFilter !== "all") params.set("filter", newFilter);
+    else params.delete("filter");
+    router.push(`?${params.toString()}`);
+  };
+
+  // Debounced search handler - only trigger when searchTerm changes
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const params = new URLSearchParams();
+      params.set("page", "1");
+      if (searchTerm) params.set("search", searchTerm);
+      if (sortFilter !== "all") params.set("filter", sortFilter);
+      router.push(`?${params.toString()}`);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   return (
     <div className="w-full mx-auto bg-gray-50">
@@ -266,16 +290,22 @@ const AllUserAnalysis: React.FC<AllUserAnalysisProps> = ({
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="start" className="min-w-40">
-                    <DropdownMenuItem onClick={() => setSortFilter("all")}>
+                    <DropdownMenuItem onClick={() => handleFilterChange("all")}>
                       All Results
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setSortFilter("good")}>
+                    <DropdownMenuItem
+                      onClick={() => handleFilterChange("good")}
+                    >
                       Good (70+)
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setSortFilter("moderate")}>
+                    <DropdownMenuItem
+                      onClick={() => handleFilterChange("moderate")}
+                    >
                       Moderate (40-69)
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setSortFilter("poor")}>
+                    <DropdownMenuItem
+                      onClick={() => handleFilterChange("poor")}
+                    >
                       Poor (0-39)
                     </DropdownMenuItem>
                   </DropdownMenuContent>
