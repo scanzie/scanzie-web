@@ -9,7 +9,7 @@ import {
   AlarmClock,
   Eye,
   LucideIcon,
-  PlusCircleIcon,
+  PlusIcon,
 } from "lucide-react";
 import { SidebarTrigger } from "../../ui/sidebar";
 import Link from "next/link";
@@ -84,8 +84,8 @@ const Dashboard = ({ results }: { results: Analysis[] }) => {
                 className="hidden md:flex items-center gap-4"
               >
                 <Button className="bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors duration-200">
-                  <PlusCircleIcon />
-                  <span>New</span>
+                  <PlusIcon className="" />
+                  <span>New analysis</span>
                 </Button>
               </Link>
               <SidebarTrigger className="bg-blue-50 p-3 rounded-md md:hidden" />

@@ -16,7 +16,7 @@ import {
   TriangleAlert,
   InfoIcon,
   Check,
-  PlusCircleIcon,
+  PlusIcon,
   FolderIcon,
 } from "lucide-react";
 import { Button } from "../../ui/button";
@@ -215,8 +215,8 @@ const AllUserAnalysis: React.FC<AllUserAnalysisProps> = ({
                 className="hidden md:flex items-center gap-4"
               >
                 <Button className="bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors duration-200">
-                  <PlusCircleIcon className="" />
-                  <span>New</span>
+                  <PlusIcon className="" /> 
+                  <span>New analyis</span>
                 </Button>
               </Link>
               <SidebarTrigger className="bg-blue-50 p-3 rounded-md md:hidden" />
