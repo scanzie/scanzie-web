@@ -91,7 +91,10 @@ export const verification = pgTable("verification", {
 export const seo_analysis = pgTable("seo_analysis", {
   id: uuid("id").defaultRandom().primaryKey(),
 
-  // Creator (required)
+  projectId: uuid("projectId")
+    .notNull()
+    .references(() => project.id, { onDelete: "cascade" }),
+
   userId: varchar("userId", { length: 255 })
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
@@ -106,18 +109,38 @@ export const seo_analysis = pgTable("seo_analysis", {
   createdAt: timestamp("createdAt", { withTimezone: true })
     .defaultNow()
     .notNull(),
+
+  updatedAt: timestamp("updatedAt", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+});
+
+export const project = pgTable("project", {
+  id: uuid("id").defaultRandom().primaryKey(),
+
+  name: varchar("name", { length: 255 }).notNull(),
+
+  // creator (owner)
+  userId: varchar("userId", { length: 255 })
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+
+  createdAt: timestamp("createdAt", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+
   updatedAt: timestamp("updatedAt", { withTimezone: true })
     .defaultNow()
     .notNull(),
 });
 
 
-export const seo_analysis_members = pgTable(
-  "seo_analysis_members",
+export const project_members = pgTable(
+  "project_members",
   {
-    seoAnalysisId: uuid("seoAnalysisId")
+    projectId: uuid("projectId")
       .notNull()
-      .references(() => seo_analysis.id, { onDelete: "cascade" }),
+      .references(() => project.id, { onDelete: "cascade" }),
 
     userId: varchar("userId", { length: 255 })
       .notNull()
@@ -130,19 +153,32 @@ export const seo_analysis_members = pgTable(
       .notNull(),
   },
   (table) => ({
-    pk: primaryKey(table.seoAnalysisId, table.userId),
+    pk: primaryKey(table.projectId, table.userId),
   }),
 );
 
 // Table relations
 
+export const projectRelations = relations(project, ({ one, many }) => ({
+  creator: one(user, {
+    fields: [project.userId],
+    references: [user.id],
+  }),
+
+  analyses: many(seo_analysis),
+
+  members: many(project_members),
+}));
+
 export const userRelations = relations(user, ({ many }) => ({
   sessions: many(session),
   accounts: many(account),
 
-  createdSeoAnalyses: many(seo_analysis), // creator
+  createdProjects: many(project),
 
-  memberships: many(seo_analysis_members), // joined analyses
+  createdSeoAnalyses: many(seo_analysis),
+
+  projectMemberships: many(project_members),
 }));
 
 export const sessionRelations = relations(session, ({ one }) => ({
@@ -159,29 +195,29 @@ export const accountRelations = relations(account, ({ one }) => ({
   }),
 }));
 
-export const seoAnalysisRelations = relations(
-  seo_analysis,
-  ({ one, many }) => ({
-    creator: one(user, {
-      fields: [seo_analysis.userId],
-      references: [user.id],
-    }),
-
-    members: many(seo_analysis_members),
+export const seoAnalysisRelations = relations(seo_analysis, ({ one }) => ({
+  creator: one(user, {
+    fields: [seo_analysis.userId],
+    references: [user.id],
   }),
-);
 
-export const seoAnalysisMembersRelations = relations(
-  seo_analysis_members,
+  project: one(project, {
+    fields: [seo_analysis.projectId],
+    references: [project.id],
+  }),
+}));
+
+export const projectMembersRelations = relations(
+  project_members,
   ({ one }) => ({
     user: one(user, {
-      fields: [seo_analysis_members.userId],
+      fields: [project_members.userId],
       references: [user.id],
     }),
 
-    seoAnalysis: one(seo_analysis, {
-      fields: [seo_analysis_members.seoAnalysisId],
-      references: [seo_analysis.id],
+    project: one(project, {
+      fields: [project_members.projectId],
+      references: [project.id],
     }),
   }),
 );
@@ -202,5 +238,5 @@ export type NewVerification = typeof verification.$inferInsert;
 export type SeoAnalysis = typeof seo_analysis.$inferSelect;
 export type NewSeoAnalysis = typeof seo_analysis.$inferInsert;
 
-export type SeoAnalysisMember = typeof seo_analysis_members.$inferSelect;
-export type NewSeoAnalysisMember = typeof seo_analysis_members.$inferInsert;
+export type ProjectMember = typeof project_members.$inferSelect;
+export type NewProjectMember = typeof project_members.$inferInsert;
