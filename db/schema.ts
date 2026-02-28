@@ -10,7 +10,6 @@ import {
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
-
 export const user = pgTable("user", {
   id: varchar("id", { length: 255 }).primaryKey(),
   name: varchar("name", { length: 255 }),
@@ -24,7 +23,6 @@ export const user = pgTable("user", {
     .defaultNow()
     .notNull(),
 });
-
 
 export const session = pgTable("session", {
   id: varchar("id", { length: 255 }).primaryKey(),
@@ -134,7 +132,6 @@ export const project = pgTable("project", {
     .notNull(),
 });
 
-
 export const project_members = pgTable(
   "project_members",
   {
@@ -156,6 +153,37 @@ export const project_members = pgTable(
     pk: primaryKey(table.projectId, table.userId),
   }),
 );
+
+//
+// SUBSCRIPTION TABLE
+//
+export const subscription = pgTable("subscription", {
+  id: uuid("id").defaultRandom().primaryKey(),
+
+  userId: varchar("userId", { length: 255 })
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+
+  plan: varchar("plan", { length: 50 }).notNull(),
+
+  status: varchar("status", { length: 50 }).notNull(),
+
+  subscriptionCode: varchar("subscriptionCode", { length: 255 })
+    .notNull()
+    .unique(),
+
+  nextPaymentDate: timestamp("nextPaymentDate", {
+    withTimezone: true,
+  }).notNull(),
+
+  createdAt: timestamp("createdAt", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+
+  updatedAt: timestamp("updatedAt", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+});
 
 // Table relations
 
@@ -179,6 +207,8 @@ export const userRelations = relations(user, ({ many }) => ({
   createdSeoAnalyses: many(seo_analysis),
 
   projectMemberships: many(project_members),
+
+  subscriptions: many(subscription),
 }));
 
 export const sessionRelations = relations(session, ({ one }) => ({
@@ -222,6 +252,13 @@ export const projectMembersRelations = relations(
   }),
 );
 
+export const subscriptionRelations = relations(subscription, ({ one }) => ({
+  user: one(user, {
+    fields: [subscription.userId],
+    references: [user.id],
+  }),
+}));
+
 // Types Inferred from tables
 export type User = typeof user.$inferSelect;
 export type NewUser = typeof user.$inferInsert;
@@ -240,3 +277,6 @@ export type NewSeoAnalysis = typeof seo_analysis.$inferInsert;
 
 export type ProjectMember = typeof project_members.$inferSelect;
 export type NewProjectMember = typeof project_members.$inferInsert;
+
+export type Subscription = typeof subscription.$inferSelect;
+export type NewSubscription = typeof subscription.$inferInsert;
