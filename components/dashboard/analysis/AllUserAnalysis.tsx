@@ -486,7 +486,7 @@ const AllUserAnalysis: React.FC<AllUserAnalysisProps> = ({
                         <button
                           key={page}
                           onClick={() => handlePageChange(page)}
-                          className={`w-10 h-10 rounded-lg font-medium transition-all ${
+                          className={`w-10 h-10 rounded-xl font-medium transition-all ${
                             isCurrentPage ?
                               "bg-blue-600 text-white"
                             : "bg-white border border-gray-200 text-gray-900 hover:border-gray-300"
