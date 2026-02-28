@@ -40,9 +40,9 @@ export default function SubscribeCallback() {
 
         if (subData?.status === "active") {
           setState("success");
-          // Redirect after 2 seconds
+          // Redirect to dashboard with success param after 2 seconds
           setTimeout(() => {
-            router.push("/dashboard");
+            router.push("/dashboard?successfully-subscribed=true");
           }, 2000);
         } else {
           // Keep polling if not active yet
