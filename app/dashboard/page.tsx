@@ -14,10 +14,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import DashboardSkeleton from "./loading";
+import { Suspense } from "react";
 
-const Dashboard = () => {
+const DashboardContent = () => {
   const searchParams = useSearchParams();
   const [showWelcomeDialog, setShowWelcomeDialog] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -47,13 +50,13 @@ const Dashboard = () => {
   }, [searchParams]);
 
   if (loading) {
-    return <div className="p-6">Loading...</div>;
+    return <DashboardSkeleton />;
   }
 
   return (
     <>
-      {/* @ts-expect-error - Type mismatch from database unknown types */}
-      <DashboardHome results={data} />
+      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+      <DashboardHome results={data as any} />
 
       {/* Welcome to Pro Dialog */}
       <AlertDialog open={showWelcomeDialog} onOpenChange={setShowWelcomeDialog}>
@@ -139,4 +142,10 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default function Dashboard() {
+  return (
+    <Suspense fallback={<DashboardSkeleton />}>
+      <DashboardContent />
+    </Suspense>
+  );
+}

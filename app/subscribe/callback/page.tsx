@@ -7,7 +7,7 @@ import { getSubscriptionStatus } from "@/lib/actions/subscription";
 import { authClient } from "@/lib/auth/client";
 import { Button } from "@/components/ui/button";
 
-export default function SubscribeCallback() {
+function SubscribeCallbackContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const reference = searchParams.get("reference");
@@ -194,5 +194,33 @@ export default function SubscribeCallback() {
         )}
       </div>
     </div>
+  );
+}
+
+import { Suspense } from "react";
+
+function CallbackLoading() {
+  return (
+    <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+      <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
+        <div className="flex flex-col items-center gap-4">
+          <div className="relative w-16 h-16">
+            <div className="absolute inset-0 rounded-full border-4 border-blue-100 border-t-blue-600 animate-spin" />
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900 text-center">
+            Processing
+          </h1>
+          <p className="text-gray-600 text-center">Verifying your payment…</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function SubscribeCallback() {
+  return (
+    <Suspense fallback={<CallbackLoading />}>
+      <SubscribeCallbackContent />
+    </Suspense>
   );
 }
