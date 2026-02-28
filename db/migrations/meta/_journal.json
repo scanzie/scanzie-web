@@ -36,6 +36,20 @@
       "when": 1757622760170,
       "tag": "0004_wild_alex_power",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1772286340999,
+      "tag": "0005_clammy_mercury",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1772287443887,
+      "tag": "0006_strong_warbird",
+      "breakpoints": true
     }
   ]
 }
