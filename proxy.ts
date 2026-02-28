@@ -7,6 +7,7 @@ export async function proxy(request: NextRequest) {
   const publicOnlyRoutes = ["/", "/login", "/register", "/forgot-password"];
   const publicRoutes = [
     "/api/",
+    "/.well-known/",
     "/robots.txt",
     "/sitemap.xml",
     "/favicon.png",
@@ -86,7 +87,7 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Match all paths except API routes, Next.js static files, .well-known, and common static files
-    "/((?!api|_next/static|_next/image|\\.well-known|favicon.ico|robots.txt|sitemap.xml).*)",
+    // Match all paths except Next.js static files, images, and common static files
+    "/((?!_next/static|_next/image|favicon.ico).*)",
   ],
 };
