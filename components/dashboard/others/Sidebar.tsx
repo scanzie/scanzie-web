@@ -1,5 +1,5 @@
 "use client"
-import { Home, Settings, BarChart3, Zap, LogOut } from "lucide-react"
+import { Home, Settings, BarChart3, FolderIcon, Zap, LogOut } from "lucide-react"
 import { usePathname } from "next/navigation"
 
 import {
@@ -31,6 +31,11 @@ const dashboardMenus = [
     title: "Analysis",
     url: "/dashboard/analysis",
     icon: BarChart3,
+  },
+  {
+    title: "Projects",
+    url: "/dashboard/projects",
+    icon: FolderIcon,
   },
   {
     title: "Settings",
