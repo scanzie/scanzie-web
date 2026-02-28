@@ -1,11 +1,15 @@
 import AllUserAnalysis from "@/components/dashboard/analysis/AllUserAnalysis";
-import { fetchUserAnalysis }  from "@/lib/actions/analysis";
+import { fetchUserAnalysis } from "@/lib/actions/analysis";
 
 const Page = async () => {
   try {
-    const data = await fetchUserAnalysis()
+    const response = await fetchUserAnalysis();
+    const analysis = response.map((item: any) => ({
+      ...item.analysis,
+      projectName: item.projectName,
+    }));
 
-    return <AllUserAnalysis analysis={data} />;
+    return <AllUserAnalysis analysis={analysis} />;
   } catch (err) {
     console.error("Error fetching analysis:", err);
     return <div>Error: {(err as Error).message ?? "An error occurred"}</div>;

@@ -7,7 +7,7 @@ import { user, account } from "../../db/schema"
 export const updateProfileName = async (userId: string, newName: string) => {
     try {
         await db.update(user).set({ name: newName }).where(eq(user.id, userId));
-    } catch(err) {
+    } catch {
         throw new Error("An error occurred while trying to update profile name")
     }
 }
@@ -15,7 +15,7 @@ export const updateProfileName = async (userId: string, newName: string) => {
 export const deleteAccount = async (userId: string) => {
     try {
         await db.delete(user).where(eq(user.id, userId))
-    } catch(err) {
+    } catch {
         throw new Error("Failed to delete account")
     }
 }

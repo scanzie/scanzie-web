@@ -54,6 +54,7 @@ export type Analysis = {
   technical: TechnicalAnalysis;
   createdAt: Date;
   updatedAt: Date;
+  projectName?: string;
 };
 
 interface AllUserAnalysisProps {
