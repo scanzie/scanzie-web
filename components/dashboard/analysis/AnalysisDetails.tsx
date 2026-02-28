@@ -212,6 +212,7 @@ export interface SEOAnalysisResult {
   title: string;
   createdAt: Date;
   updatedAt: Date;
+  projectName?: string;
   [key: string]: unknown;
 }
 

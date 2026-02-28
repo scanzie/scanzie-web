@@ -16,6 +16,7 @@ import {
   InfoIcon,
   Check,
   PlusCircleIcon,
+  FolderIcon,
 } from "lucide-react";
 import { Button } from "../../ui/button";
 import { SidebarTrigger } from "../../ui/sidebar";
@@ -331,8 +332,14 @@ const AllUserAnalysis: React.FC<AllUserAnalysisProps> = ({ analysis }) => {
                             </p>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2 mt-2 text-xs md:text-sm text-gray-500">
-                          {formatDate(analysis.updatedAt)}
+                        <div className="flex items-center space-x-4 text-xs md:text-sm text-gray-500">
+                          <span className="capitalize flex items-center gap-1">
+                            <FolderIcon className="w-3 h-3 md:h-4 md:w-4 text-gray-400" />
+                            {analysis.projectName}
+                            </span>
+                          <div className="flex items-center gap-2 ">
+                            {formatDate(analysis.updatedAt)}
+                          </div>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
