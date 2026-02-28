@@ -18,6 +18,9 @@ export default function PlanCard({
   const [loading, setLoading] = useState(false);
   const [plan, setPlan] = useState<string>(currentPlan);
   const [fetching, setFetching] = useState(true);
+  const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">(
+    "monthly",
+  );
 
   // Fetch subscription status on mount
   useEffect(() => {
@@ -54,7 +57,7 @@ export default function PlanCard({
         method: "POST",
         body: JSON.stringify({
           email: user.email,
-          plan: "monthly",
+          plan: billingPeriod,
         }),
       });
 
@@ -84,7 +87,7 @@ export default function PlanCard({
   ];
 
   return (
-    <div className="border-t border-gray-200 pt-6">
+    <div className=" border-gray-200 pt-6">
       <h3 className="text-lg font-semibold text-gray-900 mb-6">
         Subscription Plan
       </h3>
@@ -123,14 +126,58 @@ export default function PlanCard({
                 {isPro && <Zap className="w-6 h-6 text-yellow-500" />}
               </div>
 
+              {!isPro && (
+                <div className="mb-8">
+                  <p className="text-sm text-gray-600 mb-4">Billing Period</p>
+                  <div className="flex gap-2 mb-6">
+                    <button
+                      onClick={() => setBillingPeriod("monthly")}
+                      className={`flex-1 py-2.5 px-4 rounded-lg font-semibold transition-colors ${
+                        billingPeriod === "monthly" ?
+                          "bg-blue-600 text-white"
+                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                      }`}
+                    >
+                      Monthly
+                    </button>
+                    <button
+                      onClick={() => setBillingPeriod("yearly")}
+                      className={`flex-1 py-2.5 px-4 rounded-lg font-semibold transition-colors relative ${
+                        billingPeriod === "yearly" ?
+                          "bg-blue-600 text-white"
+                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                      }`}
+                    >
+                      Yearly
+                      <span className="absolute -top-2 -right-2 bg-secondary-foreground text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                        Save 20%
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              )}
+
               <div className="mb-8">
                 <p className="text-sm text-gray-600 mb-2">Current Plan Price</p>
                 <div className="text-3xl font-bold text-gray-900">
-                  {isPro ? "$12" : "$0"}
+                  {isPro ?
+                    "$12"
+                  : billingPeriod === "monthly" ?
+                    "$12"
+                  : "$115.2"}
                   <span className="text-lg text-gray-600 font-normal">
-                    /month
+                    {isPro ?
+                      "/month"
+                    : billingPeriod === "monthly" ?
+                      "/month"
+                    : "/year"}
                   </span>
                 </div>
+                {!isPro && billingPeriod === "yearly" && (
+                  <p className="text-xs text-green-600 mt-2">
+                    ✓ You save $28.80 compared to monthly billing
+                  </p>
+                )}
               </div>
 
               {!isPro && (
@@ -216,7 +263,9 @@ export default function PlanCard({
                   "Your active plan"
                 : loading ?
                   "Processing..."
-                : "Upgrade to Pro"}
+                : billingPeriod === "monthly" ?
+                  "Upgrade to Pro - $12/month"
+                : "Upgrade to Pro - $115.2/year"}
               </Button>
             </div>
           </div>
