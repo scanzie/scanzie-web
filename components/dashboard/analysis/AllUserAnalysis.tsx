@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useMemo } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -59,15 +60,36 @@ export type Analysis = {
 };
 
 interface AllUserAnalysisProps {
-  analysis: SEOAnalysisResult[];
+  analysis: {
+    data: Array<{
+      analysis: SEOAnalysisResult;
+      projectName: string;
+    }>;
+    total: number;
+    totalPages: number;
+    currentPage: number;
+  };
 }
 
-const AllUserAnalysis: React.FC<AllUserAnalysisProps> = ({ analysis }) => {
+const AllUserAnalysis: React.FC<AllUserAnalysisProps> = ({
+  analysis: paginatedData,
+}) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   const [searchTerm, setSearchTerm] = useState("");
   const [sortFilter, setSortFilter] = useState("all");
   const [sortBy, setSortBy] = useState("createdAt");
   const [sortOrder, setSortOrder] = useState("desc");
-  const [analyses] = useState<SEOAnalysisResult[]>(analysis);
+
+  // Extract analysis items and project names from paginated response
+  const analyses = paginatedData.data.map((item) => ({
+    ...item.analysis,
+    projectName: item.projectName,
+  }));
+
+  const { data, total, totalPages, currentPage } = paginatedData;
+
   const [open, setOpen] = useState(false);
   const [reanalyzeOpen, setReanalyzeOpen] = useState(false);
   const [selectedAnalysis, setSelectedAnalysis] = useState<Analysis | null>(
@@ -99,15 +121,15 @@ const AllUserAnalysis: React.FC<AllUserAnalysisProps> = ({ analysis }) => {
   };
 
   const filteredAndSortedAnalyses = useMemo(() => {
-    const filtered: SEOAnalysisResult[] = analyses.filter((analysis) => {
+    const filtered: SEOAnalysisResult[] = analyses.filter((a) => {
       const matchesSearch =
-        analysis.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        analysis.url.toLowerCase().includes(searchTerm.toLowerCase());
+        a.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        a.url.toLowerCase().includes(searchTerm.toLowerCase());
 
       if (sortFilter === "all") return matchesSearch;
       return (
         matchesSearch &&
-        getScoreCategory(getScoreBreakdown(analysis).overall) === sortFilter
+        getScoreCategory(getScoreBreakdown(a).overall) === sortFilter
       );
     });
 
@@ -116,8 +138,8 @@ const AllUserAnalysis: React.FC<AllUserAnalysisProps> = ({ analysis }) => {
 
       switch (sortBy) {
         case "score":
-          aValue = getScoreBreakdown(analysis[0]).overall;
-          bValue = getScoreBreakdown(analysis[0]).overall;
+          aValue = getScoreBreakdown(a).overall;
+          bValue = getScoreBreakdown(b).overall;
           break;
         case "title":
           aValue = a.title.toLowerCase();
@@ -135,11 +157,18 @@ const AllUserAnalysis: React.FC<AllUserAnalysisProps> = ({ analysis }) => {
       }
       return aValue < bValue ? 1 : -1;
     });
-  }, [searchTerm, sortFilter, sortBy, sortOrder, analyses, analysis]);
+  }, [searchTerm, sortFilter, sortBy, sortOrder, analyses]);
 
   const stats = useMemo(() => {
     return calculateAnalysisStats(analyses);
   }, [analyses]);
+
+  const handlePageChange = (newPage: number) => {
+    const params = new URLSearchParams(searchParams);
+    params.set("page", newPage.toString());
+    router.push(`?${params.toString()}`);
+    window.scrollTo(0, 0);
+  };
 
   return (
     <div className="w-full mx-auto bg-gray-50">
@@ -336,7 +365,7 @@ const AllUserAnalysis: React.FC<AllUserAnalysisProps> = ({ analysis }) => {
                           <span className="capitalize flex items-center gap-1">
                             <FolderIcon className="w-3 h-3 md:h-4 md:w-4 text-gray-400" />
                             {analysis.projectName}
-                            </span>
+                          </span>
                           <div className="flex items-center gap-2 ">
                             {formatDate(analysis.updatedAt)}
                           </div>
@@ -429,6 +458,71 @@ const AllUserAnalysis: React.FC<AllUserAnalysisProps> = ({ analysis }) => {
                 </h3>
                 <p className="text-gray-600">Create your first analysis</p>
               </div>
+            </div>
+          )}
+
+          {/* Pagination Controls */}
+          {analyses.length > 0 && (
+            <div className="mt-8 flex items-center justify-center gap-2">
+              {/* Previous Button */}
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="p-2 hover:bg-gray-200 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                ←
+              </button>
+
+              {/* Page Numbers */}
+              <div className="flex items-center gap-1">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                  (page) => {
+                    const isCurrentPage = page === currentPage;
+                    const distance = Math.abs(page - currentPage);
+
+                    // Show first page, last page, current page, and pages within 1 of current
+                    if (page === 1 || page === totalPages || distance <= 1) {
+                      return (
+                        <button
+                          key={page}
+                          onClick={() => handlePageChange(page)}
+                          className={`w-10 h-10 rounded-lg font-medium transition-all ${
+                            isCurrentPage ?
+                              "bg-blue-600 text-white"
+                            : "bg-white border border-gray-200 text-gray-900 hover:border-gray-300"
+                          }`}
+                        >
+                          {page}
+                        </button>
+                      );
+                    } else if (
+                      (page === 2 && currentPage > 3) ||
+                      (page === totalPages - 1 && currentPage < totalPages - 2)
+                    ) {
+                      return (
+                        <span key={page} className="px-2 text-gray-500">
+                          ...
+                        </span>
+                      );
+                    }
+                    return null;
+                  },
+                )}
+              </div>
+
+              {/* Next Button */}
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="p-2 hover:bg-gray-200 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                →
+              </button>
+
+              {/* Page Info */}
+              <span className="ml-4 text-sm text-gray-600">
+                Page {currentPage} of {totalPages}
+              </span>
             </div>
           )}
         </div>

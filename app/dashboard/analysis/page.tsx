@@ -1,15 +1,18 @@
 import AllUserAnalysis from "@/components/dashboard/analysis/AllUserAnalysis";
 import { fetchUserAnalysis } from "@/lib/actions/analysis";
 
-const Page = async () => {
+const Page = async ({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) => {
   try {
-    const response = await fetchUserAnalysis();
-    const analysis = response.map((item: any) => ({
-      ...item.analysis,
-      projectName: item.projectName,
-    }));
+    const params = await searchParams;
+    const page = params.page ? parseInt(params.page) : 1;
+    const response = await fetchUserAnalysis(page, 12);
 
-    return <AllUserAnalysis analysis={analysis} />;
+    // @ts-expect-error - Type mismatch from database unknown types
+    return <AllUserAnalysis analysis={response} />;
   } catch (err) {
     console.error("Error fetching analysis:", err);
     return <div>Error: {(err as Error).message ?? "An error occurred"}</div>;

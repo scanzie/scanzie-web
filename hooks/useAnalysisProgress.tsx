@@ -1,7 +1,6 @@
 // src/hooks/useAnalysisProgress.ts
 "use client";
 import { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
 import { invalidateUserAnalysisCache } from "@/lib/actions/analysis";
 
 interface JobStatus {
@@ -29,7 +28,6 @@ export const useAnalysisProgress = (
   const [progress, setProgress] = useState<ProgressData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const router = useRouter();
 
   const fetchProgress = useCallback(async () => {
     if (!userId || !sessionId) return;
@@ -74,7 +72,7 @@ export const useAnalysisProgress = (
     } finally {
       setIsLoading(false);
     }
-  }, [userId, sessionId, url, router]);
+  }, [userId, sessionId, url]);
 
   useEffect(() => {
     if (!userId || !sessionId) return;
