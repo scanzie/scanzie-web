@@ -7,7 +7,7 @@ export async function proxy(request: NextRequest) {
   const publicOnlyRoutes = ["/", "/login", "/register", "/forgot-password"];
   const publicRoutes = [
     "/api/",
-    "/.well-known/",
+    "/.well-known",
     "/robots.txt",
     "/sitemap.xml",
     "/favicon.png",
