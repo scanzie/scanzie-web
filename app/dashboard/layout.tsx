@@ -1,6 +1,7 @@
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
 import { AppSidebar } from "@/components/dashboard/others/Sidebar";
+import UpgradeBanner from "@/components/dashboard/others/UpgradeBanner";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -55,6 +56,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <SidebarProvider>
       <AppSidebar />
       <main className="bg-gray-50 w-full">
+        <UpgradeBanner />
         {children}
         <Toaster
           position="top-right"

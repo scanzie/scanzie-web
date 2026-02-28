@@ -17,6 +17,7 @@ export async function proxy(request: NextRequest) {
   ];
   const protectedRoutes = [
     "/dashboard",
+    "/subscribe",
     "/profile",
     "/logout",
     "/settings",
