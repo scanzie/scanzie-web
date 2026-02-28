@@ -175,28 +175,28 @@ const AllUserAnalysis: React.FC<AllUserAnalysisProps> = ({ analysis }) => {
         <div className="px-6 py-10">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
             <MetricCard
-              key={stats.total}
+              key={0}
               title="All Analyses"
               value={stats.total.toString()}
               icon={Globe}
               iconColor="blue"
             />
             <MetricCard
-              key={stats.good}
+              key={1}
               title="Good (70+)"
               value={stats.good.toString()}
               icon={Check}
               iconColor="green"
             />
             <MetricCard
-              key={stats.moderate}
+              key={2}
               title="Moderate (40-69)"
               value={stats.moderate.toString()}
               icon={TriangleAlert}
               iconColor="yellow"
             />
             <MetricCard
-              key={stats.poor}
+              key={3}
               title="Poor (0-39)"
               value={stats.poor.toString()}
               icon={InfoIcon}
