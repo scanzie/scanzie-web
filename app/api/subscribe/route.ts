@@ -8,6 +8,12 @@ export async function POST(req: NextRequest) {
       process.env.PAYSTACK_MONTHLY_PLAN
     : process.env.PAYSTACK_YEARLY_PLAN;
 
+  // Build callback URL with reference parameter
+  const callbackUrl = new URL(
+    "/subscribe/callback",
+    process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+  );
+
   const response = await fetch(
     "https://api.paystack.co/transaction/initialize",
     {
@@ -18,8 +24,9 @@ export async function POST(req: NextRequest) {
       },
       body: JSON.stringify({
         email,
-        amount: plan === "monthly" ? 10000 : 10000, // Amount in kobo (1000 = ₦10.00)
+        amount: plan === "monthly" ? 100 * 100 : 1200 * 100, // Amount in kobo
         plan: planCode,
+        callback_url: callbackUrl.toString(),
       }),
     },
   );
