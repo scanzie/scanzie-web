@@ -24,7 +24,7 @@ interface ProgressData {
 export const useAnalysisProgress = (
   userId: string,
   sessionId: string,
-  url:string
+  url: string,
 ) => {
   const [progress, setProgress] = useState<ProgressData | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -39,23 +39,34 @@ export const useAnalysisProgress = (
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/progress/${encodeURIComponent(
-          sessionId
-        )}?userId=${encodeURIComponent(userId)}`
+          sessionId,
+        )}?userId=${encodeURIComponent(userId)}`,
       );
 
       if (!response.ok) {
-        throw new Error("Oops 😢 we were unable to check your analysis progress.");
+        throw new Error(
+          "Oops 😢 we were unable to check your analysis progress.",
+        );
       }
 
       const data: ProgressData = await response.json();
       setProgress(data);
 
-      if (data.isReady) {
-      // Hard reload to bypass Next.js cache
-      await invalidateUserAnalysisCache()
-      setTimeout(() => {
-        window.location.href = `/dashboard/analysis/${encodeURIComponent(url)}`;
-      }, 1000);
+      const shouldRedirect =
+        data.isReady &&
+        data.jobs &&
+        (data.status === "completed" ||
+          (data.jobs.some((job) => job.status === "completed") &&
+            data.jobs.every(
+              (job) => job.status === "completed" || job.status === "failed",
+            )));
+
+      if (shouldRedirect) {
+        // Hard reload to bypass Next.js cache
+        await invalidateUserAnalysisCache();
+        setTimeout(() => {
+          window.location.href = `/dashboard/analysis/${encodeURIComponent(url)}`;
+        }, 1000);
       }
     } catch (err) {
       console.error("Progress fetch error:", err);
