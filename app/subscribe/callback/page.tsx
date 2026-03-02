@@ -17,7 +17,7 @@ function SubscribeCallbackContent() {
   >("processing");
   const [error, setError] = useState<string | null>(null);
   const [pollCount, setPollCount] = useState(0);
-  const maxPolls = 12; // 12 polls x 2.5 seconds = 30 seconds
+  const maxPolls = 12; 
 
   useEffect(() => {
     if (!reference) {
@@ -28,33 +28,29 @@ function SubscribeCallbackContent() {
 
     const checkSubscriptionStatus = async () => {
       try {
-        // Get current user
         const { data: session } = await authClient.getSession();
 
         if (!session?.user?.email) {
-          throw new Error("User not authenticated");
+           setError("You are not authenticated!");
+           setState("error");
+           return;
         }
 
-        // Check subscription status
         const subData = await getSubscriptionStatus(session.user.id);
 
         if (subData?.status === "active") {
           setState("success");
-          // Redirect to dashboard with success param after 2 seconds
           setTimeout(() => {
             router.push("/dashboard?successfully-subscribed=true");
           }, 2000);
         } else {
-          // Keep polling if not active yet
           if (pollCount < maxPolls) {
             setState("polling");
             setPollCount(pollCount + 1);
-            // Wait 2.5 seconds before next poll
             setTimeout(() => {
               checkSubscriptionStatus();
             }, 2500);
           } else {
-            // Max polls reached
             setError(
               "Subscription activation timeout. Please refresh or contact support.",
             );
