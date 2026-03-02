@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { CheckCircle, AlertCircle, Loader } from "lucide-react";
+import { AlertCircle, Loader, CheckCircle2Icon, CheckIcon } from "lucide-react";
 import { getSubscriptionStatus } from "@/lib/actions/subscription";
 import { authClient } from "@/lib/auth/client";
 import { Button } from "@/components/ui/button";
@@ -129,7 +129,7 @@ function SubscribeCallbackContent() {
         {state === "success" && (
           <div className="flex flex-col items-center gap-4">
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-              <CheckCircle className="w-10 h-10 text-green-600" />
+              <CheckCircle2Icon className="w-10 h-10 text-green-600" />
             </div>
             <h1 className="text-2xl font-bold text-gray-900 text-center">
               Success!
@@ -139,15 +139,15 @@ function SubscribeCallbackContent() {
             </p>
             <div className="mt-4 space-y-2 w-full">
               <div className="flex items-start gap-2 text-sm text-green-700 bg-green-50 p-3 rounded">
-                <CheckCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                <CheckIcon className="w-4 h-4 shrink-0 mt-0.5" />
                 <span>Advanced SEO analysis enabled</span>
               </div>
               <div className="flex items-start gap-2 text-sm text-green-700 bg-green-50 p-3 rounded">
-                <CheckCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                <CheckIcon className="w-4 h-4 shrink-0 mt-0.5" />
                 <span>Unlimited projects and analyses</span>
               </div>
               <div className="flex items-start gap-2 text-sm text-green-700 bg-green-50 p-3 rounded">
-                <CheckCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                <CheckIcon className="w-4 h-4 shrink-0 mt-0.5" />
                 <span>Team collaboration unlocked</span>
               </div>
             </div>
