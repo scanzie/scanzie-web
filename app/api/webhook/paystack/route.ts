@@ -6,21 +6,20 @@ import { eq } from "drizzle-orm";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-
-    const event = body.event;
+    const { event } = body;
 
     if (event === "subscription.create") {
-      const data = body.data;
+      const { data } = body;
 
       // Extract customer email from the webhook data
       const customerEmail = data.customer?.email;
-      const planName = data.plan?.name || "pro"; // Plan name from Paystack
+      const planName = data.plan?.name || "pro"; 
       const subscriptionCode = data.subscription_code;
       const status = data.status || "active";
       const nextPaymentDate =
         data.next_payment_date ?
           new Date(data.next_payment_date)
-        : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days from now
+        : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); 
 
       // Find user by email
       const existingUser = await db
@@ -72,8 +71,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (event === "invoice.payment_failed") {
-      // Mark subscription as inactive/past_due
-      const data = body.data;
+      const { data } = body;
       const subscriptionCode = data.subscription?.subscription_code;
 
       if (subscriptionCode) {

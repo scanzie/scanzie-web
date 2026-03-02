@@ -41,9 +41,6 @@ export const session = pgTable("session", {
     .notNull(),
 });
 
-//
-// ACCOUNT TABLE
-//
 export const account = pgTable("account", {
   id: varchar("id", { length: 255 }).primaryKey(),
   userId: varchar("userId", { length: 255 })
@@ -70,9 +67,6 @@ export const account = pgTable("account", {
     .notNull(),
 });
 
-//
-// VERIFICATION TABLE
-//
 export const verification = pgTable("verification", {
   id: varchar("id", { length: 255 }).primaryKey(),
   identifier: varchar("identifier", { length: 255 }).notNull(),
@@ -154,9 +148,6 @@ export const project_members = pgTable(
   }),
 );
 
-//
-// SUBSCRIPTION TABLE
-//
 export const subscription = pgTable("subscription", {
   id: uuid("id").defaultRandom().primaryKey(),
 
@@ -186,7 +177,6 @@ export const subscription = pgTable("subscription", {
 });
 
 // Table relations
-
 export const projectRelations = relations(project, ({ one, many }) => ({
   creator: one(user, {
     fields: [project.userId],
