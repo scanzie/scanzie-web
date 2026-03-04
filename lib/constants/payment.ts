@@ -11,8 +11,8 @@ export const CREATE_SUBSCRIPTION = "subscription.create";
 export const PAYMENT_FAILED = "invoice.payment_failed";
 export const PAYMENT_CALLBACK_MAX_POLLS = 12;
 
-// Plan Prices
-export const SCANZIE_PRO_MONTHLY = 16500 * 100; // $12.00
-export const SCANZIE_PRO_YEARLY = 149760 * 100; // $115.20
-export const SCANZIE_BUSINESS_MONTHLY = 97500 * 100; // $75.00
-export const SCANZIE_BUSINESS_YEARLY = 936000 * 100; // $720.00
+// Plan Prices in KOBO
+export const SCANZIE_PRO_MONTHLY = 16500 * 100; // approx. $12.00
+export const SCANZIE_PRO_YEARLY = 149760 * 100; // approx. $115.20
+export const SCANZIE_BUSINESS_MONTHLY = 97500 * 100; // approx. $75.00
+export const SCANZIE_BUSINESS_YEARLY = 936000 * 100; // approx. $720.00

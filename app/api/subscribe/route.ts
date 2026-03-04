@@ -1,4 +1,10 @@
-import { PAYSTACK_INITIALIZE_TRANSACTION_URL } from "@/lib/constants/payment";
+import {
+  PAYSTACK_INITIALIZE_TRANSACTION_URL,
+  SCANZIE_BUSINESS_MONTHLY,
+  SCANZIE_BUSINESS_YEARLY,
+  SCANZIE_PRO_MONTHLY,
+  SCANZIE_PRO_YEARLY,
+} from "@/lib/constants/payment";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -11,6 +17,14 @@ export async function POST(req: NextRequest) {
       : process.env.PAYSTACK_YEARLY_PLAN
     : period == "monthly" ? process.env.PAYSTACK_BUSINESS_MONTHLY_PLAN
     : process.env.PAYSTACK_BUSINESS_YEARLY_PLAN;
+
+  const subscriptionAmount =
+    plan === "pro" ?
+      period == "monthly" ?
+        SCANZIE_PRO_MONTHLY
+      : SCANZIE_PRO_YEARLY
+    : period == "monthly" ? SCANZIE_BUSINESS_MONTHLY
+    : SCANZIE_BUSINESS_YEARLY;
 
   // Build callback URL with reference parameter
   const callbackUrl = new URL(
@@ -26,7 +40,7 @@ export async function POST(req: NextRequest) {
     },
     body: JSON.stringify({
       email,
-      amount: plan === "monthly" ? 100 * 100 : 1200 * 100, // Amount in kobo
+      amount: subscriptionAmount,
       plan: planCode,
       callback_url: callbackUrl.toString(),
     }),
