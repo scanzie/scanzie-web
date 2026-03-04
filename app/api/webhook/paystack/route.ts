@@ -6,7 +6,10 @@ import { subscription } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { CREATE_SUBSCRIPTION, PAYMENT_FAILED } from "@/lib/constants/payment";
 import { getUserByEmail } from "@/lib/actions/profile";
-import { getSubscriptionByUserId } from "@/lib/actions/subscription";
+import {
+  createUserSubscription,
+  getSubscriptionByUserId,
+} from "@/lib/actions/subscription";
 
 export async function POST(req: NextRequest) {
   try {
@@ -62,13 +65,13 @@ export async function POST(req: NextRequest) {
         console.log(`Updated subscription for user: ${userId}`);
       } else {
         // Create new subscription
-        await db.insert(subscription).values({
+        await createUserSubscription(
           userId,
-          plan: planName,
-          status: subscriptionStatus,
+          planName,
+          subscriptionStatus,
           subscriptionCode,
           nextPaymentDate,
-        });
+        );
 
         console.log(`Created subscription for user: ${userId}`);
       }
@@ -82,8 +85,7 @@ export async function POST(req: NextRequest) {
       } = body;
 
       if (subscription_code) {
-        // Change the subscription status of a failed
-        // payment to inactive.
+        // Change the subscription status of a failed payment to inactive.
         await db
           .update(subscription)
           .set({

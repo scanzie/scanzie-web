@@ -63,4 +63,22 @@ export const getSubscriptionByUserId = async (userId: string) => {
     console.error("Unable to get user subscription: ", err);
   }
 };
-
+export const createUserSubscription = async (
+  userId: string,
+  planName: string,
+  status: string,
+  subscriptionCode: string,
+  nextPaymentDate: Date,
+) => {
+  try {
+    await db.insert(subscription).values({
+      userId,
+      plan: planName,
+      status,
+      subscriptionCode,
+      nextPaymentDate,
+    });
+  } catch (err) {
+    console.error("Unable to create user subscription: ", err);
+  }
+};
