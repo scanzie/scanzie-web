@@ -5,7 +5,7 @@ import { db } from "@/db";
 import { subscription } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { CREATE_SUBSCRIPTION, PAYMENT_FAILED } from "@/lib/constants/payment";
-import { getUserByEmail } from "@/lib/actions/subscription";
+import { getUserByEmail } from "@/lib/actions/profile";
 
 export async function POST(req: NextRequest) {
   try {

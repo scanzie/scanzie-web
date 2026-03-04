@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/db";
-import { subscription, user } from "@/db/schema";
+import { subscription } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { PAYSTACK_VERIFY_TRANSACTION_URL } from "../constants/payment";
 
@@ -32,24 +32,7 @@ export async function getSubscriptionStatus(userId: string): Promise<{
   }
 }
 
-export async function getUserByEmail(email: string) {
-  try {
-    const foundUser = await db
-      .select()
-      .from(user)
-      .where(eq(user.email, email))
-      .limit(1);
 
-    if (!foundUser || foundUser.length === 0) {
-      return null;
-    }
-
-    return foundUser[0];
-  } catch (error) {
-    console.error("Error fetching user:", error);
-    throw new Error("Failed to fetch user");
-  }
-}
 
 export async function verifyPaystackTransaction(reference: string) {
   try {
