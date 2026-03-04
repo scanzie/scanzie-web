@@ -6,6 +6,7 @@ import { subscription } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { CREATE_SUBSCRIPTION, PAYMENT_FAILED } from "@/lib/constants/payment";
 import { getUserByEmail } from "@/lib/actions/profile";
+import { getSubscriptionByUserId } from "@/lib/actions/subscription";
 
 export async function POST(req: NextRequest) {
   try {
@@ -43,11 +44,7 @@ export async function POST(req: NextRequest) {
       const userId = existingUser.id;
 
       // Check if subscription already exists
-      const existingSubscription = await db
-        .select()
-        .from(subscription)
-        .where(eq(subscription.userId, userId))
-        .limit(1);
+      const existingSubscription = await getSubscriptionByUserId(userId);
 
       if (existingSubscription && existingSubscription.length > 0) {
         // Update existing subscription

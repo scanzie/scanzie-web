@@ -32,8 +32,6 @@ export async function getSubscriptionStatus(userId: string): Promise<{
   }
 }
 
-
-
 export async function verifyPaystackTransaction(reference: string) {
   try {
     const response = await fetch(
@@ -52,3 +50,17 @@ export async function verifyPaystackTransaction(reference: string) {
     throw new Error("Failed to verify transaction");
   }
 }
+
+export const getSubscriptionByUserId = async (userId: string) => {
+  try {
+    const userSubscription = await db
+      .select()
+      .from(subscription)
+      .where(eq(subscription.userId, userId))
+      .limit(1);
+    return userSubscription;
+  } catch (err) {
+    console.error("Unable to get user subscription: ", err);
+  }
+};
+
