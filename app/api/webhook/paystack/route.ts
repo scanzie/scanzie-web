@@ -2,9 +2,10 @@
 // whether successful or not
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
-import { user, subscription } from "@/db/schema";
+import { subscription } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { CREATE_SUBSCRIPTION, PAYMENT_FAILED } from "@/lib/constants/payment";
+import { getUserByEmail } from "@/lib/actions/subscription";
 
 export async function POST(req: NextRequest) {
   try {
@@ -31,19 +32,15 @@ export async function POST(req: NextRequest) {
           new Date(next_payment_date)
         : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
 
-      // Find user by email
-      const existingUser = await db
-        .select()
-        .from(user)
-        .where(eq(user.email, email))
-        .limit(1);
+      // Find existing user
+      const existingUser = await getUserByEmail(email);
 
-      if (!existingUser || existingUser.length === 0) {
+      if (!existingUser) {
         console.error(`User not found for email: ${email}`);
         return NextResponse.json({ error: "User not found" }, { status: 404 });
       }
 
-      const userId = existingUser[0].id;
+      const userId = existingUser.id;
 
       // Check if subscription already exists
       const existingSubscription = await db

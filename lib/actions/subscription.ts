@@ -3,6 +3,7 @@
 import { db } from "@/db";
 import { subscription, user } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { PAYSTACK_VERIFY_TRANSACTION_URL } from "../constants/payment";
 
 export async function getSubscriptionStatus(userId: string): Promise<{
   status: string;
@@ -53,7 +54,7 @@ export async function getUserByEmail(email: string) {
 export async function verifyPaystackTransaction(reference: string) {
   try {
     const response = await fetch(
-      `https://api.paystack.co/transaction/verify/${reference}`,
+      `${PAYSTACK_VERIFY_TRANSACTION_URL}/${reference}`,
       {
         headers: {
           Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
