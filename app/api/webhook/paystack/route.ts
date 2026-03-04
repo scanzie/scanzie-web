@@ -1,4 +1,4 @@
-// Logic that get fired when checkout process has finished
+// Logic that get fired when checkout process has finished -
 // whether successful or not
 import { NextRequest, NextResponse } from "next/server";
 import { CREATE_SUBSCRIPTION, PAYMENT_FAILED } from "@/lib/constants/payment";
@@ -16,7 +16,6 @@ export async function POST(req: NextRequest) {
     const { event } = body;
 
     if (event === CREATE_SUBSCRIPTION) {
-      // Extract customer data from webhook body
       const {
         data: {
           customer: { email },
@@ -35,7 +34,6 @@ export async function POST(req: NextRequest) {
           new Date(next_payment_date)
         : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
 
-      // Find existing user
       const existingUser = await getUserByEmail(email);
 
       if (!existingUser) {
@@ -43,13 +41,11 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: "User not found" }, { status: 404 });
       }
 
-      const userId = existingUser.id;
+      const { id: userId } = existingUser;
 
-      // Check if subscription already exists
       const existingSubscription = await getSubscriptionByUserId(userId);
 
       if (existingSubscription && existingSubscription.length > 0) {
-        // Update existing subscription
         await updateUserSubscription(
           {
             plan: planName,
@@ -63,7 +59,6 @@ export async function POST(req: NextRequest) {
 
         console.log(`Updated subscription for user: ${userId}`);
       } else {
-        // Create new subscription
         await createUserSubscription(
           userId,
           planName,
@@ -84,9 +79,8 @@ export async function POST(req: NextRequest) {
       } = body;
 
       if (subscription_code) {
-        // Change the subscription status of a failed payment to inactive.
         await setSubscriptionToInactive(subscription_code);
-        
+
         console.log(`Marked subscription as inactive: ${subscription_code}`);
       }
     }
