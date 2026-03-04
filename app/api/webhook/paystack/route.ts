@@ -9,6 +9,7 @@ import { getUserByEmail } from "@/lib/actions/profile";
 import {
   createUserSubscription,
   getSubscriptionByUserId,
+  updateUserSubscription,
 } from "@/lib/actions/subscription";
 
 export async function POST(req: NextRequest) {
@@ -51,16 +52,16 @@ export async function POST(req: NextRequest) {
 
       if (existingSubscription && existingSubscription.length > 0) {
         // Update existing subscription
-        await db
-          .update(subscription)
-          .set({
+        await updateUserSubscription(
+          {
             plan: planName,
             status: subscriptionStatus,
             subscriptionCode,
             nextPaymentDate,
             updatedAt: new Date(),
-          })
-          .where(eq(subscription.userId, userId));
+          },
+          userId,
+        );
 
         console.log(`Updated subscription for user: ${userId}`);
       } else {

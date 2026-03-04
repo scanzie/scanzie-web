@@ -5,6 +5,14 @@ import { subscription } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { PAYSTACK_VERIFY_TRANSACTION_URL } from "../constants/payment";
 
+type UpdateSubscriptionParams = {
+  plan: string;
+  status: string;
+  subscriptionCode: string;
+  nextPaymentDate: Date;
+  updatedAt: Date;
+};
+
 export async function getSubscriptionStatus(userId: string): Promise<{
   status: string;
   plan: string;
@@ -80,5 +88,19 @@ export const createUserSubscription = async (
     });
   } catch (err) {
     console.error("Unable to create user subscription: ", err);
+  }
+};
+
+export const updateUserSubscription = async (
+  params: UpdateSubscriptionParams,
+  userId: string,
+) => {
+  try {
+    await db
+      .update(subscription)
+      .set(params)
+      .where(eq(subscription.userId, userId));
+  } catch (err) {
+    console.error("Failed to update user subscription: ", err);
   }
 };
