@@ -9,11 +9,6 @@ import { Input } from "../../ui/input";
 import { BadgeCheck, Edit, Trash2, AlertTriangle } from "lucide-react";
 import { Button } from "../../ui/button";
 import {
-  deleteAccount,
-  updateProfileName,
-  getUserProvider,
-} from "@/lib/actions/profile";
-import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -25,10 +20,15 @@ import {
   AlertDialogTrigger,
 } from "../../ui/alert-dialog";
 import { useRouter } from "next/navigation";
-import { getInitials } from "@/utils/general";
 import PlanCard from "./PlanCard";
 import GitHubIcon from "@/components/icons/Github";
 import GoogleIcon from "@/components/icons/Google";
+import {
+  deleteAccount,
+  updateProfileName,
+  getUserProvider,
+} from "@/lib/actions/profile";
+import { getProviderName, getInitials } from "@/utils/profile";
 
 const Settings = () => {
   const [user, setUser] = useState<User>();
@@ -83,7 +83,6 @@ const Settings = () => {
     fetchSession();
   }, []);
 
-  // Client-side validation for name field
   const validateName = (value: string): string => {
     if (!value.trim()) {
       return "Name cannot be empty";
@@ -97,7 +96,6 @@ const Settings = () => {
     return "";
   };
 
-  // Handle name input change with validation
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setName(value);
@@ -106,7 +104,6 @@ const Settings = () => {
     setNameError(error);
   };
 
-  // Function to get provider icon
   const getProviderIcon = (provider: string) => {
     switch (provider?.toLowerCase()) {
       case "github":
@@ -115,18 +112,6 @@ const Settings = () => {
         return <GoogleIcon />;
       default:
         return <BadgeCheck className="w-4 h-4" />;
-    }
-  };
-
-  // Function to get provider display name
-  const getProviderName = (provider: string) => {
-    switch (provider?.toLowerCase()) {
-      case "github":
-        return "GitHub";
-      case "google":
-        return "Google";
-      default:
-        return provider || "Unknown";
     }
   };
 
