@@ -1,35 +1,45 @@
+// Logic that get fired when checkout process has finished
+// whether successful or not
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { user, subscription } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { CREATE_SUBSCRIPTION, PAYMENT_FAILED } from "@/lib/constants/payment";
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { event } = body;
 
-    if (event === "subscription.create") {
-      const { data } = body;
+    if (event === CREATE_SUBSCRIPTION) {
+      // Extract customer data from webhook body
+      const {
+        data: {
+          customer: { email },
+          plan,
+          subscription_code,
+          status,
+          next_payment_date,
+        },
+      } = body;
 
-      // Extract customer email from the webhook data
-      const customerEmail = data.customer?.email;
-      const planName = data.plan?.name || "pro"; 
-      const subscriptionCode = data.subscription_code;
-      const status = data.status || "active";
+      const subscriptionStatus = status || "active";
+      const planName = plan?.name || "pro";
+      const subscriptionCode = subscription_code;
       const nextPaymentDate =
-        data.next_payment_date ?
-          new Date(data.next_payment_date)
-        : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); 
+        next_payment_date ?
+          new Date(next_payment_date)
+        : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
 
       // Find user by email
       const existingUser = await db
         .select()
         .from(user)
-        .where(eq(user.email, customerEmail))
+        .where(eq(user.email, email))
         .limit(1);
 
       if (!existingUser || existingUser.length === 0) {
-        console.error(`User not found for email: ${customerEmail}`);
+        console.error(`User not found for email: ${email}`);
         return NextResponse.json({ error: "User not found" }, { status: 404 });
       }
 
@@ -48,9 +58,9 @@ export async function POST(req: NextRequest) {
           .update(subscription)
           .set({
             plan: planName,
-            status: status,
-            subscriptionCode: subscriptionCode,
-            nextPaymentDate: nextPaymentDate,
+            status: subscriptionStatus,
+            subscriptionCode,
+            nextPaymentDate,
             updatedAt: new Date(),
           })
           .where(eq(subscription.userId, userId));
@@ -59,31 +69,36 @@ export async function POST(req: NextRequest) {
       } else {
         // Create new subscription
         await db.insert(subscription).values({
-          userId: userId,
+          userId,
           plan: planName,
-          status: status,
-          subscriptionCode: subscriptionCode,
-          nextPaymentDate: nextPaymentDate,
+          status: subscriptionStatus,
+          subscriptionCode,
+          nextPaymentDate,
         });
 
         console.log(`Created subscription for user: ${userId}`);
       }
     }
 
-    if (event === "invoice.payment_failed") {
-      const { data } = body;
-      const subscriptionCode = data.subscription?.subscription_code;
+    if (event === PAYMENT_FAILED) {
+      const {
+        data: {
+          subscription: { subscription_code },
+        },
+      } = body;
 
-      if (subscriptionCode) {
+      if (subscription_code) {
+        // Change the subscription status of a failed
+        // payment to inactive.
         await db
           .update(subscription)
           .set({
             status: "inactive",
             updatedAt: new Date(),
           })
-          .where(eq(subscription.subscriptionCode, subscriptionCode));
+          .where(eq(subscription.subscriptionCode, subscription_code));
 
-        console.log(`Marked subscription as inactive: ${subscriptionCode}`);
+        console.log(`Marked subscription as inactive: ${subscription_code}`);
       }
     }
 
