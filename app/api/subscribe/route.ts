@@ -26,7 +26,6 @@ export async function POST(req: NextRequest) {
     : period == "monthly" ? SCANZIE_BUSINESS_MONTHLY
     : SCANZIE_BUSINESS_YEARLY;
 
-  // Build callback URL with reference parameter
   const callbackUrl = new URL(
     "/subscribe/callback",
     process.env.NEXT_PUBLIC_BASE_URL!,
