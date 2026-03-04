@@ -57,7 +57,8 @@ export default function PlanCard({
         method: "POST",
         body: JSON.stringify({
           email: user.email,
-          plan: billingPeriod,
+          plan,
+          period: billingPeriod,
         }),
       });
 
@@ -174,7 +175,7 @@ export default function PlanCard({
                   </span>
                 </div>
                 {!isPro && billingPeriod === "yearly" && (
-                  <p className="text-xs text-green-600 mt-2">
+                  <p className="text-xs text-blue-600 mt-2">
                     ✓ You save $28.80 compared to monthly billing
                   </p>
                 )}
@@ -200,7 +201,7 @@ export default function PlanCard({
                         key={index}
                         className="flex items-center gap-2 text-sm text-gray-700"
                       >
-                        <Check className="w-4 h-4 text-green-500 shrink-0" />
+                        <Check className="w-4 h-4 text-blue-500 shrink-0" />
                         {feature}
                       </li>
                     ))}
@@ -216,13 +217,13 @@ export default function PlanCard({
                     </p>
                     <ul className="space-y-1">
                       <li className="flex items-center gap-2 text-sm text-gray-700">
-                        <Check className="w-4 h-4 text-green-500" />3 analyses
+                        <Check className="w-4 h-4 text-blue-500" />3 analyses
                       </li>
                       <li className="flex items-center gap-2 text-sm text-gray-700">
-                        <Check className="w-4 h-4 text-green-500" />1 project
+                        <Check className="w-4 h-4 text-blue-500" />1 project
                       </li>
                       <li className="flex items-center gap-2 text-sm text-gray-700">
-                        <Check className="w-4 h-4 text-green-500" />
+                        <Check className="w-4 h-4 text-blue-500" />
                         Base analysis
                       </li>
                     </ul>
