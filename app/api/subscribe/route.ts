@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
       period == "monthly" ?
         process.env.PAYSTACK_MONTHLY_PLAN
       : process.env.PAYSTACK_YEARLY_PLAN
-    : period == "yearly" ? process.env.PAYSTACK_BUSINESS_MONTHLY_PLAN
+    : period == "monthly" ? process.env.PAYSTACK_BUSINESS_MONTHLY_PLAN
     : process.env.PAYSTACK_BUSINESS_YEARLY_PLAN;
 
   // Build callback URL with reference parameter
