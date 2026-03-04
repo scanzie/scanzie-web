@@ -19,7 +19,6 @@ export async function proxy(request: NextRequest) {
     "/dashboard",
     "/subscribe",
     "/profile",
-    "/logout",
     "/settings",
     "/api/user",
   ];

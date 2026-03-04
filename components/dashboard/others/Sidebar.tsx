@@ -44,7 +44,7 @@ const dashboardMenus = [
   },
   {
     title: "Logout",
-    url: "/logout",
+    url: "/dashboard/logout",
     icon: LogOut,
   },
 ]
