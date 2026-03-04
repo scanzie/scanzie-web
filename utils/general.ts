@@ -32,8 +32,8 @@ export const formatDate = (date: Date | string): string => {
 export const formatUrl = (url: string): string => {
   if (url.length <= 28) return url;
 
-  const start = url.slice(0, 10); // first 10 chars
-  const end = url.slice(-5); // last 5 chars
+  const start = url.slice(0, 10); 
+  const end = url.slice(-5); 
 
-  return `${start}...${end}`; // total = 18 chars
+  return `${start}...${end}`;
 };

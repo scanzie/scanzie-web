@@ -52,9 +52,7 @@ export const calculateOverallScore = (analysis: SEOAnalysisResult): number => {
   return Math.round(totalScore / scores.length);
 };
 
-/**
- * Get score breakdown for categories
- */
+
 export const getScoreBreakdown = (analysis: SEOAnalysisResult) => {
   const onPageScores: number[] = [];
   const contentScores: number[] = [];
@@ -138,44 +136,34 @@ export const getScoreStatus = (score: number): ScoreStatus => {
   };
 };
 
-/**
- * Get comprehensive score status using calculated overall score
- */
+
 export const getAnalysisScoreStatus = (analysis: SEOAnalysisResult): ScoreStatus => {
   const calculatedScore = calculateOverallScore(analysis);
   return getScoreStatus(calculatedScore);
 };
 
-/**
- * Get score category only
- */
+
 export const getScoreCategory = (score: number): 'good' | 'moderate' | 'poor' => {
   if (score >= 70) return 'good';
   if (score >= 40) return 'moderate';
   return 'poor';
 };
 
-/**
- * Get score color class only
- */
+
 export const getScoreColor = (score: number): string => {
   if (score >= 70) return 'text-green-600';
   if (score >= 40) return 'text-yellow-600';
   return 'text-red-600';
 };
 
-/**
- * Get score background class only
- */
+
 export const getScoreBg = (score: number): string => {
   if (score >= 70) return 'bg-green-100 border-green-200';
   if (score >= 40) return 'bg-yellow-100 border-yellow-200';
   return 'bg-red-100 border-red-200';
 };
 
-/**
- * Calculate statistics for multiple analyses using calculated overall scores
- */
+
 export const calculateAnalysisStats = (analyses: SEOAnalysisResult[]) => {
   const total = analyses.length;
   const good = analyses.filter(a => getScoreCategory(calculateOverallScore(a)) === 'good').length;
