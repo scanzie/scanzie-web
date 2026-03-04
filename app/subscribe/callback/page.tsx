@@ -17,7 +17,6 @@ function SubscribeCallbackContent() {
   >("processing");
   const [error, setError] = useState<string | null>(null);
   const [pollCount, setPollCount] = useState(0);
-  const maxPolls = 12; 
 
   useEffect(() => {
     if (!reference) {
@@ -31,9 +30,9 @@ function SubscribeCallbackContent() {
         const { data: session } = await authClient.getSession();
 
         if (!session?.user?.email) {
-           setError("You are not authenticated!");
-           setState("error");
-           return;
+          setError("You are not authenticated!");
+          setState("error");
+          return;
         }
 
         const subData = await getSubscriptionStatus(session.user.id);
@@ -41,10 +40,10 @@ function SubscribeCallbackContent() {
         if (subData?.status === "active") {
           setState("success");
           setTimeout(() => {
-            router.push("/dashboard?successfully-subscribed=true");
+            router.push(PAYMENT_SUCCESSFUL_CALLBACK_URL);
           }, 2000);
         } else {
-          if (pollCount < maxPolls) {
+          if (pollCount < PAYMENT_CALLBACK_MAX_POLLS) {
             setState("polling");
             setPollCount(pollCount + 1);
             setTimeout(() => {
@@ -112,12 +111,12 @@ function SubscribeCallbackContent() {
               <div
                 className="bg-blue-600 h-2 rounded-full transition-all duration-300"
                 style={{
-                  width: `${(pollCount / maxPolls) * 100}%`,
+                  width: `${(pollCount / PAYMENT_CALLBACK_MAX_POLLS) * 100}%`,
                 }}
               />
             </div>
             <p className="text-xs text-gray-500 mt-2">
-              {((pollCount / maxPolls) * 100).toFixed(0)}%
+              {((pollCount / PAYMENT_CALLBACK_MAX_POLLS) * 100).toFixed(0)}%
             </p>
           </div>
         )}
@@ -194,6 +193,10 @@ function SubscribeCallbackContent() {
 }
 
 import { Suspense } from "react";
+import {
+  PAYMENT_CALLBACK_MAX_POLLS,
+  PAYMENT_SUCCESSFUL_CALLBACK_URL,
+} from "@/lib/constants/payment";
 
 function CallbackLoading() {
   return (
