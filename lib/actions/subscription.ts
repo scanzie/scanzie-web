@@ -71,6 +71,7 @@ export const getSubscriptionByUserId = async (userId: string) => {
     console.error("Unable to get user subscription: ", err);
   }
 };
+
 export const createUserSubscription = async (
   userId: string,
   planName: string,
@@ -102,5 +103,21 @@ export const updateUserSubscription = async (
       .where(eq(subscription.userId, userId));
   } catch (err) {
     console.error("Failed to update user subscription: ", err);
+  }
+};
+
+export const setSubscriptionToInactive = async (subscriptionCode: string) => {
+  try {
+    await db
+      .update(subscription)
+      .set({
+        status: "inactive",
+        updatedAt: new Date(),
+      })
+      .where(eq(subscription.subscriptionCode, subscriptionCode));
+  } catch (err) {
+    console.error(
+      `Failed to set subscription status of code: ${subscriptionCode} to inactive. Error: ${err}`,
+    );
   }
 };

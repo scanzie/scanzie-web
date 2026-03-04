@@ -1,14 +1,12 @@
 // Logic that get fired when checkout process has finished
 // whether successful or not
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/db";
-import { subscription } from "@/db/schema";
-import { eq } from "drizzle-orm";
 import { CREATE_SUBSCRIPTION, PAYMENT_FAILED } from "@/lib/constants/payment";
 import { getUserByEmail } from "@/lib/actions/profile";
 import {
   createUserSubscription,
   getSubscriptionByUserId,
+  setSubscriptionToInactive,
   updateUserSubscription,
 } from "@/lib/actions/subscription";
 
@@ -87,14 +85,8 @@ export async function POST(req: NextRequest) {
 
       if (subscription_code) {
         // Change the subscription status of a failed payment to inactive.
-        await db
-          .update(subscription)
-          .set({
-            status: "inactive",
-            updatedAt: new Date(),
-          })
-          .where(eq(subscription.subscriptionCode, subscription_code));
-
+        await setSubscriptionToInactive(subscription_code);
+        
         console.log(`Marked subscription as inactive: ${subscription_code}`);
       }
     }
