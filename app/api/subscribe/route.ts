@@ -10,21 +10,26 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
   const { email, plan, period } = await req.json();
 
-  const planCode =
-    plan === "pro" ?
-      period == "monthly" ?
-        process.env.PAYSTACK_MONTHLY_PLAN
-      : process.env.PAYSTACK_YEARLY_PLAN
-    : period == "monthly" ? process.env.PAYSTACK_BUSINESS_MONTHLY_PLAN
-    : process.env.PAYSTACK_BUSINESS_YEARLY_PLAN;
+  let planCode: string | undefined;
+  let subscriptionAmount: number;
 
-  const subscriptionAmount =
-    plan === "pro" ?
-      period == "monthly" ?
-        SCANZIE_PRO_MONTHLY
-      : SCANZIE_PRO_YEARLY
-    : period == "monthly" ? SCANZIE_BUSINESS_MONTHLY
-    : SCANZIE_BUSINESS_YEARLY;
+  if (plan === "pro") {
+    if (period === "monthly") {
+      planCode = process.env.PAYSTACK_PRO_MONTHLY_PLAN;
+      subscriptionAmount = SCANZIE_PRO_MONTHLY;
+    } else {
+      planCode = process.env.PAYSTACK_PRO_YEARLY_PLAN;
+      subscriptionAmount = SCANZIE_PRO_YEARLY;
+    }
+  } else {
+    if (period === "monthly") {
+      planCode = process.env.PAYSTACK_BUSINESS_MONTHLY_PLAN;
+      subscriptionAmount = SCANZIE_BUSINESS_MONTHLY;
+    } else {
+      planCode = process.env.PAYSTACK_BUSINESS_YEARLY_PLAN;
+      subscriptionAmount = SCANZIE_BUSINESS_YEARLY;
+    }
+  }
 
   const callbackUrl = new URL(
     "/subscribe/callback",

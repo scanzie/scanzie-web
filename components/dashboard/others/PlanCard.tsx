@@ -57,7 +57,7 @@ export default function PlanCard({
         method: "POST",
         body: JSON.stringify({
           email: user.email,
-          plan,
+          plan: "pro",
           period: billingPeriod,
         }),
       });

@@ -18,7 +18,7 @@ import { useEffect, useState } from "react"
 import { User } from "better-auth"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import Image from "next/image"
-import { getInitials } from "@/utils/general"
+import { getInitials } from "@/utils/profile"
 
 // Updated menu items to match the SEO analytics theme
 const dashboardMenus = [
