@@ -37,7 +37,10 @@ function SubscribeCallbackContent() {
 
         const verifyResponse = await verifyPaystackTransaction(reference);
 
-        if (verifyResponse?.status === true && verifyResponse?.data?.status === "success") {
+        if (
+          verifyResponse?.status === true &&
+          verifyResponse?.data?.status === "success"
+        ) {
           setState("success");
           setTimeout(() => {
             router.push(PAYMENT_SUCCESSFUL_CALLBACK_URL);
@@ -84,9 +87,7 @@ function SubscribeCallbackContent() {
             <h1 className="text-2xl font-bold text-gray-900 text-center">
               Processing
             </h1>
-            <p className="text-gray-600 text-center">
-              Verifying your payment…
-            </p>
+            <p className="text-gray-600 text-center">Verifying your payment…</p>
             <div className="mt-2 space-y-2 text-sm text-gray-500">
               <p className="flex items-center gap-2">
                 <Loader className="w-4 h-4 animate-spin" />
