@@ -27,7 +27,16 @@ export async function POST(req: NextRequest) {
       } = body;
 
       const subscriptionStatus = status || "active";
-      const planName = plan?.name || "pro";
+      const planCode = plan?.plan_code || "";
+
+      // Determine plan name based on plan code
+      let planName = "PRO"; // default to PRO
+      if (planCode.toLowerCase().includes("business")) {
+        planName = "BUSINESS";
+      } else if (planCode.toLowerCase().includes("pro")) {
+        planName = "PRO";
+      }
+
       const subscriptionCode = subscription_code;
       const nextPaymentDate =
         next_payment_date ?
