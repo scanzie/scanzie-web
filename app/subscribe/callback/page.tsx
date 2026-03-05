@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { AlertCircle, Loader, CheckCircle2Icon, CheckIcon } from "lucide-react";
-import { getSubscriptionStatus } from "@/lib/actions/subscription";
+import { verifyPaystackTransaction } from "@/lib/actions/subscription";
 import { authClient } from "@/lib/auth/client";
 import { Button } from "@/components/ui/button";
 
@@ -35,9 +35,9 @@ function SubscribeCallbackContent() {
           return;
         }
 
-        const subData = await getSubscriptionStatus(session.user.id);
+        const verifyResponse = await verifyPaystackTransaction(reference);
 
-        if (subData?.status === "active") {
+        if (verifyResponse?.status === true && verifyResponse?.data?.status === "success") {
           setState("success");
           setTimeout(() => {
             router.push(PAYMENT_SUCCESSFUL_CALLBACK_URL);
@@ -51,15 +51,15 @@ function SubscribeCallbackContent() {
             }, 2500);
           } else {
             setError(
-              "Subscription activation timeout. Please refresh or contact support.",
+              "Payment verification timeout. Please refresh or contact support.",
             );
             setState("error");
           }
         }
       } catch (err) {
-        console.error("Subscription check error:", err);
+        console.error("Payment verification error:", err);
         setError(
-          err instanceof Error ? err.message : "Failed to verify subscription",
+          err instanceof Error ? err.message : "Failed to verify payment",
         );
         setState("error");
       }
@@ -85,12 +85,12 @@ function SubscribeCallbackContent() {
               Processing
             </h1>
             <p className="text-gray-600 text-center">
-              Setting up your Pro subscription…
+              Verifying your payment…
             </p>
             <div className="mt-2 space-y-2 text-sm text-gray-500">
               <p className="flex items-center gap-2">
                 <Loader className="w-4 h-4 animate-spin" />
-                Verifying payment
+                Confirming transaction
               </p>
             </div>
           </div>
@@ -105,7 +105,7 @@ function SubscribeCallbackContent() {
               Almost there
             </h1>
             <p className="text-gray-600 text-center">
-              Activating your Pro plan…
+              Confirming your payment…
             </p>
             <div className="mt-4 w-full bg-gray-200 rounded-full h-2">
               <div
