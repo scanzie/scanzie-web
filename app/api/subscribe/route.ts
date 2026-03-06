@@ -1,4 +1,5 @@
 import {
+  PAYMENT_CHANNELS,
   PAYSTACK_INITIALIZE_TRANSACTION_URL,
   SCANZIE_BUSINESS_MONTHLY,
   SCANZIE_BUSINESS_YEARLY,
@@ -47,7 +48,7 @@ export async function POST(req: NextRequest) {
       amount: subscriptionAmount,
       plan: planCode,
       callback_url: callbackUrl.toString(),
-      channels: ["card", "bank", "apple_pay", "ussd", "qr", "mobile_money", "bank_transfer", "eft", "capitec_pay", "payattitude"]
+      channels: PAYMENT_CHANNELS
     }),
   });
 

@@ -10,6 +10,7 @@ export const PAYSTACK_INITIALIZE_TRANSACTION_URL =
 export const CREATE_SUBSCRIPTION = "subscription.create";
 export const PAYMENT_FAILED = "invoice.payment_failed";
 export const PAYMENT_CALLBACK_MAX_POLLS = 12;
+export const PAYMENT_CHANNELS = ["card", "bank", "apple_pay", "ussd", "qr", "mobile_money", "bank_transfer", "eft", "capitec_pay", "payattitude"]
 
 // Plan Prices in KOBO
 export const SCANZIE_PRO_MONTHLY = 16500 * 100; // approx. $12.00
