@@ -205,9 +205,7 @@ const Settings = () => {
           {/* Profile Tab */}
           {activeTab === "profile" && (
             <div className="grid md:grid-cols-2 gap-2">
-              {/* Profile Info section */}
             <div className="grid gap-6 md:w-sm">
-              {/* Profile Image */}
               <Avatar className="w-48 h-48">
                 <AvatarImage src={user?.image as string} />
                 <AvatarFallback>{getInitials(user?.name)}</AvatarFallback>
