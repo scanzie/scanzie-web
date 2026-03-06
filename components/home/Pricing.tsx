@@ -3,13 +3,16 @@
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { Check } from "lucide-react";
+import { BillingToggle } from "../ui/BillingToggle";
 
 interface PricingProps {
   isAuthenticated?: boolean;
   userEmail?: string;
+  userPlan?: string;
 }
 
-export default function Pricing({ isAuthenticated, userEmail }: PricingProps) {
+export default function Pricing({ isAuthenticated, userEmail, userPlan = "free" }: PricingProps) {
+  const [isYearly, setIsYearly] = useState(false);
   const [loading, setLoading] = useState<{
     monthly: boolean;
     yearly: boolean;
@@ -20,7 +23,6 @@ export default function Pricing({ isAuthenticated, userEmail }: PricingProps) {
 
   const handleSubscribe = async (plan: "monthly" | "yearly") => {
     if (!isAuthenticated) {
-      // Redirect to signin if not authenticated
       window.location.href = "/login";
       return;
     }
@@ -31,7 +33,8 @@ export default function Pricing({ isAuthenticated, userEmail }: PricingProps) {
         method: "POST",
         body: JSON.stringify({
           email: userEmail,
-          plan,
+          plan: "pro", 
+          period: plan,
         }),
       });
 
@@ -52,29 +55,33 @@ export default function Pricing({ isAuthenticated, userEmail }: PricingProps) {
   const freePlanFeatures = [
     "Base-line SEO analysis",
     "Access to one folder/projects",
-    "Can create up to 3 analyses",
-    "Can re-analyze URLs",
+    "Can create up to 3 analyses.",
+    "Can re-analyze URLS.",
   ];
 
   const proPlanFeatures = [
     "Advanced SEO analysis (more metrics, screenshots, etc.)",
-    "Can create up to 10 folders/projects",
-    "Can create up to 100 unique analyses",
-    "Can invite up to 10 people in a project",
-    "Mini-window for page navigation",
-    "Download analysis result in well formatted PDF",
+    "Can create up to 10 folders/projects.",
+    "Can create up to 100 unique analyses.",
+    "Can invite up to 10 people to a project.",
+    "Mini-window for page navigation.",
+    "Download the analysis result in well formatted PDF.",
   ];
 
   return (
-    <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
+    <section className="py-10 px-4 sm:px-6 lg:px-8 bg-gray-50">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
             Simple, Transparent Pricing
           </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
             Choose the perfect plan for your SEO analysis needs
           </p>
+          
+          <div className="flex justify-center">
+            <BillingToggle isYearly={isYearly} onToggle={setIsYearly} />
+          </div>
         </div>
 
         <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
@@ -88,7 +95,7 @@ export default function Pricing({ isAuthenticated, userEmail }: PricingProps) {
                 No credit card required
               </p>
 
-              <div className="mb-8">
+              <div className="mb-8 h-20">
                 <div className="text-5xl font-bold text-gray-900">
                   $0
                   <span className="text-xl text-gray-600 font-normal">/mo</span>
@@ -96,11 +103,11 @@ export default function Pricing({ isAuthenticated, userEmail }: PricingProps) {
               </div>
 
               <Button
-                disabled={!isAuthenticated}
-                className="w-full mb-8 bg-gray-100 text-gray-900 hover:bg-gray-200 border border-gray-300"
-                variant="outline"
+                disabled={!isAuthenticated || userPlan === "free"}
+                className={`w-full mb-8 ${userPlan === "free" ? "bg-gray-100 text-gray-900" : "bg-white text-gray-900 border border-gray-300 hover:bg-gray-50"}`}
+                variant={userPlan === "free" ? "secondary" : "outline"}
               >
-                {isAuthenticated ? "Current Plan" : "Sign up to get started"}
+                {isAuthenticated ? (userPlan === "free" ? "Current Plan" : "Downgrade to Free") : "Sign up to get started"}
               </Button>
 
               <div className="space-y-4">
@@ -109,7 +116,7 @@ export default function Pricing({ isAuthenticated, userEmail }: PricingProps) {
                 </p>
                 {freePlanFeatures.map((feature, index) => (
                   <div key={index} className="flex items-start gap-3">
-                    <Check className="w-5 h-5 text-green-500 mt-0.5 shrink-0" />
+                    <Check className="w-5 h-5 text-blue-500 mt-0.5 shrink-0" />
                     <span className="text-gray-700">{feature}</span>
                   </div>
                 ))}
@@ -127,21 +134,29 @@ export default function Pricing({ isAuthenticated, userEmail }: PricingProps) {
               <h3 className="text-2xl font-bold text-gray-900 mb-2">
                 Pro Plan
               </h3>
-              <p className="text-gray-600 text-sm mb-6">Billed monthly</p>
+              <p className="text-gray-600 text-sm mb-6">
+                {isYearly ? "Billed annually" : "Billed monthly"}
+              </p>
 
-              <div className="mb-8">
+              <div className="mb-8 h-20">
                 <div className="text-5xl font-bold text-gray-900">
-                  $12
+                  ${isYearly ? "9.60" : "12"}
                   <span className="text-xl text-gray-600 font-normal">/mo</span>
                 </div>
+                {isYearly && (
+                  <div className="text-sm text-gray-500 mt-1">
+                    $115.20 billed yearly
+                  </div>
+                )}
               </div>
 
               <Button
-                onClick={() => handleSubscribe("monthly")}
-                disabled={!isAuthenticated || loading.monthly}
-                className="w-full mb-8 bg-blue-600 hover:bg-blue-700 text-white"
+                onClick={() => handleSubscribe(isYearly ? "yearly" : "monthly")}
+                disabled={!isAuthenticated || loading.monthly || loading.yearly || userPlan === "pro"}
+                className={`w-full mb-8 ${userPlan === "pro" ? "bg-gray-100 text-gray-900 hover:bg-gray-200" : "bg-blue-600 hover:bg-blue-700 text-white"}`}
+                variant={userPlan === "pro" ? "secondary" : "default"}
               >
-                {loading.monthly ? "Processing..." : "Upgrade to Pro"}
+                {loading.monthly || loading.yearly ? "Processing..." : userPlan === "pro" ? "Current Plan" : "Upgrade to Pro"}
               </Button>
 
               <div className="space-y-4">
@@ -150,7 +165,7 @@ export default function Pricing({ isAuthenticated, userEmail }: PricingProps) {
                 </p>
                 {proPlanFeatures.map((feature, index) => (
                   <div key={index} className="flex items-start gap-3">
-                    <Check className="w-5 h-5 text-green-500 mt-0.5 shrink-0" />
+                    <Check className="w-5 h-5 text-blue-500 mt-0.5 shrink-0" />
                     <span className="text-gray-700">{feature}</span>
                   </div>
                 ))}

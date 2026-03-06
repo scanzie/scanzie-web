@@ -20,6 +20,7 @@ export async function proxy(request: NextRequest) {
     "/subscribe",
     "/profile",
     "/settings",
+    "/upgrade",
     "/api/user",
   ];
 

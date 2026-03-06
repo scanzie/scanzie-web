@@ -63,10 +63,10 @@ export default function UpgradeBanner() {
           </div>
 
           <div className="flex items-center gap-2 shrink-0">
-            <Link href="/dashboard/settings">
+            <Link href="/upgrade">
               <Button
-                size="sm"
-                className="bg-white text-blue-600 hover:bg-blue-50 font-semibold"
+              size="sm"
+                className="bg-white text-blue-600 hover:bg-blue-50 font-semibold rounded-2xl text-sm"
               >
                 Upgrade Now
               </Button>

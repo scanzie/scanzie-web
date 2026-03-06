@@ -20,7 +20,6 @@ import {
   AlertDialogTrigger,
 } from "../../ui/alert-dialog";
 import { useRouter } from "next/navigation";
-import PlanCard from "./PlanCard";
 import GitHubIcon from "@/components/icons/Github";
 import GoogleIcon from "@/components/icons/Google";
 import {
@@ -281,8 +280,6 @@ const Settings = () => {
               </div>
             </div>
 
-            {/* Delete Account Section */}
-            <PlanCard user={user} currentPlan="free" />
           </div>
 
           <div className="border-t border-gray-200 pt-6">
