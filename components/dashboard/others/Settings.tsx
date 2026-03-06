@@ -19,7 +19,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "../../ui/alert-dialog";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import GitHubIcon from "@/components/icons/Github";
 import GoogleIcon from "@/components/icons/Google";
 import {
@@ -39,6 +39,16 @@ const Settings = () => {
   const [nameError, setNameError] = useState<string>("");
   const [providerLoading, setProviderLoading] = useState<boolean>(true);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const [activeTab, setActiveTab] = useState<"profile" | "account">("profile");
+
+  useEffect(() => {
+    if (searchParams.has("profile")) {
+      setActiveTab("profile");
+    } else if (searchParams.has("account")) {
+      setActiveTab("account");
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     const fetchSession = async () => {
@@ -156,15 +166,35 @@ const Settings = () => {
       <div className="bg-white border-b">
         <main className="dashboard-container ">
           {/* Header */}
-          <header className="bg-white border-b border-gray-100 p-6">
-            <div className="flex items-center justify-between">
+          <header className="bg-white pt-6 px-6">
+            <div className="flex items-center justify-between mb-6">
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
                 <p className="text-gray-600 mt-1">
-                  Customize your account profile.
+                  Customize your account profile and preferences.
                 </p>
               </div>
               <SidebarTrigger className="bg-blue-50 p-3 rounded-md md:hidden" />
+            </div>
+            
+            {/* Tabs */}
+            <div className="flex gap-6 border-b border-gray-100">
+              {(["profile", "account"] as const).map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => {
+                    setActiveTab(tab);
+                    router.push(`/dashboard/settings?${tab}`);
+                  }}
+                  className={`pb-4 text-sm font-medium border-b-2 transition-colors duration-200 capitalize ${
+                    activeTab === tab
+                      ? "border-blue-600 text-blue-600"
+                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                  }`}
+                >
+                  {tab}
+                </button>
+              ))}
             </div>
           </header>
         </main>
@@ -172,8 +202,10 @@ const Settings = () => {
 
       <main className="dashboard-container py-10">
         <div className="grid gap-6 p-6 ">
-          <div className="grid md:grid-cols-2 gap-2">
-            {/* Profile Info section */}
+          {/* Profile Tab */}
+          {activeTab === "profile" && (
+            <div className="grid md:grid-cols-2 gap-2">
+              {/* Profile Info section */}
             <div className="grid gap-6 md:w-sm">
               {/* Profile Image */}
               <Avatar className="w-48 h-48">
@@ -279,11 +311,12 @@ const Settings = () => {
                 </div>
               </div>
             </div>
+            </div>
+          )}
 
-          </div>
-
-          <div className="border-t border-gray-200 pt-6">
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          {/* Account Tab */}
+          {activeTab === "account" && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 max-w-3xl">
               <div className="flex items-start gap-3">
                 <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5 shrink-0" />
                 <div className="flex-1">
@@ -336,11 +369,18 @@ const Settings = () => {
                 </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </main>
     </div>
   );
 };
 
-export default Settings;
+import { Suspense } from "react";
+export default function SettingsContainer() {
+  return (
+    <Suspense fallback={<div className="p-8">Loading settings...</div>}>
+      <Settings />
+    </Suspense>
+  )
+}

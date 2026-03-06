@@ -32,7 +32,7 @@ export default function UpgradeBanner() {
         }
       } catch (error) {
         console.error("Error checking subscription:", error);
-        setIsVisible(true); // Show banner on error as fallback
+        setIsVisible(true); 
       } finally {
         setLoading(false);
       }

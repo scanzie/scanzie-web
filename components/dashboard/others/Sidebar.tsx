@@ -38,11 +38,6 @@ const dashboardMenus = [
     icon: FolderIcon,
   },
   {
-    title: "Settings",
-    url: "/dashboard/settings",
-    icon: Settings,
-  },
-  {
     title: "Logout",
     url: "/dashboard/logout",
     icon: LogOut,
@@ -143,22 +138,33 @@ export function AppSidebar() {
         </div>
 
         {/* User Profile Section */}
-        <div className="mt-auto p-4 border-t border-gray-100 bg-gray-50/50">
-          <div className="flex items-center">
-            <Avatar>
-              <AvatarImage src={user?.image as string} />
-              <AvatarFallback>{getInitials(user?.name)}</AvatarFallback>
-            </Avatar>
-            <div className="ml-3 flex-1">
-              <p className="text-sm font-semibold text-gray-900">{user?.name}</p>
-              <p className="text-xs text-gray-500 flex items-center">
-                Free Plan
-                <span className="ml-2 px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
-                  Upgrade
-                </span>
-              </p>
+        <div className="mt-auto border-t border-gray-100 bg-gray-50/50 hover:bg-gray-100 transition-colors">
+          <div className="flex items-center w-full p-4">
+            <div className="flex items-center flex-1">
+              <Link href="/dashboard/settings?profile" className="shrink-0">
+                <Avatar>
+                  <AvatarImage src={user?.image as string} />
+                  <AvatarFallback>{getInitials(user?.name)}</AvatarFallback>
+                </Avatar>
+              </Link>
+              <div className="ml-3 flex flex-col items-start overflow-hidden">
+                <Link href="/dashboard/settings?profile" className="hover:underline w-full">
+                  <p className="text-sm font-semibold text-gray-900 truncate">{user?.name}</p>
+                </Link>
+                <div className="flex items-center w-full mt-0.5">
+                  <p className="text-xs text-gray-500 flex items-center shrink-0">
+                    Free Plan
+                  </p>
+                  <Link 
+                    href="/upgrade" className="ml-2 px-2 py-0.5 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-full text-[10px] font-medium transition-colors">
+                    Upgrade
+                  </Link>
+                </div>
+              </div>
+            
             </div>
-            <Link href="/dashboard/settings"  className="text-gray-400 hover:text-gray-600 p-1.5 rounded-md hover:bg-gray-100 transition-colors">
+
+            <Link href="/dashboard/settings?profile" className="text-gray-400 hover:text-gray-600 ml-2 p-1.5 rounded-md hover:bg-gray-200 transition-colors">
               <Settings className="w-4 h-4" />
             </Link>
           </div>
