@@ -22,6 +22,8 @@ import {
   BarChart2,
 } from "lucide-react";
 import { toast } from "sonner";
+import Link from "next/link";
+import { usePlan } from "@/hooks/usePlan";
 
 const FEATURE_PILLS = [
   { icon: ShieldCheck, label: "Technical SEO" },
@@ -35,6 +37,12 @@ const NewAnalysis = () => {
   const [open, setOpen] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
+  const { loading: planLoading, limits, usage, isFreePlan } = usePlan();
+
+  const analysesUsed = usage?.analyses ?? 0;
+  const analysesLimit = limits.maxAnalyses;
+  const hasReachedAnalysisLimit =
+    !planLoading && usage != null && analysesUsed >= analysesLimit;
 
   const scanProofUrl = (url: string) => {
     try {
@@ -48,6 +56,15 @@ const NewAnalysis = () => {
 
   const startAnalysis = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (hasReachedAnalysisLimit) {
+      toast(
+        `You have reached your maximum of ${analysesLimit} unique analyses on the ${isFreePlan ? "Free" : "current"
+        } plan. Please upgrade to create more analyses.`,
+      );
+      return;
+    }
+
     setLoading(true);
 
     if (!scanProofUrl(url)) {
@@ -119,7 +136,9 @@ const NewAnalysis = () => {
 
               <Button
                 type="submit"
-                disabled={loading || !url.trim()}
+                disabled={
+                  loading || !url.trim() || hasReachedAnalysisLimit
+                }
                 className="w-full h-11 rounded-2xl text-white "
               >
                 {loading ?
@@ -134,6 +153,20 @@ const NewAnalysis = () => {
                 }
               </Button>
             </form>
+
+            {hasReachedAnalysisLimit && (
+              <p className="text-xs text-red-600 mt-2 text-center">
+                You&apos;ve used {analysesUsed}/{analysesLimit} unique analyses on
+                your current plan.{" "}
+                <Link
+                  href="/upgrade"
+                  className="underline font-medium text-red-700"
+                >
+                  Upgrade to Pro
+                </Link>{" "}
+                to analyze more URLs.
+              </p>
+            )}
           </div>
         </div>
 
