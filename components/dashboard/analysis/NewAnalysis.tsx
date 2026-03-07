@@ -91,7 +91,6 @@ const NewAnalysis = () => {
       <div className="w-full max-w-xl space-y-8">
         {/* ── Hero card ── */}
         <div className="rounded-3xl bg-white border border-gray-100 shadow-sm overflow-hidden">
-          {/* Blue accent bar */}
 
           <div className="p-8 space-y-6">
             {/* Icon badge + heading */}
