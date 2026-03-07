@@ -9,46 +9,41 @@ export interface ScoreStatus {
   bgClass: string;
 }
 
+function toNumber(value: unknown): number | null {
+  if (value == null) return null;
+  const n = typeof value === "number" ? value : Number(value);
+  return Number.isFinite(n) ? n : null;
+}
+
 export const calculateOverallScore = (analysis: SEOAnalysisResult): number => {
   const scores: number[] = [];
 
-  // On-page scores
-  if (analysis.on_page) {
+  if (analysis?.on_page) {
     const { links, title, score, images, headings, metaDescription, openGraph, twitterCard } = analysis.on_page;
-
-    if (score !== undefined) scores.push(score);
+    const s = toNumber(score);
+    if (s != null) scores.push(s);
     else {
-      if (links?.score !== undefined) scores.push(links.score);
-      if (title?.score !== undefined) scores.push(title.score);
-      if (images?.score !== undefined) scores.push(images.score);
-      if (headings?.score !== undefined) scores.push(headings.score);
-      if (metaDescription?.score !== undefined) scores.push(metaDescription.score);
-      if (openGraph?.score !== undefined) scores.push(openGraph.score);
-      if (twitterCard?.score !== undefined) scores.push(twitterCard.score);
+      [links?.score, title?.score, images?.score, headings?.score, metaDescription?.score, openGraph?.score, twitterCard?.score]
+        .forEach((v) => { const n = toNumber(v); if (n != null) scores.push(n); });
     }
   }
 
-  // Content scores
-  if (analysis.content) {
+  if (analysis?.content) {
     const { score, contentQuality, readabilityScore } = analysis.content;
-
-    if (score !== undefined) scores.push(score)
+    const s = toNumber(score);
+    if (s != null) scores.push(s);
     else {
-      if (contentQuality?.score !== undefined) scores.push(contentQuality.score);
-      if (readabilityScore !== undefined) scores.push(readabilityScore);
+      [contentQuality?.score, readabilityScore].forEach((v) => { const n = toNumber(v); if (n != null) scores.push(n); });
     }
   }
 
-  // Technical scores
-  if (analysis.technical) {
-    const { score } = analysis.technical;
-
-    if (score !== undefined) scores.push(score);
+  if (analysis?.technical) {
+    const n = toNumber(analysis.technical.score);
+    if (n != null) scores.push(n);
   }
 
   if (scores.length === 0) return 0;
-
-  const totalScore = scores.reduce((sum, score) => sum + score, 0);
+  const totalScore = scores.reduce((sum, sc) => sum + sc, 0);
   return Math.round(totalScore / scores.length);
 };
 
@@ -58,57 +53,48 @@ export const getScoreBreakdown = (analysis: SEOAnalysisResult) => {
   const contentScores: number[] = [];
   const technicalScores: number[] = [];
 
-  // On-page scores
-  if (analysis.on_page) {
+  if (analysis?.on_page) {
     const { links, title, score, images, headings, metaDescription, openGraph, twitterCard } = analysis.on_page;
-
-    if (score !== undefined) {
-      onPageScores.push(score); 
-    } else {
-      if (links?.score !== undefined) onPageScores.push(links.score);
-      if (title?.score !== undefined) onPageScores.push(title.score);
-      if (images?.score !== undefined) onPageScores.push(images.score);
-      if (headings?.score !== undefined) onPageScores.push(headings.score);
-      if (metaDescription?.score !== undefined) onPageScores.push(metaDescription.score);
-      if (openGraph?.score !== undefined) onPageScores.push(openGraph.score);
-      if (twitterCard?.score !== undefined) onPageScores.push(twitterCard.score);
-    }
-  }
-
-  // Content scores
-  if (analysis.content) {
-    const { score, contentQuality, readabilityScore } = analysis.content;
-    if (score !== undefined) contentScores.push(score)
+    const s = toNumber(score);
+    if (s != null) onPageScores.push(s);
     else {
-      if (contentQuality?.score !== undefined) contentScores.push(contentQuality.score);
-      if (readabilityScore !== undefined) contentScores.push(readabilityScore);
+      [links?.score, title?.score, images?.score, headings?.score, metaDescription?.score, openGraph?.score, twitterCard?.score]
+        .forEach((v) => { const n = toNumber(v); if (n != null) onPageScores.push(n); });
     }
   }
 
-  // Technical scores
-  if (analysis.technical) {
-    const { score } = analysis.technical;
-    if (score !== undefined) technicalScores.push(score);
-    
+  if (analysis?.content) {
+    const { score, contentQuality, readabilityScore } = analysis.content;
+    const s = toNumber(score);
+    if (s != null) contentScores.push(s);
+    else {
+      [contentQuality?.score, readabilityScore].forEach((v) => { const n = toNumber(v); if (n != null) contentScores.push(n); });
+    }
   }
 
-  const onPageAvg: number =
+  if (analysis?.technical) {
+    const n = toNumber(analysis.technical.score);
+    if (n != null) technicalScores.push(n);
+  }
+
+  const onPageAvg =
     onPageScores.length > 0 ? Math.round(onPageScores.reduce((a, b) => a + b, 0) / onPageScores.length) : 0;
-  const contentAvg: number =
+  const contentAvg =
     contentScores.length > 0 ? Math.round(contentScores.reduce((a, b) => a + b, 0) / contentScores.length) : 0;
-  const technicalAvg: number =
+  const technicalAvg =
     technicalScores.length > 0 ? Math.round(technicalScores.reduce((a, b) => a + b, 0) / technicalScores.length) : 0;
 
   return {
     onPage: onPageAvg,
     content: contentAvg,
     technical: technicalAvg,
-    overall: calculateOverallScore(analysis)
+    overall: calculateOverallScore(analysis),
   };
 };
 
 export const getScoreStatus = (score: number): ScoreStatus => {
-  const percentage = Math.round(score);
+  const num = typeof score === "number" && Number.isFinite(score) ? score : 0;
+  const percentage = Math.round(num);
 
   if (score >= 70) {
     return {
@@ -129,10 +115,10 @@ export const getScoreStatus = (score: number): ScoreStatus => {
   }
 
   return {
-    category: 'poor',
+    category: "poor",
     percentage,
-    colorClass: 'text-red-600',
-    bgClass: 'bg-red-100'
+    colorClass: "text-red-600",
+    bgClass: "bg-red-100",
   };
 };
 

@@ -32,8 +32,8 @@ export default function PlanCard({
 
       try {
         const subData = await getSubscriptionStatus(user.id);
-        if (subData?.status === "active") {
-          setPlan("pro");
+        if (subData?.status === "active" && subData?.plan) {
+          setPlan(subData.plan.toLowerCase());
         } else {
           setPlan("free");
         }
@@ -78,13 +78,23 @@ export default function PlanCard({
   };
 
   const isPro = plan?.toLowerCase() === "pro";
+  const isBusiness = plan?.toLowerCase() === "business";
 
   const proFeatures = [
-    "Advanced SEO analysis",
+    "Suggested fixes (Technical, Content, On-Page)",
+    "Page screenshots",
     "Up to 10 projects",
     "Up to 100 analyses",
     "Team collaboration",
     "PDF exports",
+  ];
+
+  const businessFeatures = [
+    "Everything in Pro",
+    "Image content analysis",
+    "Per-image performance & suggestions",
+    "Up to 50 projects",
+    "Up to 500 analyses",
   ];
 
   return (
@@ -109,25 +119,27 @@ export default function PlanCard({
                 <div>
                   <div className="flex items-center gap-2 mb-2">
                     <h4 className="text-2xl font-bold text-gray-900">
-                      {isPro ? "Pro Plan" : "Free Plan"}
+                      {isBusiness ? "Business Plan" : isPro ? "Pro Plan" : "Free Plan"}
                     </h4>
-                    {isPro && (
+                    {(isPro || isBusiness) && (
                       <span className="bg-blue-100 text-blue-800 text-xs font-semibold px-3 py-1 rounded-full">
                         Active
                       </span>
                     )}
                   </div>
                   <p className="text-gray-600">
-                    {isPro ?
-                      "You have access to all professional features"
-                    : "Upgrade to Pro for advanced features"}
+                    {isBusiness
+                      ? "You have access to all Business features including image analysis"
+                      : isPro
+                        ? "You have access to all Pro features"
+                        : "Upgrade to Pro or Business for more features"}
                   </p>
                 </div>
 
-                {isPro && <Zap className="w-6 h-6 text-yellow-500" />}
+                {(isPro || isBusiness) && <Zap className="w-6 h-6 text-yellow-500" />}
               </div>
 
-              {!isPro && (
+              {!isPro && !isBusiness && (
                 <div className="mb-8">
                   <p className="text-sm text-gray-600 mb-4">Billing Period</p>
                   <div className="flex gap-2 mb-6">
@@ -181,7 +193,7 @@ export default function PlanCard({
                 )}
               </div>
 
-              {!isPro && (
+              {!isPro && !isBusiness && (
                 <div className="mb-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                   <p className="text-sm text-blue-800">
                     <strong>Unlock Pro features</strong> and get advanced SEO
@@ -209,7 +221,7 @@ export default function PlanCard({
                 </div>
               )}
 
-              {!isPro && (
+              {!isPro && !isBusiness && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
                   <div>
                     <p className="text-xs font-semibold text-gray-600 mb-2">
@@ -253,25 +265,25 @@ export default function PlanCard({
 
               <Button
                 onClick={handleUpgrade}
-                disabled={isPro || loading}
+                disabled={isPro || isBusiness || loading}
                 className={`w-full ${
-                  isPro ?
-                    "bg-gray-100 text-gray-600 hover:bg-gray-100 cursor-not-allowed"
-                  : "bg-blue-600 hover:bg-blue-700 text-white"
+                  isPro || isBusiness
+                    ? "bg-gray-100 text-gray-600 hover:bg-gray-100 cursor-not-allowed"
+                    : "bg-blue-600 hover:bg-blue-700 text-white"
                 }`}
               >
-                {isPro ?
-                  "Your active plan"
-                : loading ?
-                  "Processing..."
-                : billingPeriod === "monthly" ?
-                  "Upgrade to Pro - $12/month"
-                : "Upgrade to Pro - $115.2/year"}
+                {isPro || isBusiness
+                  ? "Your active plan"
+                  : loading
+                    ? "Processing..."
+                    : billingPeriod === "monthly"
+                      ? "Upgrade to Pro - $12/month"
+                      : "Upgrade to Pro - $115.2/year"}
               </Button>
             </div>
           </div>
 
-          {isPro && (
+          {(isPro || isBusiness) && (
             <div className="mt-4 p-4 bg-gray-50 rounded-lg">
               <p className="text-sm text-gray-600">
                 Billing is managed through our payment processor. You can manage

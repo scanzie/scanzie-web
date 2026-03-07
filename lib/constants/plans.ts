@@ -15,6 +15,9 @@ export const PLAN_LIMITS = {
     miniWindow: false,
     pdfDownload: false,
     canInvite: false,
+    suggestedFixes: false,
+    pageScreenshot: false,
+    imageAnalysis: false,
   },
   [PLAN_PRO]: {
     maxProjects: 10,
@@ -24,6 +27,9 @@ export const PLAN_LIMITS = {
     miniWindow: true,
     pdfDownload: true,
     canInvite: true,
+    suggestedFixes: true,
+    pageScreenshot: true,
+    imageAnalysis: false,
   },
   [PLAN_BUSINESS]: {
     maxProjects: 50,
@@ -33,6 +39,9 @@ export const PLAN_LIMITS = {
     miniWindow: true,
     pdfDownload: true,
     canInvite: true,
+    suggestedFixes: true,
+    pageScreenshot: true,
+    imageAnalysis: true,
   },
 } as const;
 

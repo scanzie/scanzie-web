@@ -14,27 +14,35 @@ interface PricingProps {
 export default function Pricing({ isAuthenticated, userEmail, userPlan = "free" }: PricingProps) {
   const [isYearly, setIsYearly] = useState(false);
   const [loading, setLoading] = useState<{
-    monthly: boolean;
-    yearly: boolean;
+    proMonthly: boolean;
+    proYearly: boolean;
+    businessMonthly: boolean;
+    businessYearly: boolean;
   }>({
-    monthly: false,
-    yearly: false,
+    proMonthly: false,
+    proYearly: false,
+    businessMonthly: false,
+    businessYearly: false,
   });
 
-  const handleSubscribe = async (plan: "monthly" | "yearly") => {
+  const handleSubscribe = async (
+    targetPlan: "pro" | "business",
+    period: "monthly" | "yearly"
+  ) => {
     if (!isAuthenticated) {
       window.location.href = "/login";
       return;
     }
 
-    setLoading((prev) => ({ ...prev, [plan]: true }));
+    const key = `${targetPlan}${period === "monthly" ? "Monthly" : "Yearly"}` as keyof typeof loading;
+    setLoading((prev) => ({ ...prev, [key]: true }));
     try {
       const res = await fetch("/api/subscribe", {
         method: "POST",
         body: JSON.stringify({
           email: userEmail,
-          plan: "pro", 
-          period: plan,
+          plan: targetPlan,
+          period,
         }),
       });
 
@@ -48,7 +56,7 @@ export default function Pricing({ isAuthenticated, userEmail, userPlan = "free" 
     } catch (error) {
       console.error("Subscription error:", error);
     } finally {
-      setLoading((prev) => ({ ...prev, [plan]: false }));
+      setLoading((prev) => ({ ...prev, [key]: false }));
     }
   };
 
@@ -60,13 +68,28 @@ export default function Pricing({ isAuthenticated, userEmail, userPlan = "free" 
   ];
 
   const proPlanFeatures = [
-    "Advanced SEO analysis (more metrics, screenshots, etc.)",
-    "Can create up to 10 folders/projects.",
-    "Can create up to 100 unique analyses.",
-    "Can invite up to 10 people to a project.",
-    "Mini-window for page navigation.",
-    "Download the analysis result in well formatted PDF.",
+    "Everything in Free",
+    "Suggested fixes for Technical, Content & On-Page analysis",
+    "Page screenshots/snapshots from URL",
+    "Up to 10 folders/projects",
+    "Up to 100 unique analyses",
+    "Invite up to 10 people per project",
+    "Mini-window for page navigation",
+    "Download analysis as PDF",
   ];
+
+  const businessPlanFeatures = [
+    "Everything in Pro",
+    "Image content analysis: performance, size & suggestions",
+    "Per-image feedback (too large, blurry, missing alt, etc.)",
+    "Up to 50 projects",
+    "Up to 500 unique analyses",
+    "Invite up to 50 people per project",
+  ];
+
+  const planNorm = (userPlan ?? "").toLowerCase();
+  const isPro = planNorm === "pro";
+  const isBusiness = planNorm === "business";
 
   return (
     <section className="py-10 px-4 sm:px-6 lg:px-8 bg-gray-50">
@@ -78,46 +101,44 @@ export default function Pricing({ isAuthenticated, userEmail, userPlan = "free" 
           <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
             Choose the perfect plan for your SEO analysis needs
           </p>
-          
+
           <div className="flex justify-center">
             <BillingToggle isYearly={isYearly} onToggle={setIsYearly} />
           </div>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-6 lg:gap-8 max-w-6xl mx-auto">
           {/* Free Plan */}
           <div className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
-            <div className="p-8">
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">
+            <div className="p-6 lg:p-8">
+              <h3 className="text-xl lg:text-2xl font-bold text-gray-900 mb-2">
                 Free Plan
               </h3>
               <p className="text-gray-600 text-sm mb-6">
                 No credit card required
               </p>
 
-              <div className="mb-8 h-20">
-                <div className="text-5xl font-bold text-gray-900">
+              <div className="mb-6 lg:mb-8 h-16">
+                <div className="text-4xl lg:text-5xl font-bold text-gray-900">
                   $0
-                  <span className="text-xl text-gray-600 font-normal">/mo</span>
+                  <span className="text-lg lg:text-xl text-gray-600 font-normal">/mo</span>
                 </div>
               </div>
 
               <Button
-                disabled={!isAuthenticated || userPlan === "free"}
-                className={`w-full mb-8 ${userPlan === "free" ? "bg-gray-100 text-gray-900" : "bg-white text-gray-900 border border-gray-300 hover:bg-gray-50"}`}
-                variant={userPlan === "free" ? "secondary" : "outline"}
+                disabled={!isAuthenticated || planNorm === "free"}
+                className={`w-full mb-6 lg:mb-8 ${planNorm === "free" ? "bg-gray-100 text-gray-900" : "bg-white text-gray-900 border border-gray-300 hover:bg-gray-50"}`}
+                variant={planNorm === "free" ? "secondary" : "outline"}
               >
-                {isAuthenticated ? (userPlan === "free" ? "Current Plan" : "Downgrade to Free") : "Sign up to get started"}
+                {isAuthenticated ? (planNorm === "free" ? "Current Plan" : "Downgrade to Free") : "Sign up to get started"}
               </Button>
 
-              <div className="space-y-4">
-                <p className="text-sm font-semibold text-gray-900 mb-4">
-                  Includes:
-                </p>
+              <div className="space-y-3">
+                <p className="text-sm font-semibold text-gray-900 mb-3">Includes:</p>
                 {freePlanFeatures.map((feature, index) => (
-                  <div key={index} className="flex items-start gap-3">
-                    <Check className="w-5 h-5 text-blue-500 mt-0.5 shrink-0" />
-                    <span className="text-gray-700">{feature}</span>
+                  <div key={index} className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
+                    <span className="text-sm text-gray-700">{feature}</span>
                   </div>
                 ))}
               </div>
@@ -126,47 +147,95 @@ export default function Pricing({ isAuthenticated, userEmail, userPlan = "free" 
 
           {/* Pro Plan */}
           <div className="bg-white rounded-lg border-2 border-blue-500 overflow-hidden hover:shadow-lg transition-shadow relative">
-            <div className="absolute top-0 right-0 bg-blue-500 text-white px-4 py-1 text-sm font-semibold rounded-bl-lg">
+            <div className="absolute top-0 right-0 bg-blue-500 text-white px-3 py-1 text-xs font-semibold rounded-bl-lg">
               Most Popular
             </div>
 
-            <div className="p-8">
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">
+            <div className="p-6 lg:p-8">
+              <h3 className="text-xl lg:text-2xl font-bold text-gray-900 mb-2">
                 Pro Plan
               </h3>
               <p className="text-gray-600 text-sm mb-6">
                 {isYearly ? "Billed annually" : "Billed monthly"}
               </p>
 
-              <div className="mb-8 h-20">
-                <div className="text-5xl font-bold text-gray-900">
+              <div className="mb-6 lg:mb-8 h-16">
+                <div className="text-4xl lg:text-5xl font-bold text-gray-900">
                   ${isYearly ? "9.60" : "12"}
-                  <span className="text-xl text-gray-600 font-normal">/mo</span>
+                  <span className="text-lg lg:text-xl text-gray-600 font-normal">/mo</span>
                 </div>
                 {isYearly && (
-                  <div className="text-sm text-gray-500 mt-1">
-                    $115.20 billed yearly
-                  </div>
+                  <div className="text-xs text-gray-500 mt-1">$115.20 billed yearly</div>
                 )}
               </div>
 
               <Button
-                onClick={() => handleSubscribe(isYearly ? "yearly" : "monthly")}
-                disabled={!isAuthenticated || loading.monthly || loading.yearly || userPlan === "pro"}
-                className={`w-full mb-8 ${userPlan === "pro" ? "bg-gray-100 text-gray-900 hover:bg-gray-200" : "bg-blue-600 hover:bg-blue-700 text-white"}`}
-                variant={userPlan === "pro" ? "secondary" : "default"}
+                onClick={() => handleSubscribe("pro", isYearly ? "yearly" : "monthly")}
+                disabled={!isAuthenticated || loading.proMonthly || loading.proYearly || isPro}
+                className={`w-full mb-6 lg:mb-8 ${isPro ? "bg-gray-100 text-gray-900 hover:bg-gray-200" : "bg-blue-600 hover:bg-blue-700 text-white"}`}
+                variant={isPro ? "secondary" : "default"}
               >
-                {loading.monthly || loading.yearly ? "Processing..." : userPlan === "pro" ? "Current Plan" : "Upgrade to Pro"}
+                {loading.proMonthly || loading.proYearly ? "Processing..." : isPro ? "Current Plan" : "Upgrade to Pro"}
               </Button>
 
-              <div className="space-y-4">
-                <p className="text-sm font-semibold text-gray-900 mb-4">
-                  Includes:
-                </p>
+              <div className="space-y-3">
+                <p className="text-sm font-semibold text-gray-900 mb-3">Includes:</p>
                 {proPlanFeatures.map((feature, index) => (
-                  <div key={index} className="flex items-start gap-3">
-                    <Check className="w-5 h-5 text-blue-500 mt-0.5 shrink-0" />
-                    <span className="text-gray-700">{feature}</span>
+                  <div key={index} className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
+                    <span className="text-sm text-gray-700">{feature}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Business Plan */}
+          <div className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
+            <div className="p-6 lg:p-8">
+              <h3 className="text-xl lg:text-2xl font-bold text-gray-900 mb-2">
+                Business Plan
+              </h3>
+              <p className="text-gray-600 text-sm mb-6">
+                {isYearly ? "Billed annually" : "Billed monthly"}
+              </p>
+
+              <div className="mb-6 lg:mb-8 h-16">
+                <div className="text-4xl lg:text-5xl font-bold text-gray-900">
+                  ${isYearly ? "60" : "75"}
+                  <span className="text-lg lg:text-xl text-gray-600 font-normal">/mo</span>
+                </div>
+                {isYearly && (
+                  <div className="text-xs text-gray-500 mt-1">$720 billed yearly</div>
+                )}
+              </div>
+
+              <Button
+                onClick={() => handleSubscribe("business", isYearly ? "yearly" : "monthly")}
+                disabled={
+                  !isAuthenticated ||
+                  loading.businessMonthly ||
+                  loading.businessYearly ||
+                  isBusiness
+                }
+                className={`w-full mb-6 lg:mb-8 ${
+                  isBusiness ? "bg-gray-100 text-gray-900 hover:bg-gray-200" : "bg-gray-800 hover:bg-gray-900 text-white"
+                }`}
+                variant={isBusiness ? "secondary" : "default"}
+              >
+                {loading.businessMonthly || loading.businessYearly
+                  ? "Processing..."
+                  : isBusiness
+                    ? "Current Plan"
+                    : "Upgrade to Business"}
+              </Button>
+
+              <div className="space-y-3">
+                <p className="text-sm font-semibold text-gray-900 mb-3">Includes:</p>
+                {businessPlanFeatures.map((feature, index) => (
+                  <div key={index} className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-gray-700 mt-0.5 shrink-0" />
+                    <span className="text-sm text-gray-700">{feature}</span>
                   </div>
                 ))}
               </div>

@@ -39,21 +39,25 @@ import DeleteDialog from "../dialogs/DeleteDialog";
 import { formatUrl } from "@/utils/general";
 import ScoreCard from "../cards/ScoreCard";
 import IssuesList from "../cards/IssuesList";
+import SuggestedFixesList from "../cards/SuggestedFixesList";
 import MetricCard from "../cards/MetricCard";
 import KeywordDensityChart from "../cards/KeywordDensityChart";
 import ShareScanzie from "../dialogs/ShareScanzie";
 import OGSocialPreview from "./OgSocialPreview";
+import { usePlan } from "@/hooks/usePlan";
 
 interface PageSpeedResult {
   loadTime: number;
   score: number;
   recommendations: string[];
+  suggestedFixes?: string[];
 }
 
 interface MobileResult {
   responsive: boolean;
   score: number;
   issues: string[];
+  suggestedFixes?: string[];
 }
 
 interface SSLResult {
@@ -116,22 +120,25 @@ export interface ContentAnalysis {
   contentQuality: ContentQuality;
   score: number;
   issues: string[];
+  suggestedFixes?: string[];
 }
 
 interface TitleResult {
   exists: boolean;
   length: number;
-  text: string;
+  text?: string;
   score: number;
   issues: string[];
+  suggestedFixes?: string[];
 }
 
 interface MetaDescriptionResult {
   exists: boolean;
   length: number;
-  text: string;
+  text?: string;
   score: number;
   issues: string[];
+  suggestedFixes?: string[];
 }
 
 interface HeadingsResult {
@@ -155,6 +162,7 @@ interface LinksResult {
   broken: number;
   score: number;
   issues: string[];
+  suggestedFixes?: string[];
 }
 
 interface FaviconResult {
@@ -174,8 +182,9 @@ interface OpenGraph {
   imageHeight?: number;
   imageAlt?: string;
   locale?: string;
-  score: number;
-  issues: string[];
+  score?: number;
+  issues?: string[];
+  suggestedFixes?: string[];
 }
 
 interface TwitterCard {
@@ -186,8 +195,9 @@ interface TwitterCard {
   imageAlt?: string;
   site?: string;
   creator?: string;
-  score: number;
-  issues: string[];
+  score?: number;
+  issues?: string[];
+  suggestedFixes?: string[];
 }
 
 export interface OnPageAnalysis {
@@ -237,7 +247,11 @@ const SEOAnalysisDashboard: React.FC<SEOAnalysisProps> = ({
   results,
 }: SEOAnalysisProps) => {
   const { technical, content, on_page, id } = results;
+  const { limits } = usePlan();
   const overallScore = calculateOverallScore(results);
+  const showSuggestedFixes = limits?.suggestedFixes === true;
+  const showPageScreenshot = limits?.pageScreenshot === true;
+  const showImageAnalysis = limits?.imageAnalysis === true;
 
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
@@ -578,8 +592,14 @@ const SEOAnalysisDashboard: React.FC<SEOAnalysisProps> = ({
             {content?.issues?.length > 0 && (
               <IssuesList
                 title="Content Issues"
-                issues={content?.issues}
+                issues={content?.issues ?? []}
                 type="warning"
+              />
+            )}
+            {showSuggestedFixes && content?.suggestedFixes && content.suggestedFixes.length > 0 && (
+              <SuggestedFixesList
+                title="Content suggested fixes"
+                fixes={content.suggestedFixes}
               />
             )}
           </div>
@@ -652,12 +672,12 @@ const SEOAnalysisDashboard: React.FC<SEOAnalysisProps> = ({
                     <span className="text-gray-600">Images without Alt</span>
                     <span
                       className={`font-medium ${
-                        on_page?.images?.withoutAlt > 0 ?
-                          "text-red-600"
-                        : "text-green-600"
+                        Number(on_page?.images?.withoutAlt ?? 0) > 0
+                          ? "text-red-600"
+                          : "text-green-600"
                       }`}
                     >
-                      {on_page?.images?.withoutAlt}
+                      {on_page?.images?.withoutAlt ?? 0}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
@@ -677,6 +697,21 @@ const SEOAnalysisDashboard: React.FC<SEOAnalysisProps> = ({
             </div>
 
             <OGSocialPreview on_page={on_page} pageUrl={results.url} />
+
+            {/* Page screenshot (Pro+) */}
+            {showPageScreenshot && on_page?.pageScreenshot && (
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-3">Page snapshot</h3>
+                <div className="rounded-xl border border-gray-200 overflow-hidden bg-white">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={on_page.pageScreenshot}
+                    alt="Page snapshot"
+                    className="w-full h-auto max-h-[500px] object-contain"
+                  />
+                </div>
+              </div>
+            )}
 
             {/* On-page Issues */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -718,11 +753,122 @@ const SEOAnalysisDashboard: React.FC<SEOAnalysisProps> = ({
               {on_page?.openGraph?.issues?.length > 0 && (
                 <IssuesList
                   title="Open Graph Issues"
-                  issues={on_page?.openGraph?.issues}
+                  issues={on_page?.openGraph?.issues ?? []}
                   type="warning"
                 />
               )}
             </div>
+
+            {/* On-page suggested fixes (Pro+) */}
+            {showSuggestedFixes && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                {on_page?.title?.suggestedFixes?.length > 0 && (
+                  <SuggestedFixesList title="Title suggested fixes" fixes={on_page.title.suggestedFixes} />
+                )}
+                {on_page?.metaDescription?.suggestedFixes?.length > 0 && (
+                  <SuggestedFixesList title="Meta description suggested fixes" fixes={on_page.metaDescription.suggestedFixes} />
+                )}
+                {on_page?.headings?.suggestedFixes?.length > 0 && (
+                  <SuggestedFixesList title="Headings suggested fixes" fixes={on_page.headings.suggestedFixes} />
+                )}
+                {on_page?.images?.suggestedFixes?.length > 0 && (
+                  <SuggestedFixesList title="Images suggested fixes" fixes={on_page.images.suggestedFixes} />
+                )}
+                {on_page?.links?.suggestedFixes?.length > 0 && (
+                  <SuggestedFixesList title="Links suggested fixes" fixes={on_page.links.suggestedFixes} />
+                )}
+                {on_page?.favicon?.suggestedFixes?.length > 0 && (
+                  <SuggestedFixesList title="Favicon suggested fixes" fixes={on_page.favicon.suggestedFixes} />
+                )}
+                {on_page?.openGraph?.suggestedFixes?.length > 0 && (
+                  <SuggestedFixesList title="Open Graph suggested fixes" fixes={on_page.openGraph.suggestedFixes} />
+                )}
+                {on_page?.twitterCard?.suggestedFixes?.length > 0 && (
+                  <SuggestedFixesList title="Twitter Card suggested fixes" fixes={on_page.twitterCard.suggestedFixes} />
+                )}
+              </div>
+            )}
+
+            {/* Image content analysis (Business) */}
+            {showImageAnalysis && on_page?.images?.imageAnalysis && Array.isArray(on_page.images.imageAnalysis) && on_page.images.imageAnalysis.length > 0 && (
+              <div className="mt-8">
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">Image content analysis</h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  How each image performs: size, dimensions, and suggestions for improvement.
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {on_page.images.imageAnalysis.map((img, idx) => (
+                    <div
+                      key={idx}
+                      className="rounded-xl border border-gray-200 overflow-hidden bg-white hover:shadow-md transition-shadow"
+                    >
+                      <div className="aspect-video bg-gray-100 relative">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={img.src}
+                          alt={img.alt ?? "Page image"}
+                          className="w-full h-full object-contain"
+                          loading="lazy"
+                          onError={(e) => {
+                            const t = e.target as HTMLImageElement;
+                            if (t) t.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='150' viewBox='0 0 200 150'%3E%3Crect fill='%23f3f4f6' width='200' height='150'/%3E%3Ctext fill='%239ca3af' x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-size='14'%3EImage unavailable%3C/text%3E%3C/svg%3E";
+                          }}
+                        />
+                        <span
+                          className={`absolute top-2 right-2 px-2 py-0.5 rounded text-xs font-medium ${
+                            (typeof img.score === "number" && img.score >= 70)
+                              ? "bg-green-100 text-green-700"
+                              : (typeof img.score === "number" && img.score >= 40)
+                                ? "bg-yellow-100 text-yellow-700"
+                                : "bg-red-100 text-red-700"
+                          }`}
+                        >
+                          {typeof img.score === "number" ? img.score : "—"}/100
+                        </span>
+                      </div>
+                      <div className="p-3">
+                        {img.byteSize != null && (
+                          <p className="text-xs text-gray-500 mb-1">
+                            Size: {img.byteSize >= 1024 * 1024 ? `${(img.byteSize / (1024 * 1024)).toFixed(1)} MB` : img.byteSize >= 1024 ? `${(img.byteSize / 1024).toFixed(1)} KB` : `${img.byteSize} B`}
+                          </p>
+                        )}
+                        {(img.width != null || img.height != null) && (
+                          <p className="text-xs text-gray-500 mb-2">
+                            Dimensions: {img.width ?? "—"}×{img.height ?? "—"}
+                          </p>
+                        )}
+                        {img.issues?.length > 0 && (
+                          <ul className="text-xs text-amber-700 space-y-0.5 mb-2">
+                            {img.issues.map((issue, i) => (
+                              <li key={i}>{issue}</li>
+                            ))}
+                          </ul>
+                        )}
+                        {img.suggestedFixes?.length > 0 && (
+                          <ul className="text-xs text-emerald-700 space-y-0.5">
+                            {img.suggestedFixes.map((fix, i) => (
+                              <li key={i}>• {fix}</li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {showImageAnalysis && (!on_page?.images?.imageAnalysis || on_page.images.imageAnalysis.length === 0) && (
+              <div className="mt-6 p-4 bg-gray-50 rounded-xl border border-gray-200">
+                <p className="text-sm text-gray-600">
+                  Image content analysis is available on the Business plan.{" "}
+                  <Link href="/upgrade" className="text-blue-600 hover:underline font-medium">
+                    Upgrade to Business
+                  </Link>{" "}
+                  to see per-image performance, size, and suggestions.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </main>
