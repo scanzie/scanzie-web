@@ -22,7 +22,10 @@ export default function GlobalError({
 }) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-background text-foreground antialiased">
+      <body
+        className="min-h-screen bg-background text-foreground antialiased"
+        style={{ fontFamily: "Geom" }}
+      >
         <main className="relative flex min-h-screen items-center justify-center overflow-hidden px-6 py-12">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(59,130,246,0.14),transparent_45%)]" />
 
