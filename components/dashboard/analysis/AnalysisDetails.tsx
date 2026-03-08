@@ -147,6 +147,7 @@ interface HeadingsResult {
   structure: string[];
   score: number;
   issues: string[];
+  suggestedFixes: string[];
 }
 
 interface ImagesResult {
@@ -154,6 +155,8 @@ interface ImagesResult {
   withoutAlt: number;
   score: number;
   issues: string[];
+  suggestedFixes: string[]
+  imageAnalysis: Array<T>;
 }
 
 interface LinksResult {
@@ -170,6 +173,8 @@ interface FaviconResult {
   score: number;
   issues: string[];
   url: string;
+  suggestedFixes: string[]
+
 }
 interface OpenGraph {
   title?: string;
@@ -210,6 +215,7 @@ export interface OnPageAnalysis {
   openGraph: OpenGraph;
   twitterCard: TwitterCard;
   score?: number;
+  pageScreenshot?: string;
 }
 
 export interface SEOAnalysisResult {
@@ -259,10 +265,8 @@ const SEOAnalysisDashboard: React.FC<SEOAnalysisProps> = ({
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
-  // router
   const router = useRouter();
 
-  // These will come back from API response
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
 
@@ -324,7 +328,7 @@ const SEOAnalysisDashboard: React.FC<SEOAnalysisProps> = ({
               : <Globe className="w-10 h-10 text-gray-700" />}
               <div>
                 <h1 className="text-xl md:text-2xl font-bold text-gray-900 ">
-                  {on_page?.title?.text.length > 25 ?
+                  {on_page.title.text && on_page?.title?.text.length > 25 ?
                     `${on_page?.title?.text.substring(0, 25)}...`
                   : on_page?.title?.text || "Untitled"}{" "}
                 </h1>
@@ -743,14 +747,14 @@ const SEOAnalysisDashboard: React.FC<SEOAnalysisProps> = ({
                   type="info"
                 />
               )}
-              {on_page?.twitterCard?.issues?.length > 0 && (
+              {on_page.twitterCard.issues && on_page?.twitterCard?.issues?.length > 0 && (
                 <IssuesList
                   title="Twitter Card Issues"
                   issues={on_page?.twitterCard?.issues}
                   type="warning"
                 />
               )}
-              {on_page?.openGraph?.issues?.length > 0 && (
+              {on_page.openGraph.issues && on_page?.openGraph?.issues?.length > 0 && (
                 <IssuesList
                   title="Open Graph Issues"
                   issues={on_page?.openGraph?.issues ?? []}
@@ -762,28 +766,28 @@ const SEOAnalysisDashboard: React.FC<SEOAnalysisProps> = ({
             {/* On-page suggested fixes (Pro+) */}
             {showSuggestedFixes && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                {on_page?.title?.suggestedFixes?.length > 0 && (
+                {on_page.title.suggestedFixes && on_page?.title?.suggestedFixes?.length > 0 && (
                   <SuggestedFixesList title="Title suggested fixes" fixes={on_page.title.suggestedFixes} />
                 )}
-                {on_page?.metaDescription?.suggestedFixes?.length > 0 && (
+                {on_page.metaDescription.suggestedFixes && on_page?.metaDescription?.suggestedFixes?.length > 0 && (
                   <SuggestedFixesList title="Meta description suggested fixes" fixes={on_page.metaDescription.suggestedFixes} />
                 )}
-                {on_page?.headings?.suggestedFixes?.length > 0 && (
+                {on_page.headings.suggestedFixes && on_page?.headings?.suggestedFixes?.length > 0 && (
                   <SuggestedFixesList title="Headings suggested fixes" fixes={on_page.headings.suggestedFixes} />
                 )}
-                {on_page?.images?.suggestedFixes?.length > 0 && (
+                {on_page.images.suggestedFixes && on_page?.images?.suggestedFixes?.length > 0 && (
                   <SuggestedFixesList title="Images suggested fixes" fixes={on_page.images.suggestedFixes} />
                 )}
-                {on_page?.links?.suggestedFixes?.length > 0 && (
+                {on_page.links.suggestedFixes && on_page?.links?.suggestedFixes?.length > 0 && (
                   <SuggestedFixesList title="Links suggested fixes" fixes={on_page.links.suggestedFixes} />
                 )}
-                {on_page?.favicon?.suggestedFixes?.length > 0 && (
+                {on_page.favicon.suggestedFixes && on_page?.favicon?.suggestedFixes?.length > 0 && (
                   <SuggestedFixesList title="Favicon suggested fixes" fixes={on_page.favicon.suggestedFixes} />
                 )}
-                {on_page?.openGraph?.suggestedFixes?.length > 0 && (
+                {on_page.openGraph.suggestedFixes && on_page?.openGraph?.suggestedFixes?.length > 0 && (
                   <SuggestedFixesList title="Open Graph suggested fixes" fixes={on_page.openGraph.suggestedFixes} />
                 )}
-                {on_page?.twitterCard?.suggestedFixes?.length > 0 && (
+                {on_page.twitterCard.suggestedFixes && on_page?.twitterCard?.suggestedFixes?.length > 0 && (
                   <SuggestedFixesList title="Twitter Card suggested fixes" fixes={on_page.twitterCard.suggestedFixes} />
                 )}
               </div>
@@ -839,14 +843,14 @@ const SEOAnalysisDashboard: React.FC<SEOAnalysisProps> = ({
                         )}
                         {img.issues?.length > 0 && (
                           <ul className="text-xs text-amber-700 space-y-0.5 mb-2">
-                            {img.issues.map((issue, i) => (
+                            {img.issues.map((issue: string, i: number) => (
                               <li key={i}>{issue}</li>
                             ))}
                           </ul>
                         )}
                         {img.suggestedFixes?.length > 0 && (
                           <ul className="text-xs text-emerald-700 space-y-0.5">
-                            {img.suggestedFixes.map((fix, i) => (
+                            {img.suggestedFixes.map((fix: string, i: number) => (
                               <li key={i}>• {fix}</li>
                             ))}
                           </ul>
@@ -858,7 +862,7 @@ const SEOAnalysisDashboard: React.FC<SEOAnalysisProps> = ({
               </div>
             )}
 
-            {showImageAnalysis && (!on_page?.images?.imageAnalysis || on_page.images.imageAnalysis.length === 0) && (
+            {showImageAnalysis && (!on_page?.images?.imageAnalysis || on_page.images.imageAnalysis?.length === 0) && (
               <div className="mt-6 p-4 bg-gray-50 rounded-xl border border-gray-200">
                 <p className="text-sm text-gray-600">
                   Image content analysis is available on the Business plan.{" "}
