@@ -1,45 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { X, RocketIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { getSubscriptionStatus } from "@/lib/actions/subscription";
-import { authClient } from "@/lib/auth/client";
 import Link from "next/link";
+import { usePlan } from "@/hooks/usePlan";
 
 export default function UpgradeBanner() {
-  const [isVisible, setIsVisible] = useState(false);
-  const [isPro, setIsPro] = useState(false);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const checkSubscription = async () => {
-      try {
-        const { data: session } = await authClient.getSession();
-
-        if (!session?.user?.id) {
-          setLoading(false);
-          return;
-        }
-
-        const subData = await getSubscriptionStatus(session.user.id);
-
-        if (subData?.status === "active") {
-          setIsPro(true);
-        } else {
-          setIsPro(false);
-          setIsVisible(true);
-        }
-      } catch (error) {
-        console.error("Error checking subscription:", error);
-        setIsVisible(true); 
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    checkSubscription();
-  }, []);
+  const [isVisible, setIsVisible] = useState(true);
+  const { loading, isPro, limits, usage } = usePlan();
 
   if (loading || isPro || !isVisible) {
     return null;
@@ -56,9 +25,22 @@ export default function UpgradeBanner() {
                 Unlock Pro Features Now
               </p>
               <p className="text-blue-100 text-xs sm:text-sm hidden sm:block">
-                Get advanced analytics, unlimited analyses, team collaboration,
-                and PDF exports
+                Get advanced analytics, higher analysis limits, team
+                collaboration, and PDF exports.
               </p>
+              {usage && (
+                <p className="text-blue-100 text-[11px] sm:text-xs mt-1">
+                  You&apos;re currently using{" "}
+                  <span className="font-semibold">
+                    {usage.projects}/{limits.maxProjects}
+                  </span>{" "}
+                  projects and{" "}
+                  <span className="font-semibold">
+                    {usage.analyses}/{limits.maxAnalyses}
+                  </span>{" "}
+                  analyses on your current plan.
+                </p>
+              )}
             </div>
           </div>
 

@@ -12,7 +12,7 @@ import { getSubscriptionStatus } from "@/lib/actions/subscription";
 export default function UpgradePage() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
-  const [userPlan, setUserPlan] = useState<"free" | "pro">("free");
+  const [userPlan, setUserPlan] = useState<string>("free");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -21,14 +21,17 @@ export default function UpgradePage() {
         const { data: sessionData } = await authClient.getSession();
         if (sessionData?.user) {
           setUser(sessionData.user);
-          
+
           try {
             const subData = await getSubscriptionStatus(sessionData.user.id);
-            if (subData?.status === "active") {
-              setUserPlan("pro");
+            if (subData?.status === "active" && subData?.plan) {
+              setUserPlan(subData.plan.toLowerCase());
+            } else {
+              setUserPlan("free");
             }
           } catch (e) {
             console.error("Failed to fetch subscription:", e);
+            setUserPlan("free");
           }
         } else {
           router.push("/login");

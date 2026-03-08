@@ -7,7 +7,6 @@ const apiClient = axios.create({
   },
 })
 
-// Before every request, grab the latest session and attach user ID
 apiClient.interceptors.request.use(
   async (config) => {
     try {

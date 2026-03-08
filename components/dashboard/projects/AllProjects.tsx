@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { formatDate } from "@/utils/general";
+import { usePlan } from "@/hooks/usePlan";
 
 interface ProjectCardProps {
   id: string;
@@ -83,6 +84,13 @@ interface AllProjectsProps {
 }
 
 const AllProjects: React.FC<AllProjectsProps> = ({ projects }) => {
+  const { loading: planLoading, limits, usage } = usePlan();
+
+  const projectsUsed = usage?.projects ?? projects.length;
+  const projectLimit = limits.maxProjects;
+  const atProjectLimit =
+    !planLoading && Number.isFinite(projectLimit) && projectsUsed >= projectLimit;
+
   return (
     <div className="w-full mx-auto bg-gray-50">
       {/* Header */}
@@ -96,7 +104,10 @@ const AllProjects: React.FC<AllProjectsProps> = ({ projects }) => {
                   Organize your SEO analyses into projects
                 </p>
               </div>
-              <Button className="hidden md:flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors duration-200">
+              <Button
+                className="hidden md:flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
+                disabled={atProjectLimit}
+              >
                 <Plus className="w-5 h-5" />
                 <span>New Project</span>
               </Button>
@@ -137,7 +148,10 @@ const AllProjects: React.FC<AllProjectsProps> = ({ projects }) => {
                 Create your first project to organize your SEO analyses and keep
                 everything in one place.
               </p>
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors duration-200">
+              <Button
+                className="bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
+                disabled={atProjectLimit}
+              >
                 <Plus className="w-5 h-5 mr-2" />
                 Create New Project
               </Button>

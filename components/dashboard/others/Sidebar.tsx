@@ -19,6 +19,7 @@ import { User } from "better-auth"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import Image from "next/image"
 import { getInitials } from "@/utils/profile"
+import { usePlan } from "@/hooks/usePlan"
 
 // Updated menu items to match the SEO analytics theme
 const dashboardMenus = [
@@ -47,6 +48,7 @@ const dashboardMenus = [
 export function AppSidebar() {
   const pathname = usePathname()
   const [user, setUser] = useState<User>()
+  const { label: planLabel, isFreePlan } = usePlan()
 
   useEffect(() => {
     const fetchSession = async () => {
@@ -153,12 +155,14 @@ export function AppSidebar() {
                 </Link>
                 <div className="flex items-center w-full mt-0.5">
                   <p className="text-xs text-gray-500 flex items-center shrink-0">
-                    Free Plan
+                    {planLabel} Plan
                   </p>
-                  <Link 
-                    href="/upgrade" className="ml-2 px-2 py-0.5 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-full text-[10px] font-medium transition-colors">
-                    Upgrade
-                  </Link>
+                  {isFreePlan && (
+                    <Link 
+                      href="/upgrade" className="ml-2 px-2 py-0.5 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-full text-[10px] font-medium transition-colors">
+                      Upgrade
+                    </Link>
+                  )}
                 </div>
               </div>
             
