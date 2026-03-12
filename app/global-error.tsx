@@ -31,7 +31,7 @@ export default function GlobalError({
 
           <Card className="relative z-10 w-full max-w-xl border-border/60 bg-card/95 backdrop-blur-sm">
             <CardHeader className="items-center text-center">
-              <div className="mb-2 flex h-14 w-14 items-center justify-center rounded-2xl bg-destructive/10 text-destructive">
+              <div className="mb-2 mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-destructive/10 text-destructive">
                 <AlertTriangle className="h-7 w-7" />
               </div>
               <CardTitle className="text-2xl sm:text-3xl">
