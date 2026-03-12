@@ -11,6 +11,8 @@ import {
   ArrowLeft,
   Trash,
   Share2,
+  Laptop,
+  Download,
 } from "lucide-react";
 import { SidebarTrigger } from "../../ui/sidebar";
 import { toast } from "sonner";
@@ -156,7 +158,16 @@ interface ImagesResult {
   score: number;
   issues: string[];
   suggestedFixes: string[]
-  imageAnalysis: Array<T>;
+  imageAnalysis?: Array<{
+    src: string;
+    alt: string | null;
+    width: number | null;
+    height: number | null;
+    byteSize: number | null;
+    score: number;
+    issues: string[];
+    suggestedFixes: string[];
+  }>;
 }
 
 interface LinksResult {
@@ -258,9 +269,12 @@ const SEOAnalysisDashboard: React.FC<SEOAnalysisProps> = ({
   const showSuggestedFixes = limits?.suggestedFixes === true;
   const showPageScreenshot = limits?.pageScreenshot === true;
   const showImageAnalysis = limits?.imageAnalysis === true;
+  const canMiniWindow = limits?.miniWindow === true;
+  const canPdfDownload = limits?.pdfDownload === true;
 
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
   const [shareScanzie, setShareScanzie] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -269,6 +283,29 @@ const SEOAnalysisDashboard: React.FC<SEOAnalysisProps> = ({
 
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
+
+  const previewUrl = (() => {
+    try {
+      if (!results?.url) return null;
+      return new URL(results.url).toString();
+    } catch {
+      return null;
+    }
+  })();
+
+  const handlePdfDownload = () => {
+    if (!results?.url) return;
+    try {
+      const encoded = encodeURIComponent(results.url);
+      window.open(
+        `/dashboard/analysis/${encoded}/pdf`,
+        "_blank",
+        "noopener,noreferrer",
+      );
+    } catch {
+      toast("Unable to start PDF download");
+    }
+  };
 
   const handleReanalyze = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -317,15 +354,31 @@ const SEOAnalysisDashboard: React.FC<SEOAnalysisProps> = ({
           {/* Header */}
           <div className="flex justify-between items-center bg-white border-b border-gray-100 p-6">
             <div className="flex items-center gap-3">
-              {results.on_page.favicon ?
+              {(() => {
+                const raw = results?.on_page?.favicon?.url ?? null;
+                const canRender =
+                  typeof raw === "string" &&
+                  raw.length > 0 &&
+                  results?.on_page?.favicon?.exists === true;
+
+                if (!canRender) return null;
+
+                try {
+                  return new URL(raw).toString();
+                } catch {
+                  return null;
+                }
+              })() ? (
                 <Image
-                  src={`${new URL(results.on_page.favicon.url)}`}
+                  src={new URL(results.on_page.favicon.url).toString()}
                   alt="Favicon"
                   width={32}
                   height={32}
                   className="w-12 h-12"
                 />
-              : <Globe className="w-10 h-10 text-gray-700" />}
+              ) : (
+                <Globe className="w-10 h-10 text-gray-700" />
+              )}
               <div>
                 <h1 className="text-xl md:text-2xl font-bold text-gray-900 ">
                   {on_page.title.text && on_page?.title?.text.length > 25 ?
@@ -351,6 +404,26 @@ const SEOAnalysisDashboard: React.FC<SEOAnalysisProps> = ({
             </div>
             <div>
               <div className="flex items-center pr-2">
+                {canMiniWindow && previewUrl && (
+                  <div
+                    onClick={() => setPreviewOpen(true)}
+                    className="p-3 rounded-xl hover:bg-gray-100 cursor-pointer hover:text-blue-600 flex items-center gap-2"
+                    title="Mini preview"
+                    aria-label="Open mini preview"
+                  >
+                    <Laptop />
+                  </div>
+                )}
+                {canPdfDownload && (
+                  <div
+                    onClick={handlePdfDownload}
+                    className="p-3 rounded-xl hover:bg-gray-100 cursor-pointer hover:text-blue-600 flex items-center gap-2"
+                    title="Download PDF"
+                    aria-label="Download PDF"
+                  >
+                    <Download />
+                  </div>
+                )}
                 <div
                   onClick={() => setShareScanzie(true)}
                   className="p-3 rounded-xl hover:bg-gray-100 cursor-pointer hover:text-blue-600 flex items-center gap-2"
@@ -903,6 +976,54 @@ const SEOAnalysisDashboard: React.FC<SEOAnalysisProps> = ({
               </p>
             </div>
           }
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={previewOpen} onOpenChange={setPreviewOpen}>
+        <AlertDialogContent className="max-w-5xl p-0 overflow-hidden">
+          <AlertDialogHeader className="p-5 pb-3">
+            <AlertDialogTitle className="flex items-center justify-between">
+              <span className="text-base font-semibold text-gray-900">
+                Mini preview
+              </span>
+              <XIcon
+                onClick={() => setPreviewOpen(false)}
+                className="h-9 w-9 p-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-full cursor-pointer"
+              />
+            </AlertDialogTitle>
+          </AlertDialogHeader>
+
+          <div className="px-5 pb-5">
+            <div className="rounded-2xl border bg-white shadow-sm overflow-hidden">
+              <div className="flex items-center gap-2 px-4 py-3 border-b bg-gray-50">
+                <span className="h-2.5 w-2.5 rounded-full bg-red-400" />
+                <span className="h-2.5 w-2.5 rounded-full bg-yellow-400" />
+                <span className="h-2.5 w-2.5 rounded-full bg-green-400" />
+                <span className="ml-3 text-xs text-gray-600 truncate">
+                  {previewUrl ?? results?.url ?? ""}
+                </span>
+              </div>
+
+              {previewUrl ? (
+                <iframe
+                  src={previewUrl}
+                  title="Website preview"
+                  className="w-full bg-white"
+                  style={{ height: 720 }}
+                  loading="lazy"
+                  referrerPolicy="no-referrer"
+                />
+              ) : (
+                <div className="p-10 text-sm text-gray-600">
+                  Unable to preview this URL.
+                </div>
+              )}
+            </div>
+            <p className="mt-3 text-xs text-gray-500">
+              Some sites block previews (X-Frame-Options / CSP). If the preview
+              is blank, open the URL directly in a new tab.
+            </p>
+          </div>
         </AlertDialogContent>
       </AlertDialog>
       <ShareScanzie open={shareScanzie} onOpenChange={setShareScanzie} />

@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useMemo, useState, useTransition } from "react";
 import {
   FolderPlus,
   FolderOpen,
@@ -12,6 +13,10 @@ import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { formatDate } from "@/utils/general";
 import { usePlan } from "@/hooks/usePlan";
+import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
+import { createProject } from "@/lib/actions/projects";
 
 interface ProjectCardProps {
   id: string;
@@ -85,11 +90,41 @@ interface AllProjectsProps {
 
 const AllProjects: React.FC<AllProjectsProps> = ({ projects }) => {
   const { loading: planLoading, limits, usage } = usePlan();
+  const router = useRouter();
+  const [createOpen, setCreateOpen] = useState(false);
+  const [projectName, setProjectName] = useState("");
+  const [isPending, startTransition] = useTransition();
 
   const projectsUsed = usage?.projects ?? projects.length;
   const projectLimit = limits.maxProjects;
   const atProjectLimit =
     !planLoading && Number.isFinite(projectLimit) && projectsUsed >= projectLimit;
+
+  const remainingLabel = useMemo(() => {
+    if (planLoading || !Number.isFinite(projectLimit)) return null;
+    const remaining = Math.max(0, projectLimit - projectsUsed);
+    return `${projectsUsed}/${projectLimit} projects used (${remaining} left)`;
+  }, [planLoading, projectLimit, projectsUsed]);
+
+  const handleCreate = () => {
+    if (atProjectLimit) {
+      toast("Project limit reached. Upgrade to create more projects.");
+      return;
+    }
+
+    const name = projectName.trim();
+    startTransition(async () => {
+      const res = await createProject(name);
+      if (!res.ok) {
+        toast(res.message ?? "Failed to create project");
+        return;
+      }
+
+      setCreateOpen(false);
+      setProjectName("");
+      router.refresh();
+    });
+  };
 
   return (
     <div className="w-full mx-auto bg-gray-50">
@@ -107,12 +142,16 @@ const AllProjects: React.FC<AllProjectsProps> = ({ projects }) => {
               <Button
                 className="hidden md:flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
                 disabled={atProjectLimit}
+                onClick={() => setCreateOpen(true)}
               >
                 <Plus className="w-5 h-5" />
                 <span>New Project</span>
               </Button>
               <SidebarTrigger className="bg-blue-50 p-3 rounded-md md:hidden" />
             </div>
+            {remainingLabel && (
+              <p className="text-xs text-gray-500 mt-2">{remainingLabel}</p>
+            )}
           </div>
         </main>
       </div>
@@ -151,6 +190,7 @@ const AllProjects: React.FC<AllProjectsProps> = ({ projects }) => {
               <Button
                 className="bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
                 disabled={atProjectLimit}
+                onClick={() => setCreateOpen(true)}
               >
                 <Plus className="w-5 h-5 mr-2" />
                 Create New Project
@@ -159,6 +199,55 @@ const AllProjects: React.FC<AllProjectsProps> = ({ projects }) => {
           }
         </div>
       </main>
+
+      <AlertDialog open={createOpen} onOpenChange={setCreateOpen}>
+        <AlertDialogContent className="max-w-lg">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center justify-between">
+              <span>Create a new project</span>
+              {remainingLabel && (
+                <span className="text-xs font-normal text-gray-500">
+                  {remainingLabel}
+                </span>
+              )}
+            </AlertDialogTitle>
+          </AlertDialogHeader>
+
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm text-gray-700">Project name</label>
+              <Input
+                value={projectName}
+                onChange={(e) => setProjectName(e.target.value)}
+                placeholder="e.g. My SaaS Landing Page"
+                className="h-11 rounded-2xl"
+                autoFocus
+              />
+              <p className="text-xs text-gray-500">
+                Tip: you can create multiple projects with the same name.
+              </p>
+            </div>
+
+            <div className="flex items-center justify-end gap-2">
+              <Button
+                variant="outline"
+                className="rounded-2xl"
+                onClick={() => setCreateOpen(false)}
+                disabled={isPending}
+              >
+                Cancel
+              </Button>
+              <Button
+                className="rounded-2xl"
+                onClick={handleCreate}
+                disabled={isPending || !projectName.trim() || atProjectLimit}
+              >
+                {isPending ? "Creating…" : "Create project"}
+              </Button>
+            </div>
+          </div>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

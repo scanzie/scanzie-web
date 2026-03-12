@@ -148,6 +148,30 @@ export const project_members = pgTable(
   }),
 );
 
+export const project_invite = pgTable("project_invite", {
+  id: uuid("id").defaultRandom().primaryKey(),
+
+  projectId: uuid("projectId")
+    .notNull()
+    .references(() => project.id, { onDelete: "cascade" }),
+
+  inviterUserId: varchar("inviterUserId", { length: 255 })
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+
+  email: varchar("email", { length: 255 }).notNull(),
+
+  token: varchar("token", { length: 255 }).notNull().unique(),
+
+  status: varchar("status", { length: 30 }).default("pending").notNull(),
+
+  acceptedAt: timestamp("acceptedAt", { withTimezone: true }),
+
+  createdAt: timestamp("createdAt", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+});
+
 export const subscription = pgTable("subscription", {
   id: uuid("id").defaultRandom().primaryKey(),
 
@@ -186,6 +210,8 @@ export const projectRelations = relations(project, ({ one, many }) => ({
   analyses: many(seo_analysis),
 
   members: many(project_members),
+
+  invites: many(project_invite),
 }));
 
 export const userRelations = relations(user, ({ many }) => ({
@@ -197,6 +223,8 @@ export const userRelations = relations(user, ({ many }) => ({
   createdSeoAnalyses: many(seo_analysis),
 
   projectMemberships: many(project_members),
+
+  projectInvitesSent: many(project_invite),
 
   subscriptions: many(subscription),
 }));
@@ -242,6 +270,18 @@ export const projectMembersRelations = relations(
   }),
 );
 
+export const projectInviteRelations = relations(project_invite, ({ one }) => ({
+  inviter: one(user, {
+    fields: [project_invite.inviterUserId],
+    references: [user.id],
+  }),
+
+  project: one(project, {
+    fields: [project_invite.projectId],
+    references: [project.id],
+  }),
+}));
+
 export const subscriptionRelations = relations(subscription, ({ one }) => ({
   user: one(user, {
     fields: [subscription.userId],
@@ -267,6 +307,9 @@ export type NewSeoAnalysis = typeof seo_analysis.$inferInsert;
 
 export type ProjectMember = typeof project_members.$inferSelect;
 export type NewProjectMember = typeof project_members.$inferInsert;
+
+export type ProjectInvite = typeof project_invite.$inferSelect;
+export type NewProjectInvite = typeof project_invite.$inferInsert;
 
 export type Subscription = typeof subscription.$inferSelect;
 export type NewSubscription = typeof subscription.$inferInsert;
