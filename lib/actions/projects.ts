@@ -117,6 +117,10 @@ export type ProjectPageData = {
     id: string;
     title: string;
     url: string;
+    on_page: null | {
+      title?: { text?: string | null } | null;
+      favicon?: { url?: string | null; exists?: boolean | null } | null;
+    };
     updatedAt: Date;
   }>;
   isOwner: boolean;
@@ -183,6 +187,7 @@ export async function getProjectPageData(
         id: seo_analysis.id,
         title: seo_analysis.title,
         url: seo_analysis.url,
+        on_page: seo_analysis.on_page,
         updatedAt: seo_analysis.updatedAt,
       })
       .from(seo_analysis)

@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { toast } from "sonner";
 import apiClient from "@/lib/api/client";
 import { Button } from "@/components/ui/button";
@@ -9,7 +10,21 @@ import { Input } from "@/components/ui/input";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { usePlan } from "@/hooks/usePlan";
 import type { ProjectPageData } from "@/lib/actions/projects";
-import { Users, Mail, FolderOpen } from "lucide-react";
+import { Users, Mail, FolderOpen, Globe } from "lucide-react";
+
+function resolveFaviconSrc(faviconUrl: unknown, pageUrl: unknown) {
+  if (typeof faviconUrl !== "string" || faviconUrl.trim().length === 0) {
+    return null;
+  }
+
+  try {
+    const base =
+      typeof pageUrl === "string" && pageUrl.trim().length > 0 ? pageUrl : undefined;
+    return new URL(faviconUrl, base).toString();
+  } catch {
+    return null;
+  }
+}
 
 export default function ProjectDetails({ data }: { data: ProjectPageData }) {
   const { limits, loading: planLoading } = usePlan();
@@ -168,18 +183,37 @@ export default function ProjectDetails({ data }: { data: ProjectPageData }) {
               </div>
             ) : (
               <div className="mt-4 space-y-3">
-                {data.analyses.map((a) => (
-                  <Link
-                    key={a.id}
-                    href={`/dashboard/analysis/${encodeURIComponent(a.url)}`}
-                    className="block rounded-xl border p-4 hover:border-blue-200 hover:bg-blue-50 transition"
-                  >
-                    <p className="text-sm font-semibold text-gray-900 line-clamp-1">
-                      {a.title}
-                    </p>
-                    <p className="text-xs text-gray-500 break-all">{a.url}</p>
-                  </Link>
-                ))}
+                {data.analyses.map((a) => {
+                  const faviconSrc = resolveFaviconSrc(a.on_page?.favicon?.url, a.url);
+                  const displayTitle =
+                    (a.on_page?.title?.text ?? "").trim() || a.title || "Untitled";
+
+                  return (
+                    <Link
+                      key={a.id}
+                      href={`/dashboard/analysis/${encodeURIComponent(a.url)}`}
+                      className="flex gap-3 items-start rounded-xl border p-4 hover:border-blue-200 hover:bg-blue-50 transition"
+                    >
+                      {faviconSrc ? (
+                        <Image
+                          src={faviconSrc}
+                          alt="Favicon"
+                          width={32}
+                          height={32}
+                          className="w-8 h-8 rounded-sm shrink-0"
+                        />
+                      ) : (
+                        <Globe className="w-8 h-8 text-gray-700 shrink-0" />
+                      )}
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-gray-900">
+                          {displayTitle.length > 30 ? displayTitle.slice(0, 30) + "…" : displayTitle}
+                        </p>
+                        <p className="text-xs text-gray-500 break-all">{a.url}</p>
+                      </div>
+                    </Link>
+                  );
+                })}
               </div>
             )}
           </section>
