@@ -168,7 +168,7 @@ export default function ProjectDetails({ data }: { data: ProjectPageData }) {
           </section>
 
           <section className="bg-white rounded-2xl border border-gray-100 p-6">
-            <h2 className="text-lg font-semibold text-gray-900">Analyses</h2>
+            <h2 className="text-lg font-semibold text-gray-900">Analyses ({data.analyses.length})</h2>
             <p className="mt-1 text-sm text-gray-500">
               Recent analyses in this project.
             </p>
