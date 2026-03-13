@@ -64,6 +64,13 @@
       "when": 1772314650549,
       "tag": "0008_simple_ares",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1773332866649,
+      "tag": "0009_confused_wrecking_crew",
+      "breakpoints": true
     }
   ]
 }
