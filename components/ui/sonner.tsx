@@ -42,7 +42,7 @@ const Toaster = ({
           "--normal-text": "var(--popover-foreground)",
           "--normal-border": "var(--border)",
           "--border-radius": "var(--radius)",
-          "font-family": "Geom",
+          "fontFamily": "Geom",
           ...style,
         } as CSSProperties
       }
