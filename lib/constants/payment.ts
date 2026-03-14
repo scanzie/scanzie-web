@@ -9,6 +9,7 @@ export const PAYSTACK_INITIALIZE_TRANSACTION_URL =
 // Keywords
 export const CREATE_SUBSCRIPTION = "subscription.create";
 export const PAYMENT_FAILED = "invoice.payment_failed";
+export const PAYMENT_SUCCESS = "invoice.payment_success";
 export const PAYMENT_CALLBACK_MAX_POLLS = 12;
 export const PAYMENT_CHANNELS = ["card", "bank", "apple_pay", "ussd", "qr", "mobile_money", "bank_transfer", "eft", "capitec_pay", "payattitude"]
 

@@ -12,6 +12,7 @@ import {
 } from "@/lib/actions/profile";
 import { ProfileTab } from "./ProfileTab";
 import { AccountTab, SessionData } from "./AccountTab";
+import { BillingTab } from "./BillingTab";
 
 const Settings = () => {
   const [user, setUser] = useState<User>();
@@ -25,13 +26,17 @@ const Settings = () => {
   const [providerLoading, setProviderLoading] = useState<boolean>(true);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [activeTab, setActiveTab] = useState<"profile" | "account">("profile");
+  const [activeTab, setActiveTab] = useState<"profile" | "account" | "billing">(
+    "profile",
+  );
 
   useEffect(() => {
     if (searchParams.has("profile")) {
       setActiveTab("profile");
     } else if (searchParams.has("account")) {
       setActiveTab("account");
+    } else if (searchParams.has("billing")) {
+      setActiveTab("billing");
     }
   }, [searchParams]);
 
@@ -159,20 +164,24 @@ const Settings = () => {
             
             {/* Tabs */}
             <div className="flex gap-6 border-b border-gray-100">
-              {(["profile", "account"] as const).map((tab) => (
+              {[
+                { key: "profile" as const, label: "Profile" },
+                { key: "account" as const, label: "Account" },
+                { key: "billing" as const, label: "Billing & Payment" },
+              ].map((tab) => (
                 <button
-                  key={tab}
+                  key={tab.key}
                   onClick={() => {
-                    setActiveTab(tab);
-                    router.push(`/dashboard/settings?${tab}`);
+                    setActiveTab(tab.key);
+                    router.push(`/dashboard/settings?${tab.key}`);
                   }}
-                  className={`cursor-pointer pb-4 text-sm font-medium border-b-2 transition-colors duration-200 capitalize ${
-                    activeTab === tab
+                  className={`cursor-pointer pb-4 text-sm font-medium border-b-2 transition-colors duration-200 ${
+                    activeTab === tab.key
                       ? "border-blue-600 text-blue-600"
                       : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                   }`}
                 >
-                  {tab}
+                  {tab.label}
                 </button>
               ))}
             </div>
@@ -206,6 +215,8 @@ const Settings = () => {
               handleDeleteAccount={handleDeleteAccount}
             />
           )}
+
+          {activeTab === "billing" && <BillingTab />}
         </div>
       </main>
     </div>
