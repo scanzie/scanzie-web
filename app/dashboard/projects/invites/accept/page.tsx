@@ -30,7 +30,7 @@ export default function AcceptProjectInvitePage() {
         if (!data?.ok) {
           throw new Error("Failed to accept invite");
         }
-        toast("Invite accepted!");
+        toast.success("Invite accepted!");
         router.push("/dashboard/projects");
       } catch (err: unknown) {
         if (!mounted) return;

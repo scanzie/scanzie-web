@@ -108,7 +108,7 @@ const AllProjects: React.FC<AllProjectsProps> = ({ projects }) => {
 
   const handleCreate = () => {
     if (atProjectLimit) {
-      toast("Project limit reached. Upgrade to create more projects.");
+      toast.error("Project limit reached. Upgrade to create more projects.");
       return;
     }
 
@@ -116,13 +116,14 @@ const AllProjects: React.FC<AllProjectsProps> = ({ projects }) => {
     startTransition(async () => {
       const res = await createProject(name);
       if (!res.ok) {
-        toast(res.message ?? "Failed to create project");
+        toast.error(res.message ?? "Failed to create project");
         return;
       }
 
       setCreateOpen(false);
       setProjectName("");
       router.refresh();
+      toast.success("Project created");
     });
   };
 

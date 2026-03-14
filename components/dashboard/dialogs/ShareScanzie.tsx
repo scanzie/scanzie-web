@@ -43,7 +43,7 @@ const ShareScanzie: React.FC<{
     } else {
       const text = `${testimonial} ${window.location.origin}`;
       navigator.clipboard.writeText(text).then(() => {
-        toast("Copied to clipboard! You can now paste and share.");
+        toast.info("Copied to clipboard! You can now paste and share.");
       });
     }
     onOpenChange(false);

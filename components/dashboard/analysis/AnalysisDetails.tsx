@@ -257,7 +257,7 @@ const handleCopyUrl = (url: string) => {
   if (navigator && navigator.clipboard) {
     navigator.clipboard.writeText(url);
   }
-  toast("Url has been copied");
+  toast.success("Url has been copied");
 };
 
 const SEOAnalysisDashboard: React.FC<SEOAnalysisProps> = ({
@@ -303,7 +303,7 @@ const SEOAnalysisDashboard: React.FC<SEOAnalysisProps> = ({
         "noopener,noreferrer",
       );
     } catch {
-      toast("Unable to start PDF download");
+      toast.error("Unable to start PDF download");
     }
   };
 
@@ -334,7 +334,7 @@ const SEOAnalysisDashboard: React.FC<SEOAnalysisProps> = ({
       await deleteAnalysis(id as string);
       await invalidateUserAnalysisCache();
       router.push("/dashboard/analysis");
-      toast("Analysis successfully deleted");
+      toast.success("Analysis successfully deleted");
     } catch (error) {
       console.log(error);
     } finally {

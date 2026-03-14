@@ -434,7 +434,7 @@ const AllUserAnalysis: React.FC<AllUserAnalysisProps> = ({
                                 <DropdownMenuItem
                                   onClick={(e) => {
                                     e.stopPropagation(); // Prevent click from bubbling to Link
-                                    toast("Export feature coming soon 😄");
+                                    toast.info("Export feature coming soon 😄");
                                   }}
                                 >
                                   <div className="flex items-center gap-2">

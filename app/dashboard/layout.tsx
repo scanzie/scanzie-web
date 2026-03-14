@@ -58,17 +58,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <main className="bg-gray-50 w-full">
         <UpgradeBanner />
         {children}
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            duration: 4000,
-            style: {
-              background: "#fff",
-              color: "#363636",
-              fontFamily: "Space Grotesk",
-            },
-          }}
-        />
+        <Toaster position="top-right" />
       </main>
     </SidebarProvider>
   );

@@ -53,7 +53,7 @@ export default function ProjectDetails({ data }: { data: ProjectPageData }) {
       await apiClient.post(`/projects/${data.project.id}/invite`, {
         email: email.trim(),
       });
-      toast("Invite sent!");
+      toast.success("Invite sent!");
       setEmail("");
     } catch (err: unknown) {
       const message =
@@ -68,7 +68,7 @@ export default function ProjectDetails({ data }: { data: ProjectPageData }) {
           : err instanceof Error
             ? err.message
             : "Failed to send invite";
-      toast(message);
+      toast.error(message);
     } finally {
       setSending(false);
     }

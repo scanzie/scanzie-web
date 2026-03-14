@@ -125,7 +125,7 @@ export default function NewAnalysis() {
           : err instanceof Error
             ? err.message
             : "Failed to start analysis";
-      toast(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -135,7 +135,7 @@ export default function NewAnalysis() {
     e.preventDefault();
 
     if (hasReachedAnalysisLimit) {
-      toast(
+      toast.error(
         `You have reached your maximum of ${analysesLimit} unique analyses on the ${
           isFreePlan ? "Free" : "current"
         } plan. Please upgrade to create more analyses.`,
@@ -144,7 +144,7 @@ export default function NewAnalysis() {
     }
 
     if (!isValidUrl(url)) {
-      toast("Please enter a valid URL");
+      toast.error("Please enter a valid URL");
       return;
     }
 
@@ -164,7 +164,7 @@ export default function NewAnalysis() {
     try {
       const res = await createProject(name);
       if (!res.ok) {
-        toast(res.message ?? "Failed to create project");
+        toast.error(res.message ?? "Failed to create project");
         return;
       }
 
@@ -172,7 +172,7 @@ export default function NewAnalysis() {
       setProjects((prev) => [{ id: res.projectId, name, updatedAt: now }, ...prev]);
       setSelectedProjectId(res.projectId);
       setNewProjectName("");
-      toast("Project created");
+      toast.success("Project created");
     } finally {
       setCreatingProject(false);
     }
@@ -180,7 +180,7 @@ export default function NewAnalysis() {
 
   const startWithSelectedProject = async () => {
     if (!isValidUrl(url)) {
-      toast("Please enter a valid URL");
+      toast.error("Please enter a valid URL");
       return;
     }
 
