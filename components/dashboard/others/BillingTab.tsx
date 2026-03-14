@@ -2,31 +2,29 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { CreditCard, ExternalLink, Loader2, RefreshCw } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePlan } from "@/hooks/usePlan";
 import { authClient } from "@/lib/auth/client";
 import { getSubscriptionByUserId } from "@/lib/actions/subscription";
+import { formatAmount, formatDate } from "@/utils/general";
 
 type PaystackAuthorization = {
   authorization_code?: string;
   last4?: string;
   exp_month?: string;
   exp_year?: string;
-  channel?: string;
   card_type?: string;
   bank?: string;
-  country_code?: string;
   brand?: string;
   reusable?: boolean;
 };
 
 type PaystackSubscription = {
-  subscription_code?: string;
   status?: string;
   amount?: number;
   next_payment_date?: string;
-  cron_expression?: string;
   plan?: { name?: string };
 };
 
@@ -35,8 +33,6 @@ type PaystackCustomerResponse =
       status: true;
       message: string;
       data: {
-        email?: string;
-        customer_code?: string;
         authorizations?: PaystackAuthorization[];
         subscriptions?: PaystackSubscription[];
       };
@@ -45,8 +41,10 @@ type PaystackCustomerResponse =
 
 export function BillingTab() {
   const { label: planLabel, loading: planLoading } = usePlan();
-  const [email, setEmail] = useState<string>("");
+
+  const [email, setEmail] = useState("");
   const [sessionLoading, setSessionLoading] = useState(true);
+
   const [customer, setCustomer] = useState<PaystackCustomerResponse | null>(null);
   const [customerLoading, setCustomerLoading] = useState(false);
   const [customerFetched, setCustomerFetched] = useState(false);
@@ -59,10 +57,16 @@ export function BillingTab() {
 
   const [cancelLoading, setCancelLoading] = useState(false);
 
+  const hasCustomer = customer?.status === true;
+
   const activePaystackSubscription = useMemo(() => {
     if (!customer || customer.status !== true) return null;
     const subs = customer.data.subscriptions ?? [];
-    return subs.find((s) => (s.status ?? "").toLowerCase() === "active") ?? subs[0] ?? null;
+    return (
+      subs.find((s) => (s.status ?? "").toLowerCase() === "active") ??
+      subs[0] ??
+      null
+    );
   }, [customer]);
 
   const loadCustomer = async () => {
@@ -75,7 +79,11 @@ export function BillingTab() {
       setCustomer(data);
 
       if (!res.ok || data.status !== true) {
-        setCustomerError(data.status === false ? data.message ?? "Customer not retrieved" : "Customer not retrieved");
+        setCustomerError(
+          data.status === false
+            ? data.message ?? "Customer not retrieved"
+            : "Customer not retrieved",
+        );
       }
     } catch (err) {
       console.error(err);
@@ -124,37 +132,26 @@ export function BillingTab() {
         `/api/paystack/subscription/manage-link?code=${encodeURIComponent(subscriptionCode)}`,
         { cache: "no-store" },
       );
-      const data = (await res.json()) as { status?: boolean; data?: { link?: string } };
+      const data = (await res.json()) as { data?: { link?: string } };
       const link = data?.data?.link;
-      if (res.ok && link) {
+      if (res.ok && typeof link === "string" && link.length > 0) {
         window.location.href = link;
-        return;
       }
     } finally {
       setCancelLoading(false);
     }
   };
 
-  const formatDate = (value: Date | string | null | undefined) => {
-    if (!value) return "—";
-    const date = typeof value === "string" ? new Date(value) : value;
-    if (Number.isNaN(date.getTime())) return "—";
-    return date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
-  };
-
-  const formatAmount = (amountKobo: number | null | undefined) => {
-    if (typeof amountKobo !== "number") return "—";
-    return `₦${(amountKobo / 100).toLocaleString()}`;
-  };
-
-  const hasCustomer = customer?.status === true;
+  const showCustomerSkeleton = !customerFetched || customerLoading;
 
   return (
     <div className="grid gap-6">
       <div className="bg-white rounded-2xl border border-gray-100 p-6">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">Billing & Payment</h2>
+            <h2 className="text-lg font-semibold text-gray-900">
+              Billing & Payment
+            </h2>
             <p className="text-sm text-gray-500 mt-1">
               View your current plan, payment methods, and subscription status.
             </p>
@@ -187,6 +184,7 @@ export function BillingTab() {
               )}
             </div>
           </div>
+
           <div className="rounded-2xl border border-gray-100 bg-gray-50 p-4">
             <p className="text-xs text-gray-500">Current plan</p>
             <div className="mt-1">
@@ -197,6 +195,7 @@ export function BillingTab() {
               )}
             </div>
           </div>
+
           <div className="rounded-2xl border border-gray-100 bg-gray-50 p-4">
             <p className="text-xs text-gray-500">Next billing date</p>
             <div className="mt-1">
@@ -204,7 +203,12 @@ export function BillingTab() {
                 <Skeleton className="h-4 w-40" />
               ) : (
                 <p className="text-sm font-semibold text-gray-900">
-                  {formatDate(nextPaymentDate ?? activePaystackSubscription?.next_payment_date)}
+                  {formatDate(
+                    nextPaymentDate ??
+                      activePaystackSubscription?.next_payment_date ??
+                      null,
+                    { style: "long" },
+                  )}
                 </p>
               )}
             </div>
@@ -228,10 +232,11 @@ export function BillingTab() {
               )}
             </div>
           </div>
+
           <div className="rounded-2xl border border-gray-100 p-4">
             <p className="text-xs text-gray-500">Amount</p>
             <div className="mt-1">
-              {!customerFetched || customerLoading ? (
+              {showCustomerSkeleton ? (
                 <Skeleton className="h-4 w-24" />
               ) : (
                 <p className="text-sm font-semibold text-gray-900">
@@ -240,10 +245,11 @@ export function BillingTab() {
               )}
             </div>
           </div>
+
           <div className="rounded-2xl border border-gray-100 p-4">
             <p className="text-xs text-gray-500">Plan (Paystack)</p>
             <div className="mt-1">
-              {!customerFetched || customerLoading ? (
+              {showCustomerSkeleton ? (
                 <Skeleton className="h-4 w-44 max-w-full" />
               ) : (
                 <p className="text-sm font-semibold text-gray-900">
@@ -260,7 +266,8 @@ export function BillingTab() {
               <Skeleton className="h-3 w-64 max-w-full" />
             ) : subscriptionCode ? (
               <span>
-                Subscription code: <span className="font-mono">{subscriptionCode}</span>
+                Subscription code:{" "}
+                <span className="font-mono">{subscriptionCode}</span>
               </span>
             ) : (
               <span>No active subscription found.</span>
@@ -289,7 +296,7 @@ export function BillingTab() {
       <div className="bg-white rounded-2xl border border-gray-100 p-6">
         <h3 className="text-sm font-semibold text-gray-900">Payment methods</h3>
 
-        {!customerFetched || customerLoading ? (
+        {showCustomerSkeleton ? (
           <div className="mt-4 grid gap-3">
             {[0, 1].map((i) => (
               <div
@@ -326,7 +333,10 @@ export function BillingTab() {
             ) : (
               (customer.data.authorizations ?? []).slice(0, 3).map((a) => (
                 <div
-                  key={a.authorization_code ?? `${a.last4}-${a.exp_month}-${a.exp_year}`}
+                  key={
+                    a.authorization_code ??
+                    `${a.last4}-${a.exp_month}-${a.exp_year}`
+                  }
                   className="flex items-center justify-between gap-4 rounded-2xl border border-gray-100 p-4"
                 >
                   <div className="flex items-center gap-3">
@@ -338,7 +348,8 @@ export function BillingTab() {
                         {a.brand ?? a.card_type ?? "Card"} •••• {a.last4 ?? "—"}
                       </p>
                       <p className="text-xs text-gray-500">
-                        Expires {a.exp_month ?? "—"}/{a.exp_year ?? "—"} • {a.bank ?? "—"}
+                        Expires {a.exp_month ?? "—"}/{a.exp_year ?? "—"} •{" "}
+                        {a.bank ?? "—"}
                       </p>
                     </div>
                   </div>
@@ -354,3 +365,4 @@ export function BillingTab() {
     </div>
   );
 }
+

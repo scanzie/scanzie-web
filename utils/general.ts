@@ -1,9 +1,36 @@
 
 
-export const formatDate = (date: Date | string): string => {
-  const now = new Date();
+export type FormatDateStyle = "relative" | "long";
+
+export const formatDate = (
+  date: Date | string | null | undefined,
+  options?: { style?: FormatDateStyle },
+): string => {
+  if (!date) return "—";
+
   const dateObj = new Date(date);
+  if (Number.isNaN(dateObj.getTime())) return "—";
+
+  const style = options?.style ?? "relative";
+  if (style === "long") {
+    return dateObj.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  }
+
+  const now = new Date();
   const diffMs = now.getTime() - dateObj.getTime();
+
+  // If date is in the future, fall back to a stable absolute format.
+  if (diffMs < 0) {
+    return dateObj.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  }
 
   const seconds = Math.floor(diffMs / 1000);
   const minutes = Math.floor(seconds / 60);
@@ -29,4 +56,9 @@ export const formatUrl = (url: string): string => {
   const end = url.slice(-5); 
 
   return `${start}...${end}`;
+};
+
+export const formatAmount = (amountKobo: number | null | undefined) => {
+  if (typeof amountKobo !== "number") return "—";
+  return `₦${(amountKobo / 100).toLocaleString()}`;
 };
