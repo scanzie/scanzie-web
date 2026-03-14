@@ -11,7 +11,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
+  useSidebarOptional,
 } from "@/components/ui/sidebar"
 import Link from "next/link"
 import { authClient } from "@/lib/auth/client"
@@ -48,12 +48,12 @@ const dashboardMenus = [
 
 export function AppSidebar() {
   const pathname = usePathname()
-  const { isMobile, setOpenMobile } = useSidebar()
+  const sidebar = useSidebarOptional()
   const [user, setUser] = useState<User>()
   const { label: planLabel, isFreePlan } = usePlan()
 
   const closeMobileSidebar = () => {
-    if (isMobile) setOpenMobile(false)
+    if (sidebar?.isMobile) sidebar.setOpenMobile(false)
   }
 
   const backTarget = (() => {

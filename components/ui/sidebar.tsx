@@ -53,6 +53,10 @@ function useSidebar() {
   return context
 }
 
+function useSidebarOptional() {
+  return React.useContext(SidebarContext)
+}
+
 function SidebarProvider({
   defaultOpen = true,
   open: openProp,
@@ -258,7 +262,9 @@ function SidebarTrigger({
   onClick,
   ...props
 }: React.ComponentProps<typeof Button>) {
-  const { toggleSidebar } = useSidebar()
+  const sidebar = useSidebarOptional()
+
+  if (!sidebar) return null
 
   return (
     <Button
@@ -269,7 +275,7 @@ function SidebarTrigger({
       className={cn("size-7", className)}
       onClick={(event) => {
         onClick?.(event)
-        toggleSidebar()
+        sidebar.toggleSidebar()
       }}
       {...props}
     >
@@ -280,7 +286,9 @@ function SidebarTrigger({
 }
 
 function SidebarRail({ className, ...props }: React.ComponentProps<"button">) {
-  const { toggleSidebar } = useSidebar()
+  const sidebar = useSidebarOptional()
+
+  if (!sidebar) return null
 
   return (
     <button
@@ -288,7 +296,7 @@ function SidebarRail({ className, ...props }: React.ComponentProps<"button">) {
       data-slot="sidebar-rail"
       aria-label="Toggle Sidebar"
       tabIndex={-1}
-      onClick={toggleSidebar}
+      onClick={sidebar.toggleSidebar}
       title="Toggle Sidebar"
       className={cn(
         "hover:after:bg-sidebar-border absolute inset-y-0 z-20 hidden w-4 -translate-x-1/2 transition-all ease-linear group-data-[side=left]:-right-4 group-data-[side=right]:left-0 after:absolute after:inset-y-0 after:left-1/2 after:w-0.5 sm:flex",
@@ -723,4 +731,5 @@ export {
   SidebarSeparator,
   SidebarTrigger,
   useSidebar,
+  useSidebarOptional,
 }
