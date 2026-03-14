@@ -168,7 +168,11 @@ const Settings = () => {
               {[
                 { key: "profile" as const, icon: User2, label: "Profile" },
                 { key: "account" as const, icon: Shield, label: "Account" },
-                { key: "billing" as const, icon: CreditCard, label: "Billing & Payment" },
+                {
+                  key: "billing" as const,
+                  icon: CreditCard,
+                  label: "Billing & Payment",
+                },
               ].map((tab) => (
                 <button
                   key={tab.key}
@@ -226,10 +230,16 @@ const Settings = () => {
 };
 
 import { Suspense } from "react";
-import { UserIcon, UserCircle, WalletCards, Icon } from "lucide-react";
+import ProfileSkeletonLoader from "@/app/dashboard/settings/loading";
 export default function SettingsContainer() {
   return (
-    <Suspense fallback={<div className="p-8">Loading settings...</div>}>
+    <Suspense
+      fallback={
+        <div className="p-8">
+          <ProfileSkeletonLoader />.
+        </div>
+      }
+    >
       <Settings />
     </Suspense>
   );
