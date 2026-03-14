@@ -115,7 +115,10 @@ export function AppSidebar() {
             <SidebarMenu className="space-y-1">
               {dashboardMenus.map((item) => {
                 const Icon = item.icon
-                const isActive = pathname === item.url || pathname.startsWith(`${item.url}/`)
+                const isActive =
+                  item.url === "/dashboard"
+                    ? pathname === "/dashboard"
+                    : pathname === item.url || pathname.startsWith(`${item.url}/`)
 
                 return (
                   <Link href={item.url} key={item.title} onClick={closeMobileSidebar}>
