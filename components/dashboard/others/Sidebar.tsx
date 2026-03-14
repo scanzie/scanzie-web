@@ -1,5 +1,5 @@
 "use client"
-import { Home, Settings, BarChart3, FolderIcon, Zap, LogOut } from "lucide-react"
+import { Home, Settings, BarChart3, FolderIcon, Zap, LogOut, ChevronLeft } from "lucide-react"
 import { usePathname } from "next/navigation"
 
 import {
@@ -11,6 +11,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar"
 import Link from "next/link"
 import { authClient } from "@/lib/auth/client"
@@ -47,8 +48,26 @@ const dashboardMenus = [
 
 export function AppSidebar() {
   const pathname = usePathname()
+  const { isMobile, setOpenMobile } = useSidebar()
   const [user, setUser] = useState<User>()
   const { label: planLabel, isFreePlan } = usePlan()
+
+  const closeMobileSidebar = () => {
+    if (isMobile) setOpenMobile(false)
+  }
+
+  const backTarget = (() => {
+    const baseRoutes = dashboardMenus.filter((item) => item.url !== "/dashboard/logout")
+    const match = [...baseRoutes]
+      .sort((a, b) => b.url.length - a.url.length)
+      .find((item) => pathname === item.url || pathname.startsWith(`${item.url}/`))
+
+    if (!match) return null
+    if (match.url === "/dashboard") return null
+    if (pathname === match.url) return null
+
+    return match
+  })()
 
   useEffect(() => {
     const fetchSession = async () => {
@@ -81,13 +100,25 @@ export function AppSidebar() {
             Main Menu
           </SidebarGroupLabel>
           <SidebarGroupContent>
+            {backTarget && (
+              <div className="mb-3 px-1">
+                <Link
+                  href={backTarget.url}
+                  onClick={closeMobileSidebar}
+                  className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  <span className="font-medium">Back to {backTarget.title}</span>
+                </Link>
+              </div>
+            )}
             <SidebarMenu className="space-y-1">
               {dashboardMenus.map((item) => {
                 const Icon = item.icon
-                const isActive = pathname === item.url
+                const isActive = pathname === item.url || pathname.startsWith(`${item.url}/`)
 
                 return (
-                  <Link href={item.url} key={item.title}>
+                  <Link href={item.url} key={item.title} onClick={closeMobileSidebar}>
                     <SidebarMenuItem>
                       <SidebarMenuButton
                         asChild
@@ -131,7 +162,7 @@ export function AppSidebar() {
                 <p className="text-blue-100 text-xs">Get optimization tips</p>
               </div>
             </div>
-            <Link href="/dashboard/analysis/new">
+            <Link href="/dashboard/analysis/new" onClick={closeMobileSidebar}>
               <button className="w-full bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white text-xs font-medium py-2.5 px-3 rounded-lg transition-all duration-200 hover:scale-105">
                 New Analysis 
               </button>
@@ -143,14 +174,14 @@ export function AppSidebar() {
         <div className="mt-auto border-t border-gray-100 bg-gray-50/50 hover:bg-gray-100 transition-colors">
           <div className="flex items-center w-full p-4">
             <div className="flex items-center flex-1">
-              <Link href="/dashboard/settings?profile" className="shrink-0">
+              <Link href="/dashboard/settings?profile" className="shrink-0" onClick={closeMobileSidebar}>
                 <Avatar>
                   <AvatarImage src={user?.image as string} />
                   <AvatarFallback>{getInitials(user?.name)}</AvatarFallback>
                 </Avatar>
               </Link>
               <div className="ml-3 flex flex-col items-start overflow-hidden">
-                <Link href="/dashboard/settings?profile" className="hover:underline w-full">
+                <Link href="/dashboard/settings?profile" className="hover:underline w-full" onClick={closeMobileSidebar}>
                   <p className="text-sm font-semibold text-gray-900 truncate">{user?.name}</p>
                 </Link>
                 <div className="flex items-center w-full mt-0.5">
@@ -159,7 +190,10 @@ export function AppSidebar() {
                   </p>
                   {isFreePlan && (
                     <Link 
-                      href="/upgrade" className="ml-2 px-2 py-0.5 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-full text-[10px] font-medium transition-colors">
+                      href="/upgrade"
+                      className="ml-2 px-2 py-0.5 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-full text-[10px] font-medium transition-colors"
+                      onClick={closeMobileSidebar}
+                    >
                       Upgrade
                     </Link>
                   )}
@@ -168,7 +202,11 @@ export function AppSidebar() {
             
             </div>
 
-            <Link href="/dashboard/settings?profile" className="text-gray-400 hover:text-gray-600 ml-2 p-1.5 rounded-md hover:bg-gray-200 transition-colors">
+            <Link
+              href="/dashboard/settings?profile"
+              className="text-gray-400 hover:text-gray-600 ml-2 p-1.5 rounded-md hover:bg-gray-200 transition-colors"
+              onClick={closeMobileSidebar}
+            >
               <Settings className="w-4 h-4" />
             </Link>
           </div>

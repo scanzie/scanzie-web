@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import apiClient from "@/lib/api/client";
 import Link from "next/link";
 import { toast } from "sonner";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 export default function AcceptProjectInvitePage() {
   const params = useSearchParams();
@@ -61,7 +62,8 @@ export default function AcceptProjectInvitePage() {
   }, [router, token]);
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4">
+    <div className="min-h-screen relative bg-slate-50 flex items-center justify-center px-4">
+      <SidebarTrigger className="absolute top-4 left-4 bg-blue-50 p-3 rounded-md md:hidden" />
       <div className="w-full max-w-md rounded-3xl bg-white border border-gray-100 shadow-sm p-8">
         <h1 className="text-xl font-semibold text-gray-900">Project invite</h1>
         {loading ? (

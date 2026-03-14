@@ -16,6 +16,7 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -192,7 +193,8 @@ export default function NewAnalysis() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4">
+    <div className="min-h-screen relative bg-slate-50 flex items-center justify-center px-4">
+      <SidebarTrigger className="absolute top-4 left-4 bg-blue-50 p-3 rounded-md md:hidden" />
       <div className="w-full max-w-xl space-y-8">
         <div className="rounded-3xl bg-white border border-gray-100 shadow-sm overflow-hidden">
           <div className="p-8 space-y-6">

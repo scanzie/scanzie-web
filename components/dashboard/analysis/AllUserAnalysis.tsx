@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useMemo, useEffect, useRef } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { toast } from "sonner";
@@ -380,8 +380,8 @@ const AllUserAnalysis: React.FC<AllUserAnalysisProps> = ({
                           : <Globe className="w-10 h-10 text-gray-700" />}
                           <div className="grid items-center">
                             <h3 className="md:text-lg font-bold text-gray-900">
-                              {analysis?.on_page?.title?.text?.length > 20 ?
-                                `${analysis?.on_page?.title?.text.substring(0, 20)}...`
+                              {analysis?.on_page?.title.text && analysis?.on_page?.title?.text?.length > 20 ?
+                                `${analysis?.on_page?.title.text && analysis?.on_page?.title?.text.substring(0, 20)}...`
                               : analysis?.on_page?.title?.text || "Untitled"}
                             </h3>
                             <p className="text-gray-600 text-xs md:text-sm break-all">
