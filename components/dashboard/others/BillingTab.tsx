@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { CreditCard, ExternalLink, Loader2, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { usePlan } from "@/hooks/usePlan";
 import { authClient } from "@/lib/auth/client";
 import { getSubscriptionByUserId } from "@/lib/actions/subscription";
@@ -45,8 +46,10 @@ type PaystackCustomerResponse =
 export function BillingTab() {
   const { label: planLabel, loading: planLoading } = usePlan();
   const [email, setEmail] = useState<string>("");
+  const [sessionLoading, setSessionLoading] = useState(true);
   const [customer, setCustomer] = useState<PaystackCustomerResponse | null>(null);
   const [customerLoading, setCustomerLoading] = useState(false);
+  const [customerFetched, setCustomerFetched] = useState(false);
   const [customerError, setCustomerError] = useState<string | null>(null);
 
   const [subLoading, setSubLoading] = useState(false);
@@ -64,6 +67,7 @@ export function BillingTab() {
 
   const loadCustomer = async () => {
     setCustomerLoading(true);
+    setCustomerFetched(false);
     setCustomerError(null);
     try {
       const res = await fetch("/api/paystack/customer", { cache: "no-store" });
@@ -79,28 +83,34 @@ export function BillingTab() {
       setCustomerError("Customer not retrieved");
     } finally {
       setCustomerLoading(false);
+      setCustomerFetched(true);
     }
   };
 
   useEffect(() => {
     const init = async () => {
-      const { data: session } = await authClient.getSession();
-      setEmail(session?.user?.email ?? "");
+      setSessionLoading(true);
+      try {
+        const { data: session } = await authClient.getSession();
+        setEmail(session?.user?.email ?? "");
 
-      if (session?.user?.id) {
-        setSubLoading(true);
-        try {
-          const sub = await getSubscriptionByUserId(session.user.id);
-          const row = sub?.[0] ?? null;
-          setSubscriptionCode(row?.subscriptionCode ?? null);
-          setSubscriptionStatus(row?.status ?? null);
-          setNextPaymentDate(row?.nextPaymentDate ?? null);
-        } finally {
-          setSubLoading(false);
+        if (session?.user?.id) {
+          setSubLoading(true);
+          try {
+            const sub = await getSubscriptionByUserId(session.user.id);
+            const row = sub?.[0] ?? null;
+            setSubscriptionCode(row?.subscriptionCode ?? null);
+            setSubscriptionStatus(row?.status ?? null);
+            setNextPaymentDate(row?.nextPaymentDate ?? null);
+          } finally {
+            setSubLoading(false);
+          }
         }
-      }
 
-      await loadCustomer();
+        await loadCustomer();
+      } finally {
+        setSessionLoading(false);
+      }
     };
 
     void init();
@@ -167,21 +177,37 @@ export function BillingTab() {
         <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="rounded-2xl border border-gray-100 bg-gray-50 p-4">
             <p className="text-xs text-gray-500">Email</p>
-            <p className="text-sm font-semibold text-gray-900 mt-1 break-all">
-              {email || "—"}
-            </p>
+            <div className="mt-1">
+              {sessionLoading ? (
+                <Skeleton className="h-4 w-56 max-w-full" />
+              ) : (
+                <p className="text-sm font-semibold text-gray-900 break-all">
+                  {email || "—"}
+                </p>
+              )}
+            </div>
           </div>
           <div className="rounded-2xl border border-gray-100 bg-gray-50 p-4">
             <p className="text-xs text-gray-500">Current plan</p>
-            <p className="text-sm font-semibold text-gray-900 mt-1">
-              {planLoading ? "Loading…" : planLabel}
-            </p>
+            <div className="mt-1">
+              {planLoading ? (
+                <Skeleton className="h-4 w-28" />
+              ) : (
+                <p className="text-sm font-semibold text-gray-900">{planLabel}</p>
+              )}
+            </div>
           </div>
           <div className="rounded-2xl border border-gray-100 bg-gray-50 p-4">
             <p className="text-xs text-gray-500">Next billing date</p>
-            <p className="text-sm font-semibold text-gray-900 mt-1">
-              {subLoading ? "Loading…" : formatDate(nextPaymentDate ?? activePaystackSubscription?.next_payment_date)}
-            </p>
+            <div className="mt-1">
+              {subLoading ? (
+                <Skeleton className="h-4 w-40" />
+              ) : (
+                <p className="text-sm font-semibold text-gray-900">
+                  {formatDate(nextPaymentDate ?? activePaystackSubscription?.next_payment_date)}
+                </p>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -192,27 +218,47 @@ export function BillingTab() {
         <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="rounded-2xl border border-gray-100 p-4">
             <p className="text-xs text-gray-500">Status</p>
-            <p className="text-sm font-semibold text-gray-900 mt-1">
-              {subscriptionStatus ?? activePaystackSubscription?.status ?? "—"}
-            </p>
+            <div className="mt-1">
+              {subLoading ? (
+                <Skeleton className="h-4 w-24" />
+              ) : (
+                <p className="text-sm font-semibold text-gray-900">
+                  {subscriptionStatus ?? activePaystackSubscription?.status ?? "—"}
+                </p>
+              )}
+            </div>
           </div>
           <div className="rounded-2xl border border-gray-100 p-4">
             <p className="text-xs text-gray-500">Amount</p>
-            <p className="text-sm font-semibold text-gray-900 mt-1">
-              {formatAmount(activePaystackSubscription?.amount)}
-            </p>
+            <div className="mt-1">
+              {!customerFetched || customerLoading ? (
+                <Skeleton className="h-4 w-24" />
+              ) : (
+                <p className="text-sm font-semibold text-gray-900">
+                  {formatAmount(activePaystackSubscription?.amount)}
+                </p>
+              )}
+            </div>
           </div>
           <div className="rounded-2xl border border-gray-100 p-4">
             <p className="text-xs text-gray-500">Plan (Paystack)</p>
-            <p className="text-sm font-semibold text-gray-900 mt-1">
-              {activePaystackSubscription?.plan?.name ?? "—"}
-            </p>
+            <div className="mt-1">
+              {!customerFetched || customerLoading ? (
+                <Skeleton className="h-4 w-44 max-w-full" />
+              ) : (
+                <p className="text-sm font-semibold text-gray-900">
+                  {activePaystackSubscription?.plan?.name ?? "—"}
+                </p>
+              )}
+            </div>
           </div>
         </div>
 
         <div className="mt-5 flex items-center justify-between gap-3 flex-wrap">
           <div className="text-xs text-gray-500">
-            {subscriptionCode ? (
+            {subLoading ? (
+              <Skeleton className="h-3 w-64 max-w-full" />
+            ) : subscriptionCode ? (
               <span>
                 Subscription code: <span className="font-mono">{subscriptionCode}</span>
               </span>
@@ -221,26 +267,46 @@ export function BillingTab() {
             )}
           </div>
 
-          <Button
-            className="rounded-2xl bg-red-500 hover:bg-red-400"
-            disabled={!subscriptionCode || cancelLoading}
-            onClick={handleCancelSubscription}
-          >
-            {cancelLoading ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <ExternalLink className="h-4 w-4" />
-            )}
-            <span className="ml-2">Cancel subscription</span>
-          </Button>
+          {subLoading ? (
+            <Skeleton className="h-10 w-48 rounded-2xl" />
+          ) : (
+            <Button
+              className="rounded-2xl bg-red-500 hover:bg-red-400"
+              disabled={!subscriptionCode || cancelLoading}
+              onClick={handleCancelSubscription}
+            >
+              {cancelLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <ExternalLink className="h-4 w-4" />
+              )}
+              <span className="ml-2">Cancel subscription</span>
+            </Button>
+          )}
         </div>
       </div>
 
       <div className="bg-white rounded-2xl border border-gray-100 p-6">
         <h3 className="text-sm font-semibold text-gray-900">Payment methods</h3>
 
-        {customerLoading ? (
-          <p className="mt-3 text-sm text-gray-500">Loading billing details…</p>
+        {!customerFetched || customerLoading ? (
+          <div className="mt-4 grid gap-3">
+            {[0, 1].map((i) => (
+              <div
+                key={i}
+                className="flex items-center justify-between gap-4 rounded-2xl border border-gray-100 p-4"
+              >
+                <div className="flex items-center gap-3">
+                  <Skeleton className="h-10 w-10 rounded-xl" />
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-44" />
+                    <Skeleton className="h-3 w-56 max-w-full" />
+                  </div>
+                </div>
+                <Skeleton className="h-3 w-20" />
+              </div>
+            ))}
+          </div>
         ) : !hasCustomer ? (
           <div className="mt-3 rounded-2xl border border-dashed border-gray-200 bg-gray-50 p-6">
             <p className="text-sm font-semibold text-gray-900">
@@ -288,4 +354,3 @@ export function BillingTab() {
     </div>
   );
 }
-
