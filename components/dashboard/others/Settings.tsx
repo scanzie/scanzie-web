@@ -30,6 +30,15 @@ const Settings = () => {
   const [activeTab, setActiveTab] = useState<"profile" | "account" | "billing">(
     "profile",
   );
+  const tabTitles = [
+    { key: "profile" as const, icon: User2, label: "Profile" },
+    { key: "account" as const, icon: Shield, label: "Account" },
+    {
+      key: "billing" as const,
+      icon: CreditCard,
+      label: "Billing & Payment",
+    },
+  ];
 
   useEffect(() => {
     if (searchParams.has("profile")) {
@@ -165,15 +174,7 @@ const Settings = () => {
 
             {/* Tabs */}
             <div className="flex gap-6 border-b border-gray-100">
-              {[
-                { key: "profile" as const, icon: User2, label: "Profile" },
-                { key: "account" as const, icon: Shield, label: "Account" },
-                {
-                  key: "billing" as const,
-                  icon: CreditCard,
-                  label: "Billing & Payment",
-                },
-              ].map((tab) => (
+              {tabTitles.map((tab) => (
                 <button
                   key={tab.key}
                   onClick={() => {
