@@ -434,17 +434,6 @@ const AllUserAnalysis: React.FC<AllUserAnalysisProps> = ({
                                 <DropdownMenuItem
                                   onClick={(e) => {
                                     e.stopPropagation(); // Prevent click from bubbling to Link
-                                    toast.info("Export feature coming soon 😄");
-                                  }}
-                                >
-                                  <div className="flex items-center gap-2">
-                                    <DownloadIcon />
-                                    <span>Export report</span>
-                                  </div>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  onClick={(e) => {
-                                    e.stopPropagation(); // Prevent click from bubbling to Link
                                     setSelectedAnalysis(analysis);
                                     setOpen(true);
                                   }}
