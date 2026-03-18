@@ -2,14 +2,12 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
-import { toast } from "sonner";
 import Link from "next/link";
 import {
   Search,
   Globe,
   ChevronDown,
   Eye,
-  DownloadIcon,
   RefreshCcw,
   BoxIcon,
   MoreHorizontal,
