@@ -27,6 +27,7 @@ import AnalysisProgress from "@/components/dashboard/analysis/AnalysisProgress";
 import apiClient from "@/lib/api/client";
 import { createProject, getUserProjects } from "@/lib/actions/projects";
 import { usePlan } from "@/hooks/usePlan";
+import Image from "next/image";
 
 const FEATURE_PILLS = [
   { icon: ShieldCheck, label: "Technical SEO" },
@@ -199,9 +200,7 @@ export default function NewAnalysis() {
         <div className="rounded-3xl bg-white border border-gray-100 shadow-sm overflow-hidden">
           <div className="p-8 space-y-6">
             <div className="flex flex-col items-center text-center space-y-3">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-600 shadow-md shadow-gray-200">
-                <Search className="h-6 w-6 text-white" />
-              </div>
+              <Image src="/full-logo.png" alt="Logo" height={24} width={24} className="w-2/5 mb-8" />
               <div className="space-y-1">
                 <h2 className="text-2xl font-bold text-gray-900 tracking-tight">
                   Analyze your website&apos;s SEO
