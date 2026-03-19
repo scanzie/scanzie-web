@@ -88,11 +88,8 @@ export function AppSidebar() {
       <SidebarContent className="bg-white">
         {/* Header Section */}
         <div className="p-5 border-b flex items-center gap-4">
-          <Image src="/favicon.png" alt="Logo" height={24} width={24} className="w-1/3"/>
-          <div className=" border-gray-100">
-            <h1 className="text-xl md:text-2xl font-bold text-gray-900">Scanzie</h1>
-            <p className="text-sm text-gray-500">SEO Analytics Platform</p>
-          </div>
+          <Image src="/full-logo.png" alt="Logo" height={24} width={24} className="w-full md:w-4/5"/>
+         
         </div>
 
         <SidebarGroup className="px-4 py-6">

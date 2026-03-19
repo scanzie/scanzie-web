@@ -10,6 +10,7 @@ export async function proxy(request: NextRequest) {
     "/.well-known/",
     "/robots.txt",
     "/sitemap.xml",
+    "/full-logo.png",
     "/favicon.png",
     "/bing.png",
     "/og-twitter.png",
