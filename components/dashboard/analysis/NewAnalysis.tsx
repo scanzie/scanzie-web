@@ -7,7 +7,6 @@ import {
   BarChart2,
   Globe,
   Loader2Icon,
-  Search,
   ShieldCheck,
   XIcon,
   Zap,

@@ -74,7 +74,6 @@ export function AppSidebar() {
       try {
         const { data: session } = await authClient.getSession()
         setUser(session?.user)
-        console.log(session?.user)
       } catch (err) {
         console.log("An error occurred", err)
       }
