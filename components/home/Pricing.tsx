@@ -11,7 +11,11 @@ interface PricingProps {
   userPlan?: string;
 }
 
-export default function Pricing({ isAuthenticated, userEmail, userPlan = "free" }: PricingProps) {
+export default function Pricing({
+  isAuthenticated,
+  userEmail,
+  userPlan = "free",
+}: PricingProps) {
   const [isYearly, setIsYearly] = useState(false);
   const [loading, setLoading] = useState<{
     proMonthly: boolean;
@@ -27,14 +31,15 @@ export default function Pricing({ isAuthenticated, userEmail, userPlan = "free" 
 
   const handleSubscribe = async (
     targetPlan: "pro" | "business",
-    period: "monthly" | "yearly"
+    period: "monthly" | "yearly",
   ) => {
     if (!isAuthenticated) {
       window.location.href = "/login";
       return;
     }
 
-    const key = `${targetPlan}${period === "monthly" ? "Monthly" : "Yearly"}` as keyof typeof loading;
+    const key =
+      `${targetPlan}${period === "monthly" ? "Monthly" : "Yearly"}` as keyof typeof loading;
     setLoading((prev) => ({ ...prev, [key]: true }));
     try {
       const res = await fetch("/api/subscribe", {
@@ -121,20 +126,30 @@ export default function Pricing({ isAuthenticated, userEmail, userPlan = "free" 
               <div className="mb-6 lg:mb-8 h-16">
                 <div className="text-4xl lg:text-5xl font-bold text-gray-900">
                   $0
-                  <span className="text-lg lg:text-xl text-gray-600 font-normal">/mo</span>
+                  <span className="text-lg lg:text-xl text-gray-600 font-normal">
+                    /mo
+                  </span>
                 </div>
               </div>
 
-              <Button
-                disabled={!isAuthenticated || planNorm === "free"}
-                className={`w-full mb-6 lg:mb-8 ${planNorm === "free" ? "bg-gray-100 text-gray-900" : "bg-white text-gray-900 border border-gray-300 hover:bg-gray-50"}`}
-                variant={planNorm === "free" ? "secondary" : "outline"}
-              >
-                {isAuthenticated ? (planNorm === "free" ? "Current Plan" : "Downgrade to Free") : "Sign up to get started"}
-              </Button>
+              {isAuthenticated && (
+                <Button
+                  disabled={planNorm === "free"}
+                  className={`w-full mb-6 lg:mb-8 ${planNorm === "free" ? "bg-gray-100 text-gray-900" : "bg-white text-gray-900 border border-gray-300 hover:bg-gray-50"}`}
+                  variant={planNorm === "free" ? "secondary" : "outline"}
+                >
+                  {isAuthenticated
+                    ? planNorm === "free"
+                      ? "Current Plan"
+                      : "Downgrade to Free"
+                    : "Sign up to get started"}
+                </Button>
+              )}
 
               <div className="space-y-3">
-                <p className="text-sm font-semibold text-gray-900 mb-3">Includes:</p>
+                <p className="text-sm font-semibold text-gray-900 mb-3">
+                  Includes:
+                </p>
                 {freePlanFeatures.map((feature, index) => (
                   <div key={index} className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
@@ -162,24 +177,38 @@ export default function Pricing({ isAuthenticated, userEmail, userPlan = "free" 
               <div className="mb-6 lg:mb-8 h-16">
                 <div className="text-4xl lg:text-5xl font-bold text-gray-900">
                   ${isYearly ? "9.60" : "12"}
-                  <span className="text-lg lg:text-xl text-gray-600 font-normal">/mo</span>
+                  <span className="text-lg lg:text-xl text-gray-600 font-normal">
+                    /mo
+                  </span>
                 </div>
                 {isYearly && (
-                  <div className="text-xs text-gray-500 mt-1">$115.20 billed yearly</div>
+                  <div className="text-xs text-gray-500 mt-1">
+                    $115.20 billed yearly
+                  </div>
                 )}
               </div>
 
-              <Button
-                onClick={() => handleSubscribe("pro", isYearly ? "yearly" : "monthly")}
-                disabled={!isAuthenticated || loading.proMonthly || loading.proYearly || isPro}
-                className={`w-full mb-6 lg:mb-8 ${isPro ? "bg-gray-100 text-gray-900 hover:bg-gray-200" : "bg-blue-600 hover:bg-blue-700 text-white"}`}
-                variant={isPro ? "secondary" : "default"}
-              >
-                {loading.proMonthly || loading.proYearly ? "Processing..." : isPro ? "Current Plan" : "Upgrade to Pro"}
-              </Button>
+              {isAuthenticated && (
+                <Button
+                  onClick={() =>
+                    handleSubscribe("pro", isYearly ? "yearly" : "monthly")
+                  }
+                  disabled={loading.proMonthly || loading.proYearly || isPro}
+                  className={`w-full mb-6 lg:mb-8 ${isPro ? "bg-gray-100 text-gray-900 hover:bg-gray-200" : "bg-blue-600 hover:bg-blue-700 text-white"}`}
+                  variant={isPro ? "secondary" : "default"}
+                >
+                  {loading.proMonthly || loading.proYearly
+                    ? "Processing..."
+                    : isPro
+                      ? "Current Plan"
+                      : "Upgrade to Pro"}
+                </Button>
+              )}
 
               <div className="space-y-3">
-                <p className="text-sm font-semibold text-gray-900 mb-3">Includes:</p>
+                <p className="text-sm font-semibold text-gray-900 mb-3">
+                  Includes:
+                </p>
                 {proPlanFeatures.map((feature, index) => (
                   <div key={index} className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
@@ -203,35 +232,46 @@ export default function Pricing({ isAuthenticated, userEmail, userPlan = "free" 
               <div className="mb-6 lg:mb-8 h-16">
                 <div className="text-4xl lg:text-5xl font-bold text-gray-900">
                   ${isYearly ? "60" : "75"}
-                  <span className="text-lg lg:text-xl text-gray-600 font-normal">/mo</span>
+                  <span className="text-lg lg:text-xl text-gray-600 font-normal">
+                    /mo
+                  </span>
                 </div>
                 {isYearly && (
-                  <div className="text-xs text-gray-500 mt-1">$720 billed yearly</div>
+                  <div className="text-xs text-gray-500 mt-1">
+                    $720 billed yearly
+                  </div>
                 )}
               </div>
 
-              <Button
-                onClick={() => handleSubscribe("business", isYearly ? "yearly" : "monthly")}
-                disabled={
-                  !isAuthenticated ||
-                  loading.businessMonthly ||
-                  loading.businessYearly ||
-                  isBusiness
-                }
-                className={`w-full mb-6 lg:mb-8 ${
-                  isBusiness ? "bg-gray-100 text-gray-900 hover:bg-gray-200" : "bg-gray-800 hover:bg-gray-900 text-white"
-                }`}
-                variant={isBusiness ? "secondary" : "default"}
-              >
-                {loading.businessMonthly || loading.businessYearly
-                  ? "Processing..."
-                  : isBusiness
-                    ? "Current Plan"
-                    : "Upgrade to Business"}
-              </Button>
+              {isAuthenticated && (
+                <Button
+                  onClick={() =>
+                    handleSubscribe("business", isYearly ? "yearly" : "monthly")
+                  }
+                  disabled={
+                    loading.businessMonthly ||
+                    loading.businessYearly ||
+                    isBusiness
+                  }
+                  className={`w-full mb-6 lg:mb-8 ${
+                    isBusiness
+                      ? "bg-gray-100 text-gray-900 hover:bg-gray-200"
+                      : "bg-gray-800 hover:bg-gray-900 text-white"
+                  }`}
+                  variant={isBusiness ? "secondary" : "default"}
+                >
+                  {loading.businessMonthly || loading.businessYearly
+                    ? "Processing..."
+                    : isBusiness
+                      ? "Current Plan"
+                      : "Upgrade to Business"}
+                </Button>
+              )}
 
               <div className="space-y-3">
-                <p className="text-sm font-semibold text-gray-900 mb-3">Includes:</p>
+                <p className="text-sm font-semibold text-gray-900 mb-3">
+                  Includes:
+                </p>
                 {businessPlanFeatures.map((feature, index) => (
                   <div key={index} className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-gray-700 mt-0.5 shrink-0" />
