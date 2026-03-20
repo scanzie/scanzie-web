@@ -1,6 +1,16 @@
-"use client"
-import { Home, Settings, BarChart3, FolderIcon, Zap, LogOut, ChevronLeft } from "lucide-react"
-import { usePathname } from "next/navigation"
+"use client";
+import {
+  Home,
+  Settings,
+  BarChart3,
+  FolderIcon,
+  Zap,
+  LogOut,
+  ChevronLeft,
+  LifeBuoy,
+  Bug,
+} from "lucide-react";
+import { usePathname } from "next/navigation";
 
 import {
   Sidebar,
@@ -12,15 +22,15 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebarOptional,
-} from "@/components/ui/sidebar"
-import Link from "next/link"
-import { authClient } from "@/lib/auth/client"
-import { useEffect, useState } from "react"
-import { User } from "better-auth"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import Image from "next/image"
-import { getInitials } from "@/utils/profile"
-import { usePlan } from "@/hooks/usePlan"
+} from "@/components/ui/sidebar";
+import Link from "next/link";
+import { authClient } from "@/lib/auth/client";
+import { useEffect, useState } from "react";
+import { User } from "better-auth";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Image from "next/image";
+import { getInitials } from "@/utils/profile";
+import { usePlan } from "@/hooks/usePlan";
 
 // Updated menu items to match the SEO analytics theme
 const dashboardMenus = [
@@ -40,55 +50,74 @@ const dashboardMenus = [
     icon: FolderIcon,
   },
   {
+    title: "Support",
+    url: "/support",
+    icon: LifeBuoy,
+  },
+  {
+    title: "Report Bug",
+    url: "/report-a-bug",
+    icon: Bug,
+  },
+  {
     title: "Logout",
     url: "/dashboard/logout",
     icon: LogOut,
   },
-]
+];
 
 export function AppSidebar() {
-  const pathname = usePathname()
-  const sidebar = useSidebarOptional()
-  const [user, setUser] = useState<User>()
-  const { label: planLabel, isFreePlan } = usePlan()
+  const pathname = usePathname();
+  const sidebar = useSidebarOptional();
+  const [user, setUser] = useState<User>();
+  const { label: planLabel, isFreePlan } = usePlan();
 
   const closeMobileSidebar = () => {
-    if (sidebar?.isMobile) sidebar.setOpenMobile(false)
-  }
+    if (sidebar?.isMobile) sidebar.setOpenMobile(false);
+  };
 
   const backTarget = (() => {
-    const baseRoutes = dashboardMenus.filter((item) => item.url !== "/dashboard/logout")
+    const baseRoutes = dashboardMenus.filter(
+      (item) => item.url !== "/dashboard/logout",
+    );
     const match = [...baseRoutes]
       .sort((a, b) => b.url.length - a.url.length)
-      .find((item) => pathname === item.url || pathname.startsWith(`${item.url}/`))
+      .find(
+        (item) => pathname === item.url || pathname.startsWith(`${item.url}/`),
+      );
 
-    if (!match) return null
-    if (match.url === "/dashboard") return null
-    if (pathname === match.url) return null
+    if (!match) return null;
+    if (match.url === "/dashboard") return null;
+    if (pathname === match.url) return null;
 
-    return match
-  })()
+    return match;
+  })();
 
   useEffect(() => {
     const fetchSession = async () => {
       try {
-        const { data: session } = await authClient.getSession()
-        setUser(session?.user)
+        const { data: session } = await authClient.getSession();
+        setUser(session?.user);
       } catch (err) {
-        console.log("An error occurred", err)
+        console.log("An error occurred", err);
       }
-    }
+    };
 
-    fetchSession()
-  }, [])
+    fetchSession();
+  }, []);
 
   return (
     <Sidebar className="border-r-0 shadow-xl bg-white">
       <SidebarContent className="bg-white">
         {/* Header Section */}
         <div className="p-5 border-b flex items-center gap-4">
-          <Image src="/full-logo.png" alt="Logo" height={24} width={24} className="w-full md:w-4/5"/>
-         
+          <Image
+            src="/full-logo.png"
+            alt="Logo"
+            height={24}
+            width={24}
+            className="w-full md:w-4/5"
+          />
         </div>
 
         <SidebarGroup className="px-4 py-6">
@@ -104,20 +133,27 @@ export function AppSidebar() {
                   className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors"
                 >
                   <ChevronLeft className="h-4 w-4" />
-                  <span className="font-medium">Back to {backTarget.title}</span>
+                  <span className="font-medium">
+                    Back to {backTarget.title}
+                  </span>
                 </Link>
               </div>
             )}
             <SidebarMenu className="space-y-1">
               {dashboardMenus.map((item) => {
-                const Icon = item.icon
+                const Icon = item.icon;
                 const isActive =
                   item.url === "/dashboard"
                     ? pathname === "/dashboard"
-                    : pathname === item.url || pathname.startsWith(`${item.url}/`)
+                    : pathname === item.url ||
+                      pathname.startsWith(`${item.url}/`);
 
                 return (
-                  <Link href={item.url} key={item.title} onClick={closeMobileSidebar}>
+                  <Link
+                    href={item.url}
+                    key={item.title}
+                    onClick={closeMobileSidebar}
+                  >
                     <SidebarMenuItem>
                       <SidebarMenuButton
                         asChild
@@ -135,7 +171,9 @@ export function AppSidebar() {
                                 : "text-gray-400 group-hover:text-gray-500"
                             }`}
                           />
-                          <span className="font-medium text-sm">{item.title}</span>
+                          <span className="font-medium text-sm">
+                            {item.title}
+                          </span>
                           {isActive && (
                             <div className="ml-auto w-2 h-2 bg-blue-500 rounded-full"></div>
                           )}
@@ -143,7 +181,7 @@ export function AppSidebar() {
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   </Link>
-                )
+                );
               })}
             </SidebarMenu>
           </SidebarGroupContent>
@@ -163,7 +201,7 @@ export function AppSidebar() {
             </div>
             <Link href="/dashboard/analysis/new" onClick={closeMobileSidebar}>
               <button className="w-full bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white text-xs font-medium py-2.5 px-3 rounded-lg transition-all duration-200 hover:scale-105">
-                New Analysis 
+                New Analysis
               </button>
             </Link>
           </div>
@@ -173,22 +211,32 @@ export function AppSidebar() {
         <div className="mt-auto border-t border-gray-100 bg-gray-50/50 hover:bg-gray-100 transition-colors">
           <div className="flex items-center w-full p-4">
             <div className="flex items-center flex-1">
-              <Link href="/dashboard/settings?profile" className="shrink-0" onClick={closeMobileSidebar}>
+              <Link
+                href="/dashboard/settings?profile"
+                className="shrink-0"
+                onClick={closeMobileSidebar}
+              >
                 <Avatar>
                   <AvatarImage src={user?.image as string} />
                   <AvatarFallback>{getInitials(user?.name)}</AvatarFallback>
                 </Avatar>
               </Link>
               <div className="ml-3 flex flex-col items-start overflow-hidden">
-                <Link href="/dashboard/settings?profile" className="hover:underline w-full" onClick={closeMobileSidebar}>
-                  <p className="text-sm font-semibold text-gray-900 truncate">{user?.name}</p>
+                <Link
+                  href="/dashboard/settings?profile"
+                  className="hover:underline w-full"
+                  onClick={closeMobileSidebar}
+                >
+                  <p className="text-sm font-semibold text-gray-900 truncate">
+                    {user?.name}
+                  </p>
                 </Link>
                 <div className="flex items-center w-full mt-0.5">
                   <p className="text-xs text-gray-500 flex items-center shrink-0">
                     {planLabel} Plan
                   </p>
                   {isFreePlan && (
-                    <Link 
+                    <Link
                       href="/upgrade"
                       className="ml-2 px-2 py-0.5 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-full text-[10px] font-medium transition-colors"
                       onClick={closeMobileSidebar}
@@ -198,7 +246,6 @@ export function AppSidebar() {
                   )}
                 </div>
               </div>
-            
             </div>
 
             <Link
@@ -212,5 +259,5 @@ export function AppSidebar() {
         </div>
       </SidebarContent>
     </Sidebar>
-  )
+  );
 }

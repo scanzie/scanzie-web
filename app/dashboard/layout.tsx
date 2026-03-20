@@ -2,6 +2,7 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
 import { AppSidebar } from "@/components/dashboard/others/Sidebar";
 import UpgradeBanner from "@/components/dashboard/others/UpgradeBanner";
+import ReportBugFab from "@/components/dashboard/others/ReportBugFab";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -55,9 +56,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <main className="bg-gray-50 w-full">
+      <main className="relative w-full bg-gray-50">
         <UpgradeBanner />
         {children}
+        <ReportBugFab />
         <Toaster position="top-right" />
       </main>
     </SidebarProvider>

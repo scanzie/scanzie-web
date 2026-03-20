@@ -25,6 +25,12 @@ const Header = () => {
             </svg>
             <span className="hidden sm:block ">Github</span>
           </Link>
+          <Link
+            href="/support"
+            className="flex items-center gap-2 px-4 py-3 hover:bg-gray-200 rounded-2xl text-sm font-medium"
+          >
+            Support
+          </Link>
           <Link href="/login">
             <Button>Get started</Button>
           </Link>

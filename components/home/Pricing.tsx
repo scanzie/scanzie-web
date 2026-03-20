@@ -4,7 +4,11 @@ import { useState } from "react";
 import { Button } from "../ui/button";
 import { Check } from "lucide-react";
 import { BillingToggle } from "../ui/BillingToggle";
-import { businessPlanFeatures, freePlanFeatures, proPlanFeatures } from "@/lib/constants/plans";
+import {
+  businessPlanFeatures,
+  freePlanFeatures,
+  proPlanFeatures,
+} from "@/lib/constants/plans";
 
 interface PricingProps {
   isAuthenticated?: boolean;
@@ -264,7 +268,7 @@ export default function Pricing({
           <p className="text-gray-600">
             Have questions?{" "}
             <a
-              href="mailto:support@scanzie.com"
+              href="/support"
               className="text-blue-600 hover:text-blue-700 font-semibold"
             >
               Contact our support team

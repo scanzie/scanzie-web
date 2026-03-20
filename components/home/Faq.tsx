@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { Button } from "../ui/button";
+import Link from "next/link";
 
 interface FAQItem {
   id: string;
@@ -135,22 +136,24 @@ const FAQ: React.FC = () => {
         {/* Contact CTA */}
         <div className="text-center mt-12">
           <p className="text-gray-600 mb-4">Still have questions?</p>
-          <Button className="">
-            Contact Support
-            <svg
-              className="ml-2 w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
-          </Button>
+          <Link href="/support">
+            <Button className="">
+              Contact Support
+              <svg
+                className="ml-2 w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </Button>
+          </Link>
         </div>
       </div>
     </section>

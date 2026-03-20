@@ -179,10 +179,7 @@ function SubscribeCallbackContent() {
             </div>
             <p className="text-xs text-gray-500 text-center mt-4">
               If the problem persists, please contact our{" "}
-              <a
-                href="mailto:support@scanzie.com"
-                className="text-blue-600 hover:underline"
-              >
+              <a href="/support" className="text-blue-600 hover:underline">
                 support team
               </a>
             </p>

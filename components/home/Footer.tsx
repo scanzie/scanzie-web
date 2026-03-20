@@ -102,10 +102,10 @@ const Footer: React.FC = () => {
               <ul className="space-y-2">
                 <li>
                   <Link
-                    href="/help"
+                    href="/support"
                     className="text-sm text-gray-600 hover:text-blue-600 transition-colors"
                   >
-                    Help Center
+                    Support Center
                   </Link>
                 </li>
                 <li>
@@ -118,10 +118,10 @@ const Footer: React.FC = () => {
                 </li>
                 <li>
                   <Link
-                    href="/privacy"
+                    href="/report-a-bug"
                     className="text-sm text-gray-600 hover:text-blue-600 transition-colors"
                   >
-                    Privacy Policy
+                    Report a Bug
                   </Link>
                 </li>
                 <li>
