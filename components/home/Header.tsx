@@ -4,7 +4,7 @@ import Image from "next/image";
 
 const Header = () => {
   return (
-    <div className="bg-background border-b border-gray-300/50 fixed w-full top-0 left-0 z-50">
+    <div className="bg-transparent backdrop-blur-xl border-b border-gray-300/50 fixed w-full top-0 left-0 z-50">
       <div className="app-container flex justify-between items-center h-[72px]">
         <div className="flex items-center gap-2">
           <Image src="/favicon.png" alt="Logo" height={25} width={25} />
