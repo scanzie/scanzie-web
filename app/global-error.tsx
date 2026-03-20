@@ -12,6 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import Image from "next/image";
 
 export default function GlobalError({
   error,
@@ -26,9 +27,10 @@ export default function GlobalError({
         className="min-h-screen bg-background text-foreground antialiased"
         style={{ fontFamily: "Geom" }}
       >
-        <main className="relative flex min-h-screen items-center justify-center overflow-hidden px-6 py-12">
+        <main className="relative flex flex-col min-h-screen items-center justify-center overflow-hidden px-6 py-12">
+          <Image src="/full-logo.png" height={150} width={150} alt="Full logo" className="mb-10"/>
+          
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(59,130,246,0.14),transparent_45%)]" />
-
           <Card className="relative z-10 w-full max-w-xl border-border/60 bg-card/95 backdrop-blur-sm">
             <CardHeader className="items-center text-center">
               <div className="mb-2 mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-destructive/10 text-destructive">
