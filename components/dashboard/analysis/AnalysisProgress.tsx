@@ -134,7 +134,13 @@ const AnalysisProgress: React.FC<AnalysisProgressProps> = ({
   return (
     <div className="max-w-md mx-auto">
       <div className="grid gap-2 text-center mb-6">
-        <p className="text-gray-600">Your SEO analysis is in progress</p>
+        <p className="text-gray-600">
+          {progress.overallProgress === 0
+            ? "Kickoff phase is running"
+            : isComplete
+              ? "All checks completed successfully"
+              : "Analysis is actively processing"}
+        </p>
         <p className="text-sm p-2 rounded-full bg-gray-100 w-60 mx-auto">
           {formatUrl(url)}
         </p>
