@@ -149,7 +149,7 @@ export default function Pricing({
                 Pro Plan
               </h3>
               <p className="text-gray-600 text-sm mb-6">
-                {isYearly ? "Billed annually" : "Billed monthly"}
+                {isYearly ? "Billed yearly" : "Billed monthly"}
               </p>
 
               <div className="mb-6 lg:mb-8 h-16">
@@ -207,7 +207,7 @@ export default function Pricing({
                 Business Plan
               </h3>
               <p className="text-gray-600 text-sm mb-6">
-                {isYearly ? "Billed annually" : "Billed monthly"}
+                {isYearly ? "Billed yearly" : "Billed monthly"}
               </p>
 
               <div className="mb-6 lg:mb-8 h-16">
