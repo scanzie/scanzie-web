@@ -55,13 +55,8 @@ const Footer: React.FC = () => {
                   </Link>
                 </li>
                 <li>
-                  <Link href="#" className="text-sm text-gray-600 hover:text-blue-600 transition-colors">
+                  <Link href="https://web.facebook.com/profile.php?id=61578661535793" className="text-sm text-gray-600 hover:text-blue-600 transition-colors">
                     Facebook
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-sm text-gray-600 hover:text-blue-600 transition-colors">
-                    Instagram
                   </Link>
                 </li>
                 <li>
