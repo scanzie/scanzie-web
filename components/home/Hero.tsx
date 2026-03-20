@@ -150,7 +150,7 @@ const Hero = () => {
       className="custom-hero-background relative overflow-hidden"
       ref={containerRef}
     >
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(59,130,246,0.14),transparent_45%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(59,130,246,0.14),transparent_25%)]" />
 
       <div className="relative z-10 flex min-h-[90vh] flex-col place-content-center gap-6 px-5 py-20 text-center sm:px-8 md:px-12">
         <h2
