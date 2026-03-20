@@ -75,7 +75,7 @@ export default function Pricing({
   const isBusiness = planNorm === "business";
 
   return (
-    <section className="py-10 px-4 sm:px-6 lg:px-8 bg-gray-50">
+    <section className="py-10 mb-10 px-4 sm:px-6 lg:px-8 bg-gray-50">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">

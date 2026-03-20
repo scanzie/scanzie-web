@@ -62,16 +62,16 @@ const FeaturesSection: React.FC = () => {
   ];
 
   return (
-    <section className="py-10">
+    <section className="py-10 mb-10">
       <div className="app-container">
         {/* Header */}
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
             Powerful SEO features
             <br />
             built for results.
           </h2>
-          <p className="text-xl max-w-2xl mx-auto leading-relaxed">
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
             Everything you need to optimize your website&apos;s search
             performance and dominate search engine rankings.
           </p>

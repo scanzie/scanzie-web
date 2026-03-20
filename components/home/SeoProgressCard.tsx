@@ -214,9 +214,9 @@ const SeoProgressCard = ({
     <div
       ref={cardRef}
       className={[
-        "relative mx-auto w-full max-w-sm sm:max-w-md select-none rounded-2xl border-2 border-blue-500 bg-white px-5 py-6 sm:px-8 sm:py-8",
-        "shadow-[0_8px_40px_rgba(59,130,246,0.18)] transition-all duration-300",
-        "hover:-translate-y-1.5 hover:scale-[1.01] hover:shadow-[0_16px_56px_rgba(59,130,246,0.32)]",
+        "relative mx-auto w-full max-w-sm sm:max-w-md select-none rounded-2xl border-2 border-gray-200 bg-white px-5 py-6 sm:px-8 sm:py-8",
+        "shadow-[0_8px_40px_#eee] transition-all duration-300",
+        "hover:-translate-y-1.5 hover:scale-[1.01] hover:shadow-[0_16px_56px_#ccc]",
         className,
       ].join(" ")}
     >

@@ -74,10 +74,10 @@ const FAQ: React.FC = () => {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
             Frequently Asked Questions
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
             Everything you need to know about Scanzie&apos;s SEO and performance
             analytics tools. Can&apos;t find what you&apos;re looking for?
             Contact our support team.
@@ -97,7 +97,7 @@ const FAQ: React.FC = () => {
                 aria-expanded={openItems.has(item.id)}
               >
                 <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-medium text-gray-900 pr-4">
+                  <h3 className="md:text-lg font-medium text-gray-900 pr-4">
                     {item.question}
                   </h3>
                   <div className="shrink-0">
