@@ -4,7 +4,6 @@ import {
   Zap,
   Target,
   Shield,
-  BarChart3,
   Globe,
   BotIcon,
 } from "lucide-react";
