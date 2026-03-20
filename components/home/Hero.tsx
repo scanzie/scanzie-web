@@ -5,6 +5,7 @@ import { gsap } from "gsap";
 import { ArrowRight } from "lucide-react";
 import { Button } from "../ui/button";
 import Link from "next/link";
+import Image from "next/image";
 
 const Hero = () => {
   const containerRef = useRef(null);
@@ -20,7 +21,6 @@ const Hero = () => {
       opacity: 0,
       y: 50,
     });
-
 
     // Main content animation
     tl.to(titleRef.current, {
@@ -49,8 +49,6 @@ const Hero = () => {
         },
         "-=0.4",
       );
-
-
   }, []);
 
   return (
@@ -60,7 +58,7 @@ const Hero = () => {
     >
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(59,130,246,0.14),transparent_45%)]" />
       {/* Main Content */}
-      <div className="flex flex-col h-[90vh] place-content-center gap-6 text-center relative z-10 px-10">
+      <div className="py-30 flex flex-col min-h-[90vh] place-content-center gap-6 text-center relative z-10 px-10">
         <h2 ref={titleRef} className="text-4xl md:text-6xl font-extrabold">
           Analyze your website <br /> SEO and performance.
         </h2>
@@ -72,13 +70,21 @@ const Hero = () => {
 
         <div ref={buttonsRef} className="flex justify-center my-2 gap-4">
           <Link href="/login">
-            <Button
-            className="hover:scale-120 text-xl font-semibold py-8 px-10 hover:bg-blue-700 transition duration-300 hover:shadow-lg">
+            <Button className="hover:scale-120 text-xl font-semibold py-8 px-10 hover:bg-blue-700 transition duration-300 hover:shadow-lg">
               <span>Get Started now</span>
               <ArrowRight className="ml-2" />
             </Button>
           </Link>
+        </div>
 
+        <div className="w-full md:w-4/5 mx-auto">
+          <Image
+            className="w-full"
+            src="og-twitter.png"
+            alt="OG Image"
+            width={500}
+            height={500}
+          />
         </div>
       </div>
     </div>
