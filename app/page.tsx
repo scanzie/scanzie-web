@@ -1,4 +1,4 @@
-import FAQ from "@/components/home/Faq";
+import Faq from "@/components/home/Faq";
 import Features from "@/components/home/Features";
 import Footer from "@/components/home/Footer";
 import Header from "@/components/home/Header";
@@ -13,7 +13,7 @@ export default function Home() {
         <Hero />
         <Features />
         <Pricing />
-        <FAQ />
+        <Faq />
         <Footer />
       </div>
     </div>
