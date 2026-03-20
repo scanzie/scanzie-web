@@ -45,7 +45,7 @@ export function BillingToggle({ isYearly, onToggle, className }: BillingTogglePr
               : "bg-blue-50 text-blue-600"
           )}
         >
-          Save 20%
+          20% Free
         </span>
       </button>
     </div>
