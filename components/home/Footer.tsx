@@ -17,7 +17,7 @@ const Footer: React.FC = () => {
           </div>
 
           {/* Tools */}
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
+          <div className='grid grid-cols-1 md:grid-cols-3 gap-8'>
             <div>
               <h3 className="text-sm font-medium text-gray-900 mb-4">Tools</h3>
               <ul className="space-y-2">
@@ -39,6 +39,34 @@ const Footer: React.FC = () => {
                 <li>
                   <Link href="/technical-seo-audit" className="text-sm text-gray-600 hover:text-blue-600 transition-colors">
                     Technical SEO Audit
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            
+            {/* Socials */}
+            
+            <div>
+              <h3 className="text-sm font-medium text-gray-900 mb-4">Socials</h3>
+              <ul className="space-y-2">
+                <li>
+                  <Link href="https://x.com/scanzieapp" className="text-sm text-gray-600 hover:text-blue-600 transition-colors">
+                    X (Twitter)
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="text-sm text-gray-600 hover:text-blue-600 transition-colors">
+                    Facebook
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="text-sm text-gray-600 hover:text-blue-600 transition-colors">
+                    Instagram
+                  </Link>
+                </li>
+                <li>
+                  <Link href="https://www.github.com" className="text-sm text-gray-600 hover:text-blue-600 transition-colors">
+                    Github
                   </Link>
                 </li>
               </ul>
