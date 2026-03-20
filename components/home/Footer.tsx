@@ -85,7 +85,7 @@ const Footer: React.FC = () => {
                 <li>
                   <Link
                     target="_blank"
-                    href="https://www.github.com"
+                    href="https://www.github.com/scanzie"
                     className="text-sm text-gray-600 hover:text-blue-600 transition-colors"
                   >
                     Github
