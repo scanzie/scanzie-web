@@ -156,7 +156,7 @@ const Hero = () => {
           ref={titleRef}
           className="text-4xl font-extrabold leading-tight sm:text-5xl md:text-6xl"
         >
-          Analyze your website <br /> SEO and performance.
+          Analyze your website&apos;s <br /> SEO and performance.
         </h2>
 
         <p
