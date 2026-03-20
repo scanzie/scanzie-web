@@ -75,3 +75,31 @@ export const PLAN_LABELS: Record<PlanType, string> = {
   [PLAN_PRO]: "Pro",
   [PLAN_BUSINESS]: "Business",
 };
+
+
+export const freePlanFeatures = [
+  "Base-line SEO analysis",
+  "Access to one folder/projects",
+  "Can create up to 3 analyses.",
+  "Can re-analyze URLS.",
+];
+
+export const proPlanFeatures = [
+  "Everything in Free",
+  "Suggested fixes for Technical, Content & On-Page analysis",
+  "Page screenshots/snapshots from URL",
+  "Up to 10 folders/projects",
+  "Up to 100 unique analyses",
+  "Invite up to 10 people per project",
+  "Mini-window for page navigation",
+  "Download analysis as PDF",
+];
+
+export const businessPlanFeatures = [
+  "Everything in Pro",
+  "Image content analysis: performance, size & suggestions",
+  "Per-image feedback (too large, blurry, missing alt, etc.)",
+  "Up to 50 projects",
+  "Up to 500 unique analyses",
+  "Invite up to 50 people per project",
+];
