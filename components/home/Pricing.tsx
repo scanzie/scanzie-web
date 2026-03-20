@@ -220,7 +220,10 @@ export default function Pricing({
           </div>
 
           {/* Business Plan */}
-          <div className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
+          <div className="bg-white rounded-lg border-2 border-gray-900 overflow-hidden hover:shadow-lg transition-shadow relative">
+            <div className="absolute top-0 right-0 bg-gray-900 text-white px-3 py-1 text-xs font-semibold rounded-bl-lg">
+              Best Value
+            </div>
             <div className="p-6 lg:p-8">
               <h3 className="text-xl lg:text-2xl font-bold text-gray-900 mb-2">
                 Business Plan
