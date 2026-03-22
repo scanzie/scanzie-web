@@ -13,6 +13,8 @@ export async function proxy(request: NextRequest) {
     "/full-logo.png",
     "/favicon.png",
     "/bing.png",
+    "/report-a-bug",
+    "/support",
     "/og-twitter.png",
     "/favicon.ico",
   ];
