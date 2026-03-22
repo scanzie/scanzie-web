@@ -151,13 +151,12 @@ const Hero = () => {
       ref={containerRef}
     >
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(59,130,246,0.14),transparent_25%)]" />
-
       <div className="relative z-10 flex min-h-[90vh] flex-col place-content-center gap-6 px-5 py-20 text-center sm:px-8 md:px-12">
         <h2
           ref={titleRef}
           className="text-4xl font-extrabold leading-tight sm:text-5xl md:text-6xl"
         >
-          Analyze your website <br /> SEO and performance.
+          Analyze your website&apos;s <br /> SEO and performance.
         </h2>
 
         <p
