@@ -24,8 +24,6 @@ export async function proxy(request: NextRequest) {
     "/profile",
     "/settings",
     "/upgrade",
-    "/report-a-bug",
-    "/support",
     "/api/user",
   ];
 
