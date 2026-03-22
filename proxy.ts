@@ -4,7 +4,7 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Route categories
-  const publicOnlyRoutes = ["/", "/login", "/register", "/support", "/report-a-bug", "/forgot-password"];
+  const publicOnlyRoutes = ["/", "/login", "/register", "/forgot-password"];
   const publicRoutes = [
     "/api/",
     "/.well-known/",
@@ -24,6 +24,8 @@ export async function proxy(request: NextRequest) {
     "/profile",
     "/settings",
     "/upgrade",
+    "/report-a-bug",
+    "/support",
     "/api/user",
   ];
 
