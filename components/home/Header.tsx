@@ -31,6 +31,12 @@ const Header = () => {
           >
             Support
           </Link>
+          <Link
+            href="/terms"
+            className="flex items-center gap-2 px-4 py-3 hover:bg-gray-200 rounded-2xl text-sm font-medium"
+          >
+            Terms
+          </Link>
           <Link href="/login">
             <Button>Get started</Button>
           </Link>

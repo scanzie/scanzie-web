@@ -15,6 +15,7 @@ export async function proxy(request: NextRequest) {
     "/bing.png",
     "/report-a-bug",
     "/support",
+    "/terms",
     "/og-twitter.png",
     "/favicon.ico",
   ];
