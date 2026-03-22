@@ -71,6 +71,34 @@
       "when": 1773332866649,
       "tag": "0009_confused_wrecking_crew",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1774178803767,
+      "tag": "0010_lazy_ted_forrester",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1774179078422,
+      "tag": "0011_black_pride",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1774179634987,
+      "tag": "0012_youthful_hercules",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1774179912932,
+      "tag": "0013_absurd_ted_forrester",
+      "breakpoints": true
     }
   ]
 }

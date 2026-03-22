@@ -7,65 +7,114 @@ import {
   jsonb,
   uuid,
   primaryKey,
+  unique,
+  index,
+  pgEnum,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
+/* =========================
+   ENUMS
+========================= */
+
+export const projectRoleEnum = pgEnum("project_role", [
+  "owner",
+  "admin",
+  "member",
+]);
+
+export const inviteStatusEnum = pgEnum("invite_status", [
+  "pending",
+  "accepted",
+  "rejected",
+]);
+
+export const subscriptionStatusEnum = pgEnum("subscription_status", [
+  "active",
+  "canceled",
+  "past_due",
+]);
+
+export const subscriptionPlanEnum = pgEnum("subscription_plan", [
+  "free",
+  "pro",
+  "enterprise",
+]);
+
 export const user = pgTable("user", {
-  id: varchar("id", { length: 255 }).primaryKey(),
+  id: varchar("id", { length: 255 }).primaryKey(), // ← FIXED
+
   name: varchar("name", { length: 255 }),
-  email: varchar("email", { length: 255 }).notNull(),
+
+  email: varchar("email", { length: 255 }).notNull().unique(),
+
   emailVerified: boolean("emailVerified").default(false).notNull(),
+
   image: varchar("image", { length: 500 }),
+
   createdAt: timestamp("createdAt", { withTimezone: true })
     .defaultNow()
     .notNull(),
+
   updatedAt: timestamp("updatedAt", { withTimezone: true })
     .defaultNow()
     .notNull(),
 });
 
-export const session = pgTable("session", {
-  id: varchar("id", { length: 255 }).primaryKey(),
-  userId: varchar("userId", { length: 255 })
-    .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
-  token: varchar("token", { length: 255 }).notNull().unique(),
-  expiresAt: timestamp("expiresAt", { withTimezone: true }).notNull(),
-  ipAddress: varchar("ipAddress", { length: 45 }),
-  userAgent: varchar("userAgent", { length: 1000 }),
-  createdAt: timestamp("createdAt", { withTimezone: true })
-    .defaultNow()
-    .notNull(),
-  updatedAt: timestamp("updatedAt", { withTimezone: true })
-    .defaultNow()
-    .notNull(),
-});
+export const session = pgTable(
+  "session",
+  {
+    id: varchar("id", { length: 255 }).primaryKey(),
+    userId: varchar("userId", { length: 255 }) // ← FIXED
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    token: varchar("token", { length: 255 }).notNull().unique(),
+    expiresAt: timestamp("expiresAt", { withTimezone: true }).notNull(),
+    ipAddress: varchar("ipAddress", { length: 45 }),
+    userAgent: varchar("userAgent", { length: 1000 }),
+    createdAt: timestamp("createdAt", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updatedAt", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => ({
+    userIdx: index("session_user_idx").on(table.userId),
+  }),
+);
 
-export const account = pgTable("account", {
-  id: varchar("id", { length: 255 }).primaryKey(),
-  userId: varchar("userId", { length: 255 })
-    .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
-  accountId: varchar("accountId", { length: 255 }).notNull(),
-  providerId: varchar("providerId", { length: 255 }).notNull(),
-  accessToken: text("accessToken"),
-  refreshToken: text("refreshToken"),
-  accessTokenExpiresAt: timestamp("accessTokenExpiresAt", {
-    withTimezone: true,
+export const account = pgTable(
+  "account",
+  {
+    id: varchar("id", { length: 255 }).primaryKey(),
+    userId: varchar("userId", { length: 255 }) // ← FIXED
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    accountId: varchar("accountId", { length: 255 }).notNull(),
+    providerId: varchar("providerId", { length: 255 }).notNull(),
+    accessToken: text("accessToken"),
+    refreshToken: text("refreshToken"),
+    accessTokenExpiresAt: timestamp("accessTokenExpiresAt", {
+      withTimezone: true,
+    }),
+    refreshTokenExpiresAt: timestamp("refreshTokenExpiresAt", {
+      withTimezone: true,
+    }),
+    scope: varchar("scope", { length: 500 }),
+    idToken: text("idToken"),
+    password: varchar("password", { length: 255 }),
+    createdAt: timestamp("createdAt", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updatedAt", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => ({
+    userIdx: index("account_user_idx").on(table.userId),
   }),
-  refreshTokenExpiresAt: timestamp("refreshTokenExpiresAt", {
-    withTimezone: true,
-  }),
-  scope: varchar("scope", { length: 500 }),
-  idToken: text("idToken"),
-  password: varchar("password", { length: 255 }),
-  createdAt: timestamp("createdAt", { withTimezone: true })
-    .defaultNow()
-    .notNull(),
-  updatedAt: timestamp("updatedAt", { withTimezone: true })
-    .defaultNow()
-    .notNull(),
-});
+);
 
 export const verification = pgTable("verification", {
   id: varchar("id", { length: 255 }).primaryKey(),
@@ -80,51 +129,69 @@ export const verification = pgTable("verification", {
     .notNull(),
 });
 
-export const seo_analysis = pgTable("seo_analysis", {
-  id: uuid("id").defaultRandom().primaryKey(),
+export const project = pgTable(
+  "project",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    name: varchar("name", { length: 255 }).notNull(),
+    userId: varchar("userId", { length: 255 }) // ← FIXED
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    createdAt: timestamp("createdAt", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updatedAt", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => ({
+    userProjectNameUnique: unique("project_user_name_unique").on(
+      table.userId,
+      table.name,
+    ),
+    userIdx: index("project_user_idx").on(table.userId),
+  }),
+);
 
-  projectId: uuid("projectId")
-    .notNull()
-    .references(() => project.id, { onDelete: "cascade" }),
+export const seo_analysis = pgTable(
+  "seo_analysis",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
 
-  userId: varchar("userId", { length: 255 })
-    .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
+    projectId: uuid("projectId")
+      .notNull()
+      .references(() => project.id, { onDelete: "cascade" }),
 
-  title: varchar("title", { length: 255 }).notNull(),
-  url: varchar("url", { length: 400 }).notNull(),
+    userId: varchar("userId", { length: 255 }) // ← FIXED
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
 
-  on_page: jsonb("on_page"),
-  content: jsonb("content"),
-  technical: jsonb("technical"),
+    title: varchar("title", { length: 255 }).notNull(),
+    url: varchar("url", { length: 400 }).notNull(),
+    normalizedUrl: varchar("normalizedUrl", { length: 400 }),
 
-  createdAt: timestamp("createdAt", { withTimezone: true })
-    .defaultNow()
-    .notNull(),
+    on_page: jsonb("on_page"),
+    content: jsonb("content"),
+    technical: jsonb("technical"),
 
-  updatedAt: timestamp("updatedAt", { withTimezone: true })
-    .defaultNow()
-    .notNull(),
-});
+    createdAt: timestamp("createdAt", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
 
-export const project = pgTable("project", {
-  id: uuid("id").defaultRandom().primaryKey(),
-
-  name: varchar("name", { length: 255 }).notNull(),
-
-  // creator (owner)
-  userId: varchar("userId", { length: 255 })
-    .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
-
-  createdAt: timestamp("createdAt", { withTimezone: true })
-    .defaultNow()
-    .notNull(),
-
-  updatedAt: timestamp("updatedAt", { withTimezone: true })
-    .defaultNow()
-    .notNull(),
-});
+    updatedAt: timestamp("updatedAt", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => ({
+    uniqueUrl: unique("seo_analysis_unique").on(
+      table.projectId,
+      table.userId,
+      table.normalizedUrl,
+    ),
+    projectIdx: index("seo_project_idx").on(table.projectId),
+    userIdx: index("seo_user_idx").on(table.userId),
+  }),
+);
 
 export const project_members = pgTable(
   "project_members",
@@ -133,11 +200,11 @@ export const project_members = pgTable(
       .notNull()
       .references(() => project.id, { onDelete: "cascade" }),
 
-    userId: varchar("userId", { length: 255 })
+    userId: varchar("userId", { length: 255 }) // ← FIXED
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
 
-    role: varchar("role", { length: 50 }).default("member").notNull(),
+    role: projectRoleEnum("role").default("member").notNull(),
 
     createdAt: timestamp("createdAt", { withTimezone: true })
       .defaultNow()
@@ -145,62 +212,77 @@ export const project_members = pgTable(
   },
   (table) => ({
     pk: primaryKey(table.projectId, table.userId),
+    userIdx: index("pm_user_idx").on(table.userId),
   }),
 );
 
-export const project_invite = pgTable("project_invite", {
-  id: uuid("id").defaultRandom().primaryKey(),
+export const project_invite = pgTable(
+  "project_invite",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
 
-  projectId: uuid("projectId")
-    .notNull()
-    .references(() => project.id, { onDelete: "cascade" }),
+    projectId: uuid("projectId")
+      .notNull()
+      .references(() => project.id, { onDelete: "cascade" }),
 
-  inviterUserId: varchar("inviterUserId", { length: 255 })
-    .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
+    inviterUserId: varchar("inviterUserId", { length: 255 }) // ← FIXED
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
 
-  email: varchar("email", { length: 255 }).notNull(),
+    email: varchar("email", { length: 255 }).notNull(),
 
-  token: varchar("token", { length: 255 }).notNull().unique(),
+    token: varchar("token", { length: 255 }).notNull().unique(),
 
-  status: varchar("status", { length: 30 }).default("pending").notNull(),
+    status: inviteStatusEnum("status").default("pending").notNull(),
 
-  acceptedAt: timestamp("acceptedAt", { withTimezone: true }),
+    acceptedAt: timestamp("acceptedAt", { withTimezone: true }),
 
-  createdAt: timestamp("createdAt", { withTimezone: true })
-    .defaultNow()
-    .notNull(),
-});
+    createdAt: timestamp("createdAt", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => ({
+    projectIdx: index("invite_project_idx").on(table.projectId),
+  }),
+);
 
-export const subscription = pgTable("subscription", {
-  id: uuid("id").defaultRandom().primaryKey(),
+export const subscription = pgTable(
+  "subscription",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
 
-  userId: varchar("userId", { length: 255 })
-    .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
+    userId: varchar("userId", { length: 255 }) // ← FIXED
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" })
+      .unique(),
 
-  plan: varchar("plan", { length: 50 }).notNull(),
+    plan: subscriptionPlanEnum("plan").notNull(),
 
-  status: varchar("status", { length: 50 }).notNull(),
+    status: subscriptionStatusEnum("status").notNull(),
 
-  subscriptionCode: varchar("subscriptionCode", { length: 255 })
-    .notNull()
-    .unique(),
+    subscriptionCode: varchar("subscriptionCode", { length: 255 })
+      .notNull()
+      .unique(),
 
-  nextPaymentDate: timestamp("nextPaymentDate", {
-    withTimezone: true,
-  }).notNull(),
+    nextPaymentDate: timestamp("nextPaymentDate", {
+      withTimezone: true,
+    }).notNull(),
 
-  createdAt: timestamp("createdAt", { withTimezone: true })
-    .defaultNow()
-    .notNull(),
+    createdAt: timestamp("createdAt", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
 
-  updatedAt: timestamp("updatedAt", { withTimezone: true })
-    .defaultNow()
-    .notNull(),
-});
+    updatedAt: timestamp("updatedAt", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => ({
+    userIdx: index("sub_user_idx").on(table.userId),
+  }),
+);
 
 // Table relations
+
 export const projectRelations = relations(project, ({ one, many }) => ({
   creator: one(user, {
     fields: [project.userId],
