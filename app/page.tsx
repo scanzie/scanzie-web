@@ -5,14 +5,17 @@ import Header from "@/components/home/Header";
 import Hero from "@/components/home/Hero";
 import Pricing from "@/components/home/Pricing";
 import Results from "@/components/home/Results";
+import { getHomeStats } from "@/lib/actions/home";
 
-export default function Home() {
+export default async function Home() {
+  const stats = await getHomeStats();
+
   return (
     <div>
       <Header />
       <div className="mt-[72px]">
         <Hero />
-        <Results />
+        <Results stats={stats} />
         <Features />
         <Pricing />
         <Faq />

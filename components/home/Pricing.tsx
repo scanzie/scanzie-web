@@ -1,14 +1,18 @@
 "use client";
 
-import { useState } from "react";
-import { Button } from "../ui/button";
+import { useEffect, useRef, useState } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Check } from "lucide-react";
+import { Button } from "../ui/button";
 import { BillingToggle } from "../ui/BillingToggle";
 import {
   businessPlanFeatures,
   freePlanFeatures,
   proPlanFeatures,
 } from "@/lib/constants/plans";
+
+gsap.registerPlugin(ScrollTrigger);
 
 interface PricingProps {
   isAuthenticated?: boolean;
@@ -21,6 +25,10 @@ export default function Pricing({
   userEmail,
   userPlan = "free",
 }: PricingProps) {
+  const sectionRef = useRef<HTMLElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const cardsRef = useRef<Array<HTMLDivElement | null>>([]);
+  const ctaRef = useRef<HTMLDivElement>(null);
   const [isYearly, setIsYearly] = useState(false);
   const [loading, setLoading] = useState<{
     proMonthly: boolean;
@@ -33,6 +41,52 @@ export default function Pricing({
     businessMonthly: false,
     businessYearly: false,
   });
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
+    }
+
+    const ctx = gsap.context(() => {
+      gsap.set(headerRef.current, { opacity: 0, y: 24 });
+      gsap.set(cardsRef.current, { opacity: 0, y: 48, scale: 0.975 });
+      gsap.set(ctaRef.current, { opacity: 0, y: 20 });
+
+      ScrollTrigger.create({
+        trigger: sectionRef.current,
+        start: "top 74%",
+        once: true,
+        onEnter: () => {
+          gsap.to(headerRef.current, {
+            opacity: 1,
+            y: 0,
+            duration: 0.7,
+            ease: "power3.out",
+          });
+
+          gsap.to(cardsRef.current, {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.8,
+            stagger: 0.12,
+            ease: "power3.out",
+            delay: 0.08,
+          });
+
+          gsap.to(ctaRef.current, {
+            opacity: 1,
+            y: 0,
+            duration: 0.65,
+            ease: "power3.out",
+            delay: 0.22,
+          });
+        },
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
 
   const handleSubscribe = async (
     targetPlan: "pro" | "business",
@@ -75,13 +129,16 @@ export default function Pricing({
   const isBusiness = planNorm === "business";
 
   return (
-    <section className="py-10 mb-10 px-4 sm:px-6 lg:px-8 bg-gray-50">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+    <section
+      ref={sectionRef}
+      className="mb-10 bg-gray-50 px-4 py-10 sm:px-6 lg:px-8"
+    >
+      <div className="mx-auto max-w-7xl">
+        <div ref={headerRef} className="mb-16 text-center">
+          <h2 className="mb-4 text-4xl font-bold text-gray-900 md:text-5xl">
             Simple, Transparent Pricing
           </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
+          <p className="mx-auto mb-8 max-w-2xl text-xl text-gray-600">
             Choose the perfect plan for your SEO analysis needs
           </p>
 
@@ -90,21 +147,25 @@ export default function Pricing({
           </div>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6 lg:gap-8 max-w-6xl mx-auto">
-          {/* Free Plan */}
-          <div className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
+        <div className="mx-auto grid max-w-6xl gap-6 md:grid-cols-3 lg:gap-8">
+          <div
+            ref={(node) => {
+              cardsRef.current[0] = node;
+            }}
+            className="overflow-hidden rounded-lg border border-gray-200 bg-white transition-shadow hover:shadow-lg"
+          >
             <div className="p-6 lg:p-8">
-              <h3 className="text-xl lg:text-2xl font-bold text-gray-900 mb-2">
+              <h3 className="mb-2 text-xl font-bold text-gray-900 lg:text-2xl">
                 Free Plan
               </h3>
-              <p className="text-gray-600 text-sm mb-6">
+              <p className="mb-6 text-sm text-gray-600">
                 No credit card required
               </p>
 
-              <div className="mb-6 lg:mb-8 h-16">
-                <div className="text-4xl lg:text-5xl font-bold text-gray-900">
+              <div className="mb-6 h-16 lg:mb-8">
+                <div className="text-4xl font-bold text-gray-900 lg:text-5xl">
                   $0
-                  <span className="text-lg lg:text-xl text-gray-600 font-normal">
+                  <span className="text-lg font-normal text-gray-600 lg:text-xl">
                     /mo
                   </span>
                 </div>
@@ -113,7 +174,7 @@ export default function Pricing({
               {isAuthenticated && (
                 <Button
                   disabled={planNorm === "free"}
-                  className={`w-full mb-6 lg:mb-8 ${planNorm === "free" ? "bg-gray-100 text-gray-900" : "bg-white text-gray-900 border border-gray-300 hover:bg-gray-50"}`}
+                  className={`mb-6 w-full lg:mb-8 ${planNorm === "free" ? "bg-gray-100 text-gray-900" : "border border-gray-300 bg-white text-gray-900 hover:bg-gray-50"}`}
                   variant={planNorm === "free" ? "secondary" : "outline"}
                 >
                   {isAuthenticated
@@ -125,12 +186,12 @@ export default function Pricing({
               )}
 
               <div className="space-y-3">
-                <p className="text-sm font-semibold text-gray-900 mb-3">
+                <p className="mb-3 text-sm font-semibold text-gray-900">
                   Includes:
                 </p>
                 {freePlanFeatures.map((feature, index) => (
                   <div key={index} className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
+                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-blue-500" />
                     <span className="text-sm text-gray-700">{feature}</span>
                   </div>
                 ))}
@@ -138,29 +199,33 @@ export default function Pricing({
             </div>
           </div>
 
-          {/* Pro Plan */}
-          <div className="bg-white rounded-lg border-2 border-blue-500 overflow-hidden hover:shadow-lg transition-shadow relative">
-            <div className="absolute top-0 right-0 bg-blue-500 text-white px-3 py-1 text-xs font-semibold rounded-bl-lg">
+          <div
+            ref={(node) => {
+              cardsRef.current[1] = node;
+            }}
+            className="relative overflow-hidden rounded-lg border-2 border-blue-500 bg-white transition-shadow hover:shadow-lg"
+          >
+            <div className="absolute top-0 right-0 rounded-bl-lg bg-blue-500 px-3 py-1 text-xs font-semibold text-white">
               Most Popular
             </div>
 
             <div className="p-6 lg:p-8">
-              <h3 className="text-xl lg:text-2xl font-bold text-gray-900 mb-2">
+              <h3 className="mb-2 text-xl font-bold text-gray-900 lg:text-2xl">
                 Pro Plan
               </h3>
-              <p className="text-gray-600 text-sm mb-6">
+              <p className="mb-6 text-sm text-gray-600">
                 {isYearly ? "Billed yearly" : "Billed monthly"}
               </p>
 
-              <div className="mb-6 lg:mb-8 h-16">
-                <div className="text-4xl lg:text-5xl font-bold text-gray-900">
+              <div className="mb-6 h-16 lg:mb-8">
+                <div className="text-4xl font-bold text-gray-900 lg:text-5xl">
                   ${isYearly ? "9.60" : "12"}
-                  <span className="text-lg lg:text-xl text-gray-600 font-normal">
+                  <span className="text-lg font-normal text-gray-600 lg:text-xl">
                     /mo
                   </span>
                 </div>
                 {isYearly && (
-                  <div className="text-xs text-gray-500 mt-1">
+                  <div className="mt-1 text-xs text-gray-500">
                     $115.20 billed yearly
                   </div>
                 )}
@@ -172,7 +237,7 @@ export default function Pricing({
                     handleSubscribe("pro", isYearly ? "yearly" : "monthly")
                   }
                   disabled={loading.proMonthly || loading.proYearly || isPro}
-                  className={`w-full mb-6 lg:mb-8 ${isPro ? "bg-gray-100 text-gray-900 hover:bg-gray-200" : "bg-blue-600 hover:bg-blue-700 text-white"}`}
+                  className={`mb-6 w-full lg:mb-8 ${isPro ? "bg-gray-100 text-gray-900 hover:bg-gray-200" : "bg-blue-600 text-white hover:bg-blue-700"}`}
                   variant={isPro ? "secondary" : "default"}
                 >
                   {loading.proMonthly || loading.proYearly
@@ -184,12 +249,12 @@ export default function Pricing({
               )}
 
               <div className="space-y-3">
-                <p className="text-sm font-semibold text-gray-900 mb-3">
+                <p className="mb-3 text-sm font-semibold text-gray-900">
                   Includes:
                 </p>
                 {proPlanFeatures.map((feature, index) => (
                   <div key={index} className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
+                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-blue-500" />
                     <span className="text-sm text-gray-700">{feature}</span>
                   </div>
                 ))}
@@ -197,28 +262,32 @@ export default function Pricing({
             </div>
           </div>
 
-          {/* Business Plan */}
-          <div className="bg-white rounded-lg border-2 border-gray-900 overflow-hidden hover:shadow-lg transition-shadow relative">
-            <div className="absolute top-0 right-0 bg-gray-900 text-white px-3 py-1 text-xs font-semibold rounded-bl-lg">
+          <div
+            ref={(node) => {
+              cardsRef.current[2] = node;
+            }}
+            className="relative overflow-hidden rounded-lg border-2 border-gray-900 bg-white transition-shadow hover:shadow-lg"
+          >
+            <div className="absolute top-0 right-0 rounded-bl-lg bg-gray-900 px-3 py-1 text-xs font-semibold text-white">
               Best Value
             </div>
             <div className="p-6 lg:p-8">
-              <h3 className="text-xl lg:text-2xl font-bold text-gray-900 mb-2">
+              <h3 className="mb-2 text-xl font-bold text-gray-900 lg:text-2xl">
                 Business Plan
               </h3>
-              <p className="text-gray-600 text-sm mb-6">
+              <p className="mb-6 text-sm text-gray-600">
                 {isYearly ? "Billed yearly" : "Billed monthly"}
               </p>
 
-              <div className="mb-6 lg:mb-8 h-16">
-                <div className="text-4xl lg:text-5xl font-bold text-gray-900">
+              <div className="mb-6 h-16 lg:mb-8">
+                <div className="text-4xl font-bold text-gray-900 lg:text-5xl">
                   ${isYearly ? "60" : "75"}
-                  <span className="text-lg lg:text-xl text-gray-600 font-normal">
+                  <span className="text-lg font-normal text-gray-600 lg:text-xl">
                     /mo
                   </span>
                 </div>
                 {isYearly && (
-                  <div className="text-xs text-gray-500 mt-1">
+                  <div className="mt-1 text-xs text-gray-500">
                     $720 billed yearly
                   </div>
                 )}
@@ -234,10 +303,10 @@ export default function Pricing({
                     loading.businessYearly ||
                     isBusiness
                   }
-                  className={`w-full mb-6 lg:mb-8 ${
+                  className={`mb-6 w-full lg:mb-8 ${
                     isBusiness
                       ? "bg-gray-100 text-gray-900 hover:bg-gray-200"
-                      : "bg-gray-800 hover:bg-gray-900 text-white"
+                      : "bg-gray-800 text-white hover:bg-gray-900"
                   }`}
                   variant={isBusiness ? "secondary" : "default"}
                 >
@@ -250,12 +319,12 @@ export default function Pricing({
               )}
 
               <div className="space-y-3">
-                <p className="text-sm font-semibold text-gray-900 mb-3">
+                <p className="mb-3 text-sm font-semibold text-gray-900">
                   Includes:
                 </p>
                 {businessPlanFeatures.map((feature, index) => (
                   <div key={index} className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-gray-700 mt-0.5 shrink-0" />
+                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-gray-700" />
                     <span className="text-sm text-gray-700">{feature}</span>
                   </div>
                 ))}
@@ -264,12 +333,12 @@ export default function Pricing({
           </div>
         </div>
 
-        <div className="text-center mt-12">
+        <div ref={ctaRef} className="mt-12 text-center">
           <p className="text-gray-600">
             Have questions?{" "}
             <a
               href="/support"
-              className="text-blue-600 hover:text-blue-700 font-semibold"
+              className="font-semibold text-blue-600 hover:text-blue-700"
             >
               Contact our support team
             </a>

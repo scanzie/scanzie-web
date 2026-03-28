@@ -1,4 +1,8 @@
-import React from "react";
+"use client";
+
+import React, { useEffect, useRef } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
   Search,
   Zap,
@@ -8,6 +12,8 @@ import {
   BotIcon,
 } from "lucide-react";
 
+gsap.registerPlugin(ScrollTrigger);
+
 interface Feature {
   id: number;
   title: string;
@@ -16,6 +22,47 @@ interface Feature {
 }
 
 const FeaturesSection: React.FC = () => {
+  const sectionRef = useRef<HTMLElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const cardsRef = useRef<Array<HTMLDivElement | null>>([]);
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
+    }
+
+    const ctx = gsap.context(() => {
+      gsap.set(headerRef.current, { opacity: 0, y: 26 });
+      gsap.set(cardsRef.current, { opacity: 0, y: 42, rotateX: -8 });
+
+      ScrollTrigger.create({
+        trigger: sectionRef.current,
+        start: "top 76%",
+        once: true,
+        onEnter: () => {
+          gsap.to(headerRef.current, {
+            opacity: 1,
+            y: 0,
+            duration: 0.7,
+            ease: "power3.out",
+          });
+
+          gsap.to(cardsRef.current, {
+            opacity: 1,
+            y: 0,
+            rotateX: 0,
+            duration: 0.8,
+            stagger: 0.1,
+            ease: "power3.out",
+            delay: 0.08,
+          });
+        },
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
+
   const features: Feature[] = [
     {
       id: 1,
@@ -62,10 +109,9 @@ const FeaturesSection: React.FC = () => {
   ];
 
   return (
-    <section className="py-10 mb-10">
+    <section ref={sectionRef} className="py-10 mb-10">
       <div className="app-container">
-        {/* Header */}
-        <div className="text-center mb-16">
+        <div ref={headerRef} className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
             Powerful SEO features
             <br />
@@ -77,24 +123,26 @@ const FeaturesSection: React.FC = () => {
           </p>
         </div>
 
-        {/* Features Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {features.map((feature) => (
+          {features.map((feature, index) => (
             <div
               key={feature.id}
-              className="group  rounded-2xl p-8 border border-gray-200 hover:border-gray-300 hover:shadow-lg transition-all duration-300 ease-in-out"
+              ref={(node) => {
+                cardsRef.current[index] = node;
+              }}
+              className="group rounded-2xl border border-gray-200 p-8 transition-all duration-300 ease-in-out hover:border-gray-300 hover:shadow-lg"
             >
               <div className="flex flex-col items-start space-y-4">
-                <div className="p-3 bg-blue-50 rounded-xl group-hover:bg-blue-100 transition-colors duration-300">
+                <div className="rounded-xl bg-blue-50 p-3 transition-colors duration-300 group-hover:bg-blue-100">
                   {feature.icon}
                 </div>
 
                 <div className="space-y-3">
-                  <h3 className="text-xl font-semibold  transition-colors">
+                  <h3 className="text-xl font-semibold transition-colors">
                     {feature.title}
                   </h3>
 
-                  <p className="leading-relaxed text-sm">
+                  <p className="text-sm leading-relaxed">
                     {feature.description}
                   </p>
                 </div>

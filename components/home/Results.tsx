@@ -1,9 +1,59 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { BarChart3, ScanSearch, Users } from "lucide-react";
-import { getHomeStats } from "@/lib/actions/home";
+import type { HomeStats } from "@/lib/actions/home";
 import { formatMetric } from "@/utils/general";
 
-export default async function Results() {
-  const stats = await getHomeStats();
+gsap.registerPlugin(ScrollTrigger);
+
+type ResultsProps = {
+  stats: HomeStats;
+};
+
+export default function Results({ stats }: ResultsProps) {
+  const sectionRef = useRef<HTMLElement>(null);
+  const introRef = useRef<HTMLDivElement>(null);
+  const cardsRef = useRef<Array<HTMLDivElement | null>>([]);
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
+    }
+
+    const ctx = gsap.context(() => {
+      gsap.set(introRef.current, { opacity: 0, y: 28 });
+      gsap.set(cardsRef.current, { opacity: 0, y: 36, scale: 0.97 });
+
+      ScrollTrigger.create({
+        trigger: sectionRef.current,
+        start: "top 78%",
+        once: true,
+        onEnter: () => {
+          gsap.to(introRef.current, {
+            opacity: 1,
+            y: 0,
+            duration: 0.75,
+            ease: "power3.out",
+          });
+
+          gsap.to(cardsRef.current, {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.75,
+            stagger: 0.12,
+            ease: "power3.out",
+            delay: 0.08,
+          });
+        },
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
 
   const metricCards = [
     {
@@ -30,11 +80,11 @@ export default async function Results() {
   ];
 
   return (
-    <section className="relative overflow-hidden mb-10 py-10">
+    <section ref={sectionRef} className="relative overflow-hidden mb-10 py-10">
       <div className="app-container relative">
         <div className="overflow-hidden rounded-4xl border border-slate-200/80 bg-white shadow-[0_5px_80px_rgba(15,23,42,0.08)]">
           <div className="grid gap-10 px-6 py-8 sm:px-8 md:px-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-12 lg:px-12 lg:py-12">
-            <div className="max-w-2xl">
+            <div ref={introRef} className="max-w-2xl">
               <span className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-blue-700">
                 Proven momentum
               </span>
@@ -68,9 +118,12 @@ export default async function Results() {
             </div>
 
             <div className="grid gap-4">
-              {metricCards.map((card) => (
+              {metricCards.map((card, index) => (
                 <div
                   key={card.label}
+                  ref={(node) => {
+                    cardsRef.current[index] = node;
+                  }}
                   className="rounded-3xl border border-slate-200 bg-white p-6 shadow-[0_10px_30px_rgba(15,23,42,0.06)]"
                 >
                   <div className="flex items-center justify-between gap-4">

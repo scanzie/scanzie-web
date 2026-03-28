@@ -1,7 +1,12 @@
 "use client";
-import React, { useState } from "react";
-import { Button } from "../ui/button";
+
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { Button } from "../ui/button";
+
+gsap.registerPlugin(ScrollTrigger);
 
 interface FAQItem {
   id: string;
@@ -33,21 +38,6 @@ const faqData: FAQItem[] = [
     answer:
       "The Technical SEO Audit identifies crawl errors, broken links, duplicate content, page speed issues, mobile-friendliness problems, sitemap errors, and other technical factors that impact search visibility and user experience.",
   },
-  //   {
-  //     id: '5',
-  //     question: 'How often is the performance data updated?',
-  //     answer: 'Performance data is updated in real-time for Core Web Vitals and loading speeds. Ranking data is refreshed daily, while technical audits can be run on-demand or scheduled to run automatically at your preferred intervals.'
-  //   },
-  //   {
-  //     id: '6',
-  //     question: 'Do you offer API access for enterprise users?',
-  //     answer: 'Yes, we provide comprehensive API access for enterprise customers. This allows you to integrate Scanzie\'s analytics and monitoring capabilities directly into your existing tools and workflows.'
-  //   },
-  //   {
-  //     id: '7',
-  //     question: 'Is there a free trial available?',
-  //     answer: 'Yes, we offer a 14-day free trial that includes access to all our tools and features. No credit card is required to start your trial, and you can upgrade to a paid plan at any time.'
-  //   },
   {
     id: "8",
     question: "How does the Site Architecture Analysis work?",
@@ -57,7 +47,56 @@ const faqData: FAQItem[] = [
 ];
 
 const FAQ: React.FC = () => {
+  const sectionRef = useRef<HTMLElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const itemsRef = useRef<Array<HTMLDivElement | null>>([]);
+  const ctaRef = useRef<HTMLDivElement>(null);
   const [openItems, setOpenItems] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
+    }
+
+    const ctx = gsap.context(() => {
+      gsap.set(headerRef.current, { opacity: 0, y: 22 });
+      gsap.set(itemsRef.current, { opacity: 0, y: 30 });
+      gsap.set(ctaRef.current, { opacity: 0, y: 18 });
+
+      ScrollTrigger.create({
+        trigger: sectionRef.current,
+        start: "top 77%",
+        once: true,
+        onEnter: () => {
+          gsap.to(headerRef.current, {
+            opacity: 1,
+            y: 0,
+            duration: 0.7,
+            ease: "power3.out",
+          });
+
+          gsap.to(itemsRef.current, {
+            opacity: 1,
+            y: 0,
+            duration: 0.65,
+            stagger: 0.08,
+            ease: "power2.out",
+            delay: 0.08,
+          });
+
+          gsap.to(ctaRef.current, {
+            opacity: 1,
+            y: 0,
+            duration: 0.55,
+            ease: "power2.out",
+            delay: 0.2,
+          });
+        },
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
 
   const toggleItem = (id: string) => {
     const newOpenItems = new Set(openItems);
@@ -70,39 +109,40 @@ const FAQ: React.FC = () => {
   };
 
   return (
-    <section className="bg-white py-16">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+    <section ref={sectionRef} className="bg-white py-16">
+      <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+        <div ref={headerRef} className="mb-12 text-center">
+          <h2 className="mb-4 text-4xl font-bold text-gray-900 md:text-5xl">
             Frequently Asked Questions
           </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
+          <p className="mx-auto mb-8 max-w-2xl text-xl text-gray-600">
             Everything you need to know about Scanzie&apos;s SEO and performance
             analytics tools. Can&apos;t find what you&apos;re looking for?
             Contact our support team.
           </p>
         </div>
 
-        {/* FAQ Items */}
         <div className="space-y-4">
-          {faqData.map((item) => (
+          {faqData.map((item, index) => (
             <div
               key={item.id}
-              className="bg-gray-50 rounded-lg border border-gray-200 hover:border-gray-300 transition-colors"
+              ref={(node) => {
+                itemsRef.current[index] = node;
+              }}
+              className="rounded-lg border border-gray-200 bg-gray-50 transition-colors hover:border-gray-300"
             >
               <button
                 onClick={() => toggleItem(item.id)}
-                className="w-full px-6 py-4 text-left cursor-pointer rounded-2xl"
+                className="w-full cursor-pointer rounded-2xl px-6 py-4 text-left"
                 aria-expanded={openItems.has(item.id)}
               >
-                <div className="flex justify-between items-center">
-                  <h3 className="md:text-lg font-medium text-gray-900 pr-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="pr-4 font-medium text-gray-900 md:text-lg">
                     {item.question}
                   </h3>
                   <div className="shrink-0">
                     <svg
-                      className={`w-5 h-5 text-gray-500 transform transition-transform duration-200 ${
+                      className={`h-5 w-5 transform text-gray-500 transition-transform duration-200 ${
                         openItems.has(item.id) ? "rotate-180" : ""
                       }`}
                       fill="none"
@@ -123,7 +163,7 @@ const FAQ: React.FC = () => {
               {openItems.has(item.id) && (
                 <div className="px-6 pb-4">
                   <div className="border-t border-gray-200 pt-4">
-                    <p className="text-gray-600 leading-relaxed">
+                    <p className="leading-relaxed text-gray-600">
                       {item.answer}
                     </p>
                   </div>
@@ -133,14 +173,13 @@ const FAQ: React.FC = () => {
           ))}
         </div>
 
-        {/* Contact CTA */}
-        <div className="text-center mt-12">
-          <p className="text-gray-600 mb-4">Still have questions?</p>
+        <div ref={ctaRef} className="mt-12 text-center">
+          <p className="mb-4 text-gray-600">Still have questions?</p>
           <Link href="/support">
-            <Button className="">
+            <Button>
               Contact Support
               <svg
-                className="ml-2 w-4 h-4"
+                className="ml-2 h-4 w-4"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
