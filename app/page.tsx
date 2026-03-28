@@ -4,6 +4,7 @@ import Footer from "@/components/home/Footer";
 import Header from "@/components/home/Header";
 import Hero from "@/components/home/Hero";
 import Pricing from "@/components/home/Pricing";
+import Results from "@/components/home/Results";
 
 export default function Home() {
   return (
@@ -11,6 +12,7 @@ export default function Home() {
       <Header />
       <div className="mt-[72px]">
         <Hero />
+        <Results />
         <Features />
         <Pricing />
         <Faq />

@@ -1,5 +1,3 @@
-
-
 export type FormatDateStyle = "relative" | "long";
 
 export const formatDate = (
@@ -52,8 +50,8 @@ export const formatDate = (
 export const formatUrl = (url: string): string => {
   if (url.length <= 28) return url;
 
-  const start = url.slice(0, 10); 
-  const end = url.slice(-5); 
+  const start = url.slice(0, 10);
+  const end = url.slice(-5);
 
   return `${start}...${end}`;
 };
@@ -61,4 +59,15 @@ export const formatUrl = (url: string): string => {
 export const formatAmount = (amountKobo: number | null | undefined) => {
   if (typeof amountKobo !== "number") return "—";
   return `₦${(amountKobo / 100).toLocaleString()}`;
+};
+
+export const formatMetric = (value: number) => {
+  if (value >= 1000) {
+    return new Intl.NumberFormat("en-US", {
+      notation: "compact",
+      maximumFractionDigits: 1,
+    }).format(value);
+  }
+
+  return new Intl.NumberFormat("en-US").format(value);
 };
