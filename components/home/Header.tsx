@@ -1,48 +1,140 @@
-import Link from "next/link";
-import { Button } from "../ui/button";
+"use client";
+
 import Image from "next/image";
+import Link from "next/link";
+import { Github, Menu } from "lucide-react";
+import { Button } from "../ui/button";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "../ui/sheet";
+
+const navLinks = [
+  { href: "/support", label: "Support" },
+  { href: "/terms", label: "Terms" },
+];
+
+const githubLink = {
+  href: "https://github.com/scanzie",
+  label: "Github",
+};
 
 const Header = () => {
   return (
-    <div className="bg-transparent backdrop-blur-xl border-b border-gray-300/50 fixed w-full top-0 left-0 z-50">
-      <div className="app-container flex justify-between items-center h-[72px]">
-        <div className="flex items-center gap-2">
+    <header className="fixed top-0 left-0 z-50 w-full border-b border-gray-300/50 bg-white/70 backdrop-blur-xl">
+      <div className="app-container flex h-[72px] items-center justify-between gap-4">
+        <Link href="/" className="flex items-center gap-2">
           <Image src="/favicon.png" alt="Logo" height={25} width={25} />
-          <h2 className="font-bold text-xl">Scanzie</h2>
-        </div>
-        <div className="flex items-center gap-4">
+          <span className="text-lg font-bold sm:text-xl">Scanzie</span>
+        </Link>
+
+        <nav className="hidden items-center gap-2 md:flex">
           <Link
-            href="https://github.com/scanzie"
+            href={githubLink.href}
             target="_blank"
-            className="flex itesm-center gap-2 px-4 py-3 hover:bg-gray-200 rounded-2xl"
+            className="flex items-center gap-2 rounded-2xl px-4 py-3 text-sm font-medium transition-colors hover:bg-gray-200"
           >
-            <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-              <path
-                fillRule="evenodd"
-                d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z"
-                clipRule="evenodd"
-              />
-            </svg>
-            <span className="hidden sm:block ">Github</span>
+            <Github className="h-5 w-5" />
+            <span>{githubLink.label}</span>
           </Link>
-          <Link
-            href="/support"
-            className="flex items-center gap-2 px-4 py-3 hover:bg-gray-200 rounded-2xl text-sm font-medium"
-          >
-            Support
-          </Link>
-          <Link
-            href="/terms"
-            className="flex items-center gap-2 px-4 py-3 hover:bg-gray-200 rounded-2xl text-sm font-medium"
-          >
-            Terms
-          </Link>
+
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="flex items-center gap-2 rounded-2xl px-4 py-3 text-sm font-medium transition-colors hover:bg-gray-200"
+            >
+              {link.label}
+            </Link>
+          ))}
+
           <Link href="/login">
-            <Button>Get started</Button>
+            <Button className="px-5">Get started</Button>
           </Link>
+        </nav>
+
+        <div className="flex items-center gap-2 md:hidden">
+          <Link href="/login">
+            <Button size="sm" className="px-4">
+              Get started
+            </Button>
+          </Link>
+
+          <Sheet>
+            <SheetTrigger asChild>
+              <button
+                type="button"
+                className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-900 shadow-sm transition-colors hover:bg-slate-50"
+                aria-label="Open navigation menu"
+              >
+                <Menu className="h-5 w-5" />
+              </button>
+            </SheetTrigger>
+
+            <SheetContent
+              side="right"
+              className="w-[88%] border-l border-slate-300 bg-white px-0 sm:max-w-sm"
+            >
+              <SheetHeader className="border-b border-slate-300 px-6 py-5 text-left">
+                <div className="flex items-center gap-3">
+                  <Image src="/favicon.png" alt="Logo" height={28} width={28} />
+                  <SheetTitle className="text-xl font-bold text-slate-950">
+                    Scanzie
+                  </SheetTitle>
+                </div>
+                <SheetDescription className="text-sm text-slate-700">
+                  SEO tools built to help you audit faster and act with clarity.
+                </SheetDescription>
+              </SheetHeader>
+
+              <div className="flex flex-1 flex-col px-4 py-5">
+                <div className="space-y-2">
+                  <SheetClose asChild>
+                    <Link
+                      href={githubLink.href}
+                      target="_blank"
+                      className="flex items-center justify-between rounded-2xl border border-slate-200 px-4 py-4 text-base font-semibold text-slate-950 transition-colors hover:border-slate-300 hover:bg-slate-100"
+                    >
+                      <span className="flex items-center gap-3">
+                        <Github className="h-5 w-5 text-slate-900" />
+                        {githubLink.label}
+                      </span>
+                      <span className="text-sm font-medium text-slate-600">
+                        External
+                      </span>
+                    </Link>
+                  </SheetClose>
+
+                  {navLinks.map((link) => (
+                    <SheetClose asChild key={link.href}>
+                      <Link
+                        href={link.href}
+                        className="flex items-center rounded-2xl border border-slate-200 px-4 py-4 text-base font-semibold text-slate-950 transition-colors hover:border-slate-300 hover:bg-slate-100"
+                      >
+                        {link.label}
+                      </Link>
+                    </SheetClose>
+                  ))}
+                </div>
+
+                <div className="mt-auto px-2 pt-6">
+                  <SheetClose asChild>
+                    <Link href="/login" className="block">
+                      <Button className="w-full">Get started</Button>
+                    </Link>
+                  </SheetClose>
+                </div>
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
-    </div>
+    </header>
   );
 };
 
