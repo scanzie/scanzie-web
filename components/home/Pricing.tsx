@@ -219,14 +219,14 @@ export default function Pricing({
 
               <div className="mb-6 h-16 lg:mb-8">
                 <div className="text-4xl font-bold text-gray-900 lg:text-5xl">
-                  ${isYearly ? "9.60" : "12"}
+                  ${isYearly ? "4" : "5"}
                   <span className="text-lg font-normal text-gray-600 lg:text-xl">
                     /mo
                   </span>
                 </div>
                 {isYearly && (
                   <div className="mt-1 text-xs text-gray-500">
-                    $115.20 billed yearly
+                    $48 billed yearly
                   </div>
                 )}
               </div>
@@ -281,14 +281,14 @@ export default function Pricing({
 
               <div className="mb-6 h-16 lg:mb-8">
                 <div className="text-4xl font-bold text-gray-900 lg:text-5xl">
-                  ${isYearly ? "60" : "75"}
+                  ${isYearly ? "12" : "15"}
                   <span className="text-lg font-normal text-gray-600 lg:text-xl">
                     /mo
                   </span>
                 </div>
                 {isYearly && (
                   <div className="mt-1 text-xs text-gray-500">
-                    $720 billed yearly
+                    $144 billed yearly
                   </div>
                 )}
               </div>
