@@ -1,6 +1,13 @@
 import type { Metadata } from "next";
+import { Geom } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
+
+const geom = Geom({
+  subsets: ["latin"],
+  variable: "--font-geom",
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
+});
 
 const siteUrl = "https://scanzie.vercel.app";
 
@@ -48,7 +55,7 @@ export default function RootLayout({
   modal?: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={geom.variable}>
       <body
         className={`antialiased`}
       >
