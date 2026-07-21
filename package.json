@@ -15,6 +15,7 @@
   "dependencies": {
     "@auth/core": "^0.40.0",
     "@auth/drizzle-adapter": "^1.10.0",
+    "@fontsource/geom": "^5.3.0",
     "@neondatabase/serverless": "^1.0.1",
     "@radix-ui/react-alert-dialog": "^1.1.15",
     "@radix-ui/react-avatar": "^1.1.10",
