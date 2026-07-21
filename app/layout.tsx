@@ -1,4 +1,8 @@
 import type { Metadata } from "next";
+import "@fontsource/geom/400.css";
+import "@fontsource/geom/500.css";
+import "@fontsource/geom/600.css";
+import "@fontsource/geom/700.css";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 
